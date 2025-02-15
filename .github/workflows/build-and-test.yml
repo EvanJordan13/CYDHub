@@ -1,0 +1,42 @@
+name: Build and Test Web Application
+
+on:
+  pull_request:
+    branches:
+      - main*
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Set up Node.js environment
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20 # Use the Node.js version required by your app
+      
+      # Cache dependencies to speed up the process
+      - name: Cache Node.js modules
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-modules-
+
+      # Install dependencies
+      - name: Install dependencies
+        run: npm install
+
+      # Build the application
+      - name: Build the application
+        run: npm run build
+
+      # Optional: Run tests
+      # - name: Run tests
+      #   run: npm test
