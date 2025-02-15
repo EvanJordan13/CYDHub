@@ -1,7 +1,7 @@
 import Provider from './providers';
 import type { Metadata } from 'next';
-import { siteConfig } from '@/config/site';
-import Footer from '@/components/Footer';
+import { siteConfig } from '@/src/config/site';
+import Footer from '@/src/components/Footer';
 
 export const metadata: Metadata = {
   title: {

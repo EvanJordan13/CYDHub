@@ -1,6 +1,6 @@
 'use client';
 
-import { siteConfig } from '@/config/site';
+import { siteConfig } from '@/src/config/site';
 import Link from 'next/link';
 import { Box, Text, Link as ChakraLink, Flex } from '@chakra-ui/react';
 

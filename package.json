@@ -15,11 +15,6 @@
     "format:check": "prettier --check src",
     "prisma": "npx prisma db pull && npx prisma generate"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "pre-commit"
-    }
-  },
   "lint-staged": {
     "*/*.{js,jsx,ts,tsx}": [
       "eslint --fix *.{js,ts,jsx,tsx} --no-error-on-unmatched-pattern",
@@ -41,7 +36,6 @@
     "eslint-config-next": "15.1.4",
     "eslint-config-prettier": "^10.0.1",
     "framer-motion": "^12.4.3",
-    "husky": "^8.0.0",
     "lint-staged": "^15.3.0",
     "next": "^14.2.18",
     "next-themes": "^0.4.4",
