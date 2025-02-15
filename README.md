@@ -60,7 +60,7 @@
 5. **Open a Pull Request (PR)**:
    - Go to the [Pull Request page](https://github.com/hack4impact-uiuc/code-your-dreams/compare) and create a new PR to merge changes from your feature branch (`<your-initials>/<branch-name>`) into the main branch for your project (`main`).
    - Provide a detailed description and request a review from Evan.
-   - Once  you PR is approved, you can merge it into the main branch!
+   - Once you PR is approved, you can merge it into the main branch!
 
 ## Development Guidelines
 
@@ -70,7 +70,7 @@
 
 1. **File and Folder Conventions**
 
-   - **Pages:** Create front-end pages in `app/<path|slug>/<page>.tsx`. 
+   - **Pages:** Create front-end pages in `app/<path|slug>/<page>.tsx`.
 
    - **Navigation:** Use `<Link>` instead of the `<a>` tag for client-side navigation. Example:
      ```jsx
@@ -110,4 +110,5 @@
 - Never commit directly to the main branch.
 - Keep [PRs small](https://google.github.io/eng-practices/review/developer/small-cls.html) and focused on one feature. Note: The link uses CLs which are synonymous with PRs
 - Commit frequently to avoid bundling unrelated changes or cluttering commit messages.
+
 ---
