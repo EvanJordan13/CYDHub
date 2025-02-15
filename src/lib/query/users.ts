@@ -1,4 +1,4 @@
-import prisma from '@/lib/postgres/db';
+import prisma from '@/src/lib/postgres/db';
 import { users } from '@prisma/client';
 
 export async function getUserById(userId: number): Promise<users | null> {

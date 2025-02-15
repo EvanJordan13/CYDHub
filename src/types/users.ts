@@ -1,5 +1,5 @@
-import { PaymentInfo } from '@/types/payment';
-import { Role } from '@/types/role';
+import { PaymentInfo } from '@/src/types/payment';
+import { Role } from '@/src/types/role';
 
 export type UserDocument = {
   id: string;
