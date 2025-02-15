@@ -9,12 +9,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "audit-fix": "npm audit fix",
-    "prepare": "husky install",
-    "lint": "next lint && eslint --fix --quiet *.{js,ts,jsx,tsx} --no-error-on-unmatched-pattern",
-    "pre-commit": "npm run lint-staged",
-    "prettify": "npm run prettier",
-    "format": "prettier --write . --log-level silent",
+    "format": "prettier --write \"src/**/*.{ts,tsx}\"",
+    "lint": "next lint",
+    "seed": "tsx seed.ts",
+    "format:check": "prettier --check src",
     "prisma": "npx prisma db pull && npx prisma generate"
   },
   "husky": {
