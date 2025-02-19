@@ -8,198 +8,325 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+/// Enums to standardize various roles and types.
 enum UserRole {
-  ADMIN
-  TEACHER
   STUDENT
+  TEACHER
+  ADMIN
 }
 
+enum ClassroomType {
+  IN_PERSON
+  ONLINE
+  ASYNC
+}
+
+enum QuestionType {
+  MULTIPLE_CHOICE
+  SHORT_ANSWER
+  CODE_EDITOR
+  FILE_UPLOAD
+}
+
+enum MaterialType {
+  FILE
+  URL
+  RECORDING
+  SLIDES
+  NOTES
+}
+
+enum SurveyType {
+  PRE
+  POST
+  OTHER
+}
+
+/// The central User model. This serves for students, teachers, and admins.
 model User {
-  id             Int        @id @default(autoincrement())
+  id             Int      @id @default(autoincrement())
   name           String?
-  email          String     @unique
-  role           UserRole?
-  paymentInfo    String?
-  inviteCode     String?    @db.Uuid
-  signupComplete Boolean?
-  createdAt      DateTime   @default(now()) @db.Timestamp(6)
-  city           String?
-  state          String?
-  country        String?
-  timezone       String?
+  email          String   @unique
+  role           UserRole
+  avatarUrl      String?
+  githubHandle   String?
+  signupComplete Boolean  @default(false)
+  points         Int      @default(0) // For gamification
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
-  // Role-specific relations
-  admin          Admin?
-  teacher        Teacher?
-  student        Student?
+  // Relations
+  classroomEnrollments ClassroomUser[]
+  submissions          Submission[]
+  surveyResponses      SurveyResponse[]
+  notifications        Notification[]
+  achievements         UserAchievement[]
 
-  // Associations with classrooms and organizations
-  userClassrooms     UserClassroom[]
-  userOrganizations  UserOrganization[]
+  // If a teacher, the classrooms they primarily manage.
+  createdClassrooms Classroom[]  @relation("TeacherClassrooms")
+  Invitation        Invitation[]
 }
 
-model Admin {
-  id       Int   @id
-  isActive Boolean?
-  user     User  @relation(fields: [id], references: [id], onDelete: Cascade)
-}
-
-model Teacher {
-  id              Int          @id
-  hireDate        DateTime?    @db.Date
-  terminationDate DateTime?    @db.Date
-  joinedAt        DateTime     @default(now()) @db.Timestamp(6)
-  isActive        Boolean?     @default(true)
-
-  // A teacher leads one or more classrooms.
-  classrooms      Classroom[]
-
-  user            User         @relation(fields: [id], references: [id], onDelete: Cascade)
-}
-
-model Student {
-  id                    Int          @id
-  joinedAt              DateTime     @default(now()) @db.Timestamp(6)
-  isActive              Boolean?     @default(true)
-
-  // Submission history.
-  assignmentSubmissions AssignmentSubmission[]
-  questionSubmissions   QuestionSubmission[]
-
-  user                  User         @relation(fields: [id], references: [id], onDelete: Cascade)
-  studentClassrooms     StudentClassroom[]
-}
-
+/// Organizations (such as CYD Hub) that can own courses and classrooms.
 model Organization {
-  id                Int                @id @default(autoincrement())
-  name              String?
-  description       String?
-  website           String?
-  oldId             String?            @db.Uuid
-
-  userOrganizations UserOrganization[]
-}
-
-model Classroom {
-  id                Int                @id @default(autoincrement())
-  name              String
-  description       String?
-  capacity          Int?
-  teacherId         Int
-  startDate         DateTime?          @db.Date
-  endDate           DateTime?          @db.Date
-
-  //Each classroom hosts multiple courses.
-  courses           Course[]
-
-  teacher           Teacher            @relation(fields: [teacherId], references: [id], onDelete: Cascade)
-
-  studentClassrooms StudentClassroom[]
-  userClassrooms    UserClassroom[]
-}
-
-model Course {
-  id          Int         @id @default(autoincrement())
-  classroomId Int
+  id          Int      @id @default(autoincrement())
   name        String
   description String?
-  startDate   DateTime?   @db.Date
-  endDate     DateTime?   @db.Date
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  // A course belongs only to one classroom.
-  classroom   Classroom   @relation(fields: [classroomId], references: [id], onDelete: Cascade)
-  
-  // A course has many assignments.
-  assignments Assignment[]
+  classrooms Classroom[]
+  courses    Course[]
 }
 
-model Assignment {
-  id                 Int                   @id @default(autoincrement())
-  courseId           Int
-  name               String
-  description        String?
-  assignmentNumber   Int?
-  dueDate            DateTime              @db.Date
-  createdAt          DateTime              @default(now()) @db.Timestamp(6)
+/// A Classroom (or program) which may be in-person, online, or async.
+/// Teachers invite students and assign courses to a classroom.
+model Classroom {
+  id             Int           @id @default(autoincrement())
+  organization   Organization  @relation(fields: [organizationId], references: [id])
+  organizationId Int
+  name           String
+  description    String?
+  type           ClassroomType
 
-  // Each assignment is part of a course.
-  course             Course                @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  // Primary teacher (optional) who manages this classroom.
+  teacher   User? @relation("TeacherClassrooms", fields: [teacherId], references: [id])
+  teacherId Int?
 
-  // Submissions and questions.
-  assignmentSubmissions AssignmentSubmission[]
-  questions          Question[]
+  // Enrollment join table for students (and additional teachers if needed).
+  enrollments ClassroomUser[]
+
+  // Many-to-many with courses.
+  classroomCourses ClassroomCourse[]
+
+  // Additional classroom features.
+  meetings      Meeting[]
+  announcements Announcement[]
+
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  Assignment Assignment[]
+  Survey     Survey[]
+  Invitation Invitation[]
 }
 
-model AssignmentSubmission {
-  id             Int                   @id @default(autoincrement())
-  assignmentId   Int
-  studentId      Int
-  s3Path         String
-  submittedAt    DateTime              @default(now()) @db.Timestamp(6)
+/// Join table for Users and Classrooms.
+model ClassroomUser {
+  id          Int       @id @default(autoincrement())
+  user        User      @relation(fields: [userId], references: [id])
+  userId      Int
+  classroom   Classroom @relation(fields: [classroomId], references: [id])
+  classroomId Int
 
-  assignment   Assignment  @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
-  student      Student     @relation(fields: [studentId], references: [id], onDelete: Cascade)
-
-  questionSubmissions QuestionSubmission[]
-}
-
-model Question {
-  id                    Int                  @id @default(autoincrement())
-  assignmentId          Int
-  questionNumber        Int?
-  name                  String?
-  prompt                String?
-  exampleSolutionS3Path String?
-  acceptedFileTypes     String?
-  createdAt             DateTime             @default(now()) @db.Timestamp(6)
-
-  // A question is part of an assignment.
-  assignment           Assignment           @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
-  questionSubmissions  QuestionSubmission[]
-}
-
-model QuestionSubmission {
-  id                      Int                   @id @default(autoincrement())
-  assignmentSubmissionId  Int
-  questionId              Int
-  studentId             Int
-  s3Path                 String
-  createdAt              DateTime              @default(now()) @db.Timestamp(6)
-
-  assignmentSubmission   AssignmentSubmission  @relation(fields: [assignmentSubmissionId], references: [id], onDelete: Cascade)
-  question               Question              @relation(fields: [questionId], references: [id], onDelete: Cascade)
-  student                Student               @relation(fields: [studentId], references: [id], onDelete: Cascade)
-}
-
-model StudentClassroom {
-  id           Int       @id @default(autoincrement())
-  classroomId  Int
-  studentId    Int
-  enrolledAt   DateTime  @default(now()) @db.Timestamp(6)
-
-  classroom    Classroom @relation(fields: [classroomId], references: [id], onDelete: Cascade)
-  student      Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
-
-  @@unique([classroomId, studentId])
-}
-
-model UserClassroom {
-  id           Int       @id @default(autoincrement())
-  userId       Int
-  classroomId  Int
-  role         String?
-
-  classroom    Classroom @relation(fields: [classroomId], references: [id], onDelete: Cascade)
-  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // This role can override the global role (for example, a teacher in one class).
+  role     UserRole?
+  joinedAt DateTime  @default(now())
 
   @@unique([userId, classroomId])
 }
 
-model UserOrganization {
-  id             Int           @id @default(autoincrement())
-  userId         Int
-  organizationId Int
+/// Join table for linking Courses to Classrooms.
+model ClassroomCourse {
+  id          Int       @id @default(autoincrement())
+  classroom   Classroom @relation(fields: [classroomId], references: [id])
+  classroomId Int
+  course      Course    @relation(fields: [courseId], references: [id])
+  courseId    Int
 
-  organization   Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@unique([classroomId, courseId])
+}
+
+/// Courses that contain curriculum content.
+/// These can be shared among many classrooms.
+model Course {
+  id             Int          @id @default(autoincrement())
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  organizationId Int
+  title          String
+  description    String?
+  syllabus       String? // Detailed course outline
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  materials   CourseMaterial[]
+  assignments Assignment[]
+
+  // Many-to-many link with classrooms.
+  classroomCourses ClassroomCourse[]
+  Survey           Survey[]
+}
+
+/// Materials (e.g. slides, recordings, files) linked to a course.
+model CourseMaterial {
+  id           Int          @id @default(autoincrement())
+  course       Course       @relation(fields: [courseId], references: [id])
+  courseId     Int
+  title        String
+  content      String? // Markdown/text content
+  materialType MaterialType
+  fileUrl      String? // For file uploads
+  order        Int? // Ordering within a module
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+/// Assignments which can be pushed to students via a course or directly to a classroom.
+model Assignment {
+  id          Int        @id @default(autoincrement())
+  // An assignment can be linked either to a course or to a classroom (for custom assignments).
+  course      Course?    @relation(fields: [courseId], references: [id])
+  courseId    Int?
+  classroom   Classroom? @relation(fields: [classroomId], references: [id])
+  classroomId Int?
+
+  title       String
+  description String?
+  dueDate     DateTime? // When the assignment is due
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // A teacher may break an assignment into multiple questions.
+  questions   AssignmentQuestion[]
+  // Student submissions.
+  submissions Submission[]
+}
+
+/// Questions that make up an assignment.
+/// Supports various types (multiple choice, short answer, code editor, file upload).
+model AssignmentQuestion {
+  id           Int          @id @default(autoincrement())
+  assignment   Assignment   @relation(fields: [assignmentId], references: [id])
+  assignmentId Int
+  questionText String
+  questionType QuestionType
+  // For multiple-choice questions, options may be stored as a JSON string or comma‐separated list.
+  options      String?
+  order        Int?
+}
+
+/// A student’s submission to an assignment.
+model Submission {
+  id              Int        @id @default(autoincrement())
+  assignment      Assignment @relation(fields: [assignmentId], references: [id])
+  assignmentId    Int
+  student         User       @relation(fields: [studentId], references: [id])
+  studentId       Int
+  content         String? // Text or code content
+  fileUrl         String? // For file uploads (e.g. S3 path)
+  grade           Float? // Optional grading
+  teacherFeedback String?
+  submittedAt     DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+}
+
+/// Surveys for collecting pre/post (or other) feedback.
+model Survey {
+  id          Int        @id @default(autoincrement())
+  title       String
+  description String?
+  surveyType  SurveyType
+  // A survey can be associated with a course or a classroom.
+  course      Course?    @relation(fields: [courseId], references: [id])
+  courseId    Int?
+  classroom   Classroom? @relation(fields: [classroomId], references: [id])
+  classroomId Int?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  questions SurveyQuestion[]
+}
+
+/// Questions for a survey.
+model SurveyQuestion {
+  id             Int              @id @default(autoincrement())
+  survey         Survey           @relation(fields: [surveyId], references: [id])
+  surveyId       Int
+  questionText   String
+  questionType   QuestionType // Reusing the same enum for simplicity
+  order          Int?
+  SurveyResponse SurveyResponse[]
+}
+
+/// A student’s response to a survey question.
+model SurveyResponse {
+  id               Int            @id @default(autoincrement())
+  surveyQuestion   SurveyQuestion @relation(fields: [surveyQuestionId], references: [id])
+  surveyQuestionId Int
+  student          User           @relation(fields: [studentId], references: [id])
+  studentId        Int
+  response         String?
+  submittedAt      DateTime       @default(now())
+}
+
+/// Achievements to reward students (or even teachers) for milestones.
+model Achievement {
+  id              Int               @id @default(autoincrement())
+  title           String
+  description     String?
+  createdAt       DateTime          @default(now())
+  UserAchievement UserAchievement[]
+}
+
+/// Join table to record which users have earned which achievements.
+model UserAchievement {
+  id            Int         @id @default(autoincrement())
+  user          User        @relation(fields: [userId], references: [id])
+  userId        Int
+  achievement   Achievement @relation(fields: [achievementId], references: [id])
+  achievementId Int
+  earnedAt      DateTime    @default(now())
+
+  @@unique([userId, achievementId])
+}
+
+/// Notifications for upcoming assignments, deadlines, or announcements.
+model Notification {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  message   String
+  link      String? // Optional link to details
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+/// Meetings (class schedules) within a classroom.
+model Meeting {
+  id          Int       @id @default(autoincrement())
+  classroom   Classroom @relation(fields: [classroomId], references: [id])
+  classroomId Int
+  title       String
+  description String?
+  meetingTime DateTime
+  meetingLink String? // E.g., Zoom or similar
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+/// Announcements made within a classroom.
+model Announcement {
+  id          Int       @id @default(autoincrement())
+  classroom   Classroom @relation(fields: [classroomId], references: [id])
+  classroomId Int
+  title       String
+  content     String
+  createdAt   DateTime  @default(now())
+}
+
+/// Invitations used by teachers to invite students to a classroom.
+model Invitation {
+  id          Int       @id @default(autoincrement())
+  classroom   Classroom @relation(fields: [classroomId], references: [id])
+  classroomId Int
+  email       String
+  token       String    @unique
+  invitedBy   User      @relation(fields: [invitedById], references: [id])
+  invitedById Int
+  status      String // Consider an enum (e.g., PENDING, ACCEPTED, DECLINED)
+  createdAt   DateTime  @default(now())
+  acceptedAt  DateTime?
 }
