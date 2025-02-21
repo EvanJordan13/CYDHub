@@ -3,15 +3,33 @@
 import { HStack, VStack, Text, Button, Box } from '@chakra-ui/react';
 import { useState } from 'react';
 
-interface SelectionPanelProps {
-  headers: string[];
+enum Tab {
+  Assignments = 0,
+  Materials = 1,
+  Announcements = 2,
+  Feedback = 3,
 }
 
-const SelectionPanel = ({ headers }: SelectionPanelProps) => {
+interface SelectionPanelProps {
+  headers: string[];
+  currentTab: number;
+  setCurrentTab: (value: Tab) => void;
+}
+
+const SelectionPanel = ({ headers, currentTab, setCurrentTab }: SelectionPanelProps) => {
   return (
-    <HStack borderWidth={'1px'} borderColor={'gray'} borderRadius={'10px'} p={'5px'} display="inline-block">
-      {headers.map(header => (
-        <Button key={header} borderRadius={'10px'} _hover={{ backgroundColor: 'pink' }} py={'5px'} px={'10px'}>
+    <HStack width={'40vw'} p={'5px'} display="flex" justifyContent={'space-between'}>
+      {headers.map((header, index) => (
+        <Button
+          key={header}
+          borderRadius={'10px'}
+          color={index == currentTab ? 'white' : 'black'}
+          backgroundColor={index == currentTab ? '#BC3860' : 'white'}
+          _hover={{ color: 'white', backgroundColor: '#BC3860' }}
+          py={'5px'}
+          px={'20px'}
+          onClick={() => setCurrentTab(index)}
+        >
           {header}
         </Button>
       ))}
