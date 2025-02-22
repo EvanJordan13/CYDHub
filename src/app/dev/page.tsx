@@ -5,11 +5,8 @@ import { Course } from '@prisma/client';
 export default function DevPage() {
   // Mock course data
   const mockCourse: Course = {
-    id: 1,
     title: 'Intro to Prisma',
     description: 'Learn how to use Prisma ORM with Next.js',
-    startDate: new Date('2024-03-01'),
-    endDate: new Date('2024-06-01'),
   };
 
   return (
