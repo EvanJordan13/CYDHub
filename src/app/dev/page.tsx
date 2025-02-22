@@ -1,6 +1,6 @@
 import CourseCard from '../../components/CourseCard';
 import { Box, Heading } from '@chakra-ui/react';
-import { Course } from '@/src/types/course';
+import { Course } from '@prisma/client';
 
 export default function DevPage() {
   // Mock course data

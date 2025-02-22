@@ -1,9 +1,6 @@
-'use client';
-
-import { siteConfig } from '@/src/config/site';
 import Link from 'next/link';
 import { Box, Text, Link as ChakraLink, Flex, Image } from '@chakra-ui/react';
-import { Course } from '../types/course';
+import { Course } from '@prisma/client';
 
 interface CourseCardProps {
   course: Course;
