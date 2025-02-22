@@ -25,7 +25,7 @@ export default function CourseCard({ course }: CourseCardProps) {
           <Image src="course-card-image.svg" marginTop={'12px'} marginLeft={'12px'} />
           <Flex direction={'column'} gap={'6px'} alignContent={'center'}>
             <Text marginTop={'22px'} width={'229px'} fontWeight={'bold'} color={'#6C757D'} fontSize={'24px'} truncate>
-              {course.name}
+              {course.title}
             </Text>
             <Text width={'249px'} lineClamp="2" fontWeight={'bold'} color={'gray'} fontSize={'16px'}>
               {course.description}
