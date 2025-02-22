@@ -12,11 +12,6 @@ export default function DevPage() {
     syllabus: "Week 1: Introduction to Python\nWeek 2: Data Wrangling\nWeek 3: Machine Learning Basics",
     createdAt: new Date("2024-03-01"),
     updatedAt: new Date(),
-  
-    materials: [],
-    assignments: [],
-    classroomCourses: [],
-    Survey: [],
   };
 
   return (
