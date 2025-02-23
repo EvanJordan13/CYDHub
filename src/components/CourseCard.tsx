@@ -22,7 +22,7 @@ export default function CourseCard({ course }: CourseCardProps) {
         transition={'linear'}
       >
         <Flex direction={'row'} gap={'7px'} alignItems={'center'}>
-          <Image src="course-card-image.svg" marginTop={'12px'} marginLeft={'12px'} />
+          <Image alt="computer science" src="course-card-image.svg" marginTop={'12px'} marginLeft={'12px'} />
           <Flex direction={'column'} gap={'6px'} alignContent={'center'}>
             <Text marginTop={'22px'} width={'229px'} fontWeight={'bold'} color={'#6C757D'} fontSize={'24px'} truncate>
               {course.title}
