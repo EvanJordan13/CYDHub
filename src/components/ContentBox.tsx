@@ -1,13 +1,14 @@
 'use client';
 
 import { HStack, VStack, Text, Button } from '@chakra-ui/react';
+import { CourseMaterial } from '@prisma/client';
 
 interface ContentBoxProps {
-  title: string;
   buttonText: string;
+  material: CourseMaterial;
 }
 
-const ContentBox = ({ title, buttonText }: ContentBoxProps) => {
+const ContentBox = ({ buttonText, material }: ContentBoxProps) => {
   return (
     <HStack
       borderWidth={'1px'}
@@ -18,7 +19,7 @@ const ContentBox = ({ title, buttonText }: ContentBoxProps) => {
       p={'10px'}
       marginBottom={2}
     >
-      <Text color="black">{title}</Text>
+      <Text color="black">{material.title}</Text>
       <Button borderRadius={'10px'} backgroundColor={buttonText === 'Start Assignment' ? 'pink' : 'lightgreen'} w="30%">
         {buttonText}
       </Button>

@@ -28,6 +28,7 @@ const SelectionPanel = ({ headers, currentTab, setCurrentTab }: SelectionPanelPr
           _hover={{ color: 'white', backgroundColor: '#BC3860' }}
           py={'5px'}
           px={'20px'}
+          marginBottom={4}
           onClick={() => setCurrentTab(index)}
         >
           {header}
