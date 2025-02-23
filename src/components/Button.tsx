@@ -5,14 +5,16 @@ interface ButtonProps {
   type: 'primary' | 'secondary';
   text: string;
   link: string;
+  height: string;
+  width: string;
 }
 
-export default function Button({ type, text, link }: ButtonProps) {
+export default function Button({ type, text, link, height, width }: ButtonProps) {
   return (
     <Link href={link} passHref>
       <Box
-        height={'56px'}
-        width={'178px'}
+        height={height}
+        width={width}
         bg={type === 'primary' ? '#BC3860' : 'white'}
         borderWidth={'1px'}
         borderColor={type === 'primary' ? '#A01B43' : '#E5E5E5'}

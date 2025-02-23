@@ -26,8 +26,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <main>{children}</main>
           <Footer />
           <Flex direction={'row'} gap={'20px'}>
-            <Button type={'primary'} text={'Primary'} link={'/'} />
-            <Button type={'secondary'} text={'Secondary'} link={'/'} />
+            <Button type={'primary'} text={'Primary'} link={'/'} height={"56px"} width={"178px"} />
+            <Button type={'secondary'} text={'Secondary'} link={'/'} height={"56px"} width={"178px"} />
           </Flex>
         </Provider>
       </body>
