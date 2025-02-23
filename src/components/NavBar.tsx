@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Text, Image, Link, Stack, Button, Flex, Center } from '@chakra-ui/react';
+import { Box, Text, Link, Stack, Button, Flex } from '@chakra-ui/react';
 
 export default function NavBar() {
   return (
