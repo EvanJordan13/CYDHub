@@ -2,6 +2,8 @@ import Provider from './providers';
 import type { Metadata } from 'next';
 import { siteConfig } from '@/src/config/site';
 import Footer from '@/src/components/Footer';
+import Button from '@/src/components/Button';
+import { Box, Text, Flex } from '@chakra-ui/react';
 
 export const metadata: Metadata = {
   title: {
@@ -23,6 +25,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Provider>
           <main>{children}</main>
           <Footer />
+          <Flex direction={'row'} gap={'20px'}>
+            <Button type={'primary'} text={'Primary'} link={'/'} />
+            <Button type={'secondary'} text={'Secondary'} link={'/'} />
+          </Flex>
         </Provider>
       </body>
     </html>
