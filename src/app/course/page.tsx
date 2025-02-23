@@ -13,7 +13,7 @@ enum Tab {
   Feedback = 3,
 }
 
-const materials = [
+const materials: CourseMaterial[] = [
   {
     id: 7,
     courseId: 1,
