@@ -22,7 +22,6 @@ export default function NavBar() {
           <MenuItem to="/">Classroom</MenuItem>
           <MenuItem to="/">Pricing</MenuItem>
           <MenuItem to="/">Learn</MenuItem>
-
         </Stack>
 
         <Stack direction={'row'} gap={'5'}>
