@@ -108,8 +108,8 @@ export default function DevPage() {
         setCurrentTab={setTab}
         headers={['Assignments', 'Materials', 'Announcements', 'Feedback']}
       />
-      {materials.map(material => {
-        return <ContentBox buttonText="Start Assignment" material={material} />;
+      {materials.map((material, index) => {
+        return <ContentBox buttonText="Start Assignment" material={material} key={index} />;
       })}
     </Box>
   );
