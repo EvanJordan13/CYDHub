@@ -12,7 +12,7 @@ const defaultTheme = createSystem(defaultConfig, {
         Flamingo: { value: '#BC3860' },
         Aqua: { value: '#4D80BB' },
         Sky: { value: '#BBD0E5' },
-        Lavendar: { value: '8D608C' },
+        Lavender: { value: '8D608C' },
       },
     },
   },
