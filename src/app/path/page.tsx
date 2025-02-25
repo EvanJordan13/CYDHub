@@ -1,4 +1,4 @@
-import { Box, Image, Flex, Text } from '@chakra-ui/react';
+import { Box, Image, Flex, Text, Checkbox } from '@chakra-ui/react';
 
 export default function OnboardingPage() {
   return (
@@ -6,8 +6,8 @@ export default function OnboardingPage() {
       <Box margin={"39px"} padding={"39px"} width={"100vw"}>
         <Image src="cyd-logo.svg" alt="Code Your Dreams" width={'283px'}/>
       </Box>
-      {/* <Image src='cyd-onboard-ellipse.svg' alt="Code Your Dreams" width={'200px'} alignItems={"end"}/> */}
-      <Box marginTop={"130px"} marginLeft={"145px"}>
+      <Image src='cyd-onboard-ellipse.svg' alt="Code Your Dreams" width={'200px'} alignItems={"self-end"}/>
+      <Box marginTop={"30px"} marginLeft={"145px"}>
         <Flex direction={"column"} gap={"24px"}>
           <Box>
             <Text width={"448px"} height={"60px"} fontWeight={"bold"} fontSize={"40px"} color={"#BC3860"}>
@@ -64,7 +64,6 @@ export default function OnboardingPage() {
             </Flex>
           </Flex>
           <Box height={"28px"} width={"460px"}>
-
           </Box>
         </Flex>
       </Box>
