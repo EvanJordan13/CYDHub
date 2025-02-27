@@ -6,6 +6,7 @@ const defaultTheme = createSystem(defaultConfig, {
       fonts: {
         body: { value: `'Poppins', sans-serif` },
         heading: { value: `'Poppins', sans-serif` },
+        logo: { value: `'Fredoka One', sans-serif` },
       },
       colors: {
         Slate: { value: '#071116' },
