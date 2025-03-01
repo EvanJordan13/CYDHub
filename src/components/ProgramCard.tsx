@@ -1,12 +1,12 @@
 import Link from 'next/link';
 import { Box, Text, Link as ChakraLink, Flex, Image } from '@chakra-ui/react';
-import { Course } from '@prisma/client';
+import { Program } from '@prisma/client';
 
-interface CourseCardProps {
-  course: Course;
+interface ProgramCardProps {
+  program: Program;
 }
 
-export default function CourseCard({ course }: CourseCardProps) {
+export default function ProgramCard({ program }: ProgramCardProps) {
   return (
     <Link href="/" passHref>
       <Box
@@ -22,13 +22,13 @@ export default function CourseCard({ course }: CourseCardProps) {
         transition={'linear'}
       >
         <Flex direction={'row'} gap={'7px'} alignItems={'center'}>
-          <Image alt="computer science" src="course-card-image.svg" marginTop={'12px'} marginLeft={'12px'} />
+          <Image src="program-card-image.svg" marginTop={'12px'} marginLeft={'12px'} />
           <Flex direction={'column'} gap={'6px'} alignContent={'center'}>
             <Text marginTop={'22px'} width={'229px'} fontWeight={'bold'} color={'#6C757D'} fontSize={'24px'} truncate>
-              {course.title}
+              {program.name}
             </Text>
             <Text width={'249px'} lineClamp="2" fontWeight={'bold'} color={'gray'} fontSize={'16px'}>
-              {course.description}
+              {program.description}
             </Text>
           </Flex>
         </Flex>
