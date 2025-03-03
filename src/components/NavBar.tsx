@@ -6,9 +6,9 @@ export default function NavBar() {
     <Box py="5" px="12">
       <Flex direction={'row'} align="center" justify={'space-between'}>
         <Text
-          fontFamily="'Poppins', sans-serif"
+          fontFamily="logo"
           fontSize="3xl"
-          fontWeight="bold"
+          fontWeight="normal"
           color="#BC3860"
           whiteSpace="nowrap"
           mr="4"
