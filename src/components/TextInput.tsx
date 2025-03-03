@@ -2,12 +2,12 @@
 
 import { useState } from 'react';
 import { Input, Flex, Box } from '@chakra-ui/react';
-import { LucideIcon } from 'lucide-react';
+import defaultTheme from '../lib/themes/default';
 
 interface TextInputProps {
   label: string;
   width: number; // please provide width in rem for accessibility
-  icon: React.ReactNode; // Change type to accept JSX instead of function component
+  icon: React.ReactNode;
 }
 
 export default function TextInput({ label, width = 18.75, icon }: TextInputProps) {
