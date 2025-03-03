@@ -1,5 +1,4 @@
-import CourseCard from '../../components/CourseCard';
-import TextInput from '../../components/TextInput';        
+import TextInput from '../../components/TextInput';
 import ProgramCard from '../../components/ProgramCard';
 import { Box, Heading } from '@chakra-ui/react';
 import { Program, Course } from '@prisma/client';
@@ -21,7 +20,6 @@ export default function DevPage() {
   return (
     <Box p={8} bg={'white'}>
       <Heading mb={6}>Development Page</Heading>
-      <CourseCard course={mockCourse} />
       <TextInput label="Date of Birth" width={10} icon={<Calendar />} />
       <br />
       <TextInput label="Name" width={18.75} icon={<User />} />
