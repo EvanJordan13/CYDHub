@@ -1,7 +1,7 @@
 import TextInput from '../../components/TextInput';
 import ProgramCard from '../../components/ProgramCard';
 import { Box, Heading } from '@chakra-ui/react';
-import { Program, Course } from '@prisma/client';
+import { Program } from '@prisma/client';
 import { User, Calendar, Award } from 'lucide-react';
 
 export default function DevPage() {
