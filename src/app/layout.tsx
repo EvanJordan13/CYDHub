@@ -4,6 +4,7 @@ import { siteConfig } from '@/src/config/site';
 import Footer from '@/src/components/Footer';
 import NavBar from '@/src/components/NavBar';
 import Fonts from '../lib/themes/Fonts';
+import { UserProvider } from '@auth0/nextjs-auth0/client';
 
 export const metadata: Metadata = {
   title: {
@@ -23,9 +24,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" suppressHydrationWarning>
       <body suppressHydrationWarning>
         <Provider>
-          <main>{children}</main>
-          <NavBar />
-          <Footer />
+          <UserProvider>
+            <main>{children}</main>
+            <NavBar />
+            <Footer />
+          </UserProvider>
         </Provider>
       </body>
     </html>
