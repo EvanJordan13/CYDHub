@@ -1,4 +1,5 @@
 import ProgramCard from '../../components/ProgramCard';
+import SideBar from '../../components/SideBar';
 import { Box, Heading } from '@chakra-ui/react';
 import { Program } from '@prisma/client';
 
@@ -16,9 +17,8 @@ export default function DevPage() {
   };
 
   return (
-    <Box p={8} bg={'white'}>
-      <Heading mb={6}>Development Page</Heading>
-      <ProgramCard program={mockProgram} />
+    <Box bg={'white'}>
+      <SideBar/>
     </Box>
   );
 }
