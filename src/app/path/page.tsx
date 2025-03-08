@@ -1,6 +1,7 @@
 import { Box, Image, Flex, Text, Link } from '@chakra-ui/react';
 import { Checkbox } from '../../components/ui/checkbox';
 import Button from '../../components/Button';
+import TextInput from '../../components/TextInput';
 
 export default function OnboardingPage() {
   return (
@@ -33,13 +34,13 @@ export default function OnboardingPage() {
                       *
                     </Text>
                   </Text>
-                  <Box width={'460px'} height={'64px'} borderWidth={'1.5px'} borderColor={'black'}></Box>
+                  <TextInput label='Input' width={28.75} icon=""/>
                 </Box>
                 <Box gap={'6px'}>
                   <Text color={'black'} fontSize={'14px'} fontWeight={'medium'}>
                     Email
                   </Text>
-                  <Box width={'460px'} height={'64px'} borderWidth={'1.5px'} borderColor={'black'}></Box>
+                  <TextInput label='Email' width={28.75} icon=""/>
                 </Box>
                 <Flex direction={'row'} gap={'16px'}>
                   <Flex direction={'column'} gap={'6px'}>
