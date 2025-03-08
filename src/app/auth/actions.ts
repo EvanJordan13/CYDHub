@@ -1,21 +1,21 @@
-"use server";
-import { getSession, handleLogin, handleLogout } from "@auth0/nextjs-auth0";
-import { redirect } from "next/navigation";
+'use server';
+import { getSession, handleLogin, handleLogout } from '@auth0/nextjs-auth0';
+import { redirect } from 'next/navigation';
 
 export async function login() {
-  "use server";
+  'use server';
   await handleLogin();
-  redirect("/");
+  redirect('/');
 }
 
 export async function logout() {
-  "use server";
-  await handleLogout()
-  redirect("/");;
+  'use server';
+  await handleLogout();
+  redirect('/');
 }
 
 export async function getUser() {
-  "use server";
+  'use server';
   const session = await getSession();
   return session?.user || null;
 }
