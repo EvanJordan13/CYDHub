@@ -6,6 +6,7 @@ import { Box, Heading } from '@chakra-ui/react';
 import { Program } from '@prisma/client';
 import { User, Calendar, Award } from 'lucide-react';
 import { useUser } from '@auth0/nextjs-auth0/client';
+import AuthButton from '@/src/components/AuthButton';
 
 export default function DevPage() {
   // Mock course data
@@ -33,15 +34,7 @@ export default function DevPage() {
       <br />
       <TextInput label="Achievement" width={25} icon={<Award />} />
       <ProgramCard program={mockProgram} />
-      {user ? (
-        <a href="/api/auth/logout" style={{ color: 'black' }}>
-          Logout
-        </a>
-      ) : (
-        <a href="/api/auth/login" style={{ color: 'black' }}>
-          Login
-        </a>
-      )}
+      <AuthButton />
     </Box>
   );
 }
