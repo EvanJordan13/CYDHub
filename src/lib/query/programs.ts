@@ -1,3 +1,5 @@
+'use server';
+
 import prisma from '../postgres/db';
 import { Program } from '@prisma/client';
 
@@ -20,4 +22,22 @@ export async function getProgramsByUser(userId: number): Promise<Program[]> {
   });
   
   return programs ? programs.programEnrollments.map((enrollment) => enrollment.program) : [];
+}
+
+export async function fetchAllPrograms(): Promise<Program[]> {
+  try {
+    return await getAllPrograms();
+  } catch (error) {
+    console.error('[FETCH_PROGRAMS]', error);
+    throw new Error('Failed to fetch programs');
+  }
+}
+
+export async function fetchProgramsByUser(userId: number): Promise<Program[]> {
+  try {
+    return await getProgramsByUser(userId);
+  } catch (error) {
+    console.error('[FETCH_PROGRAMS_BY_USER]', error);
+    throw new Error('Failed to fetch programs for user');
+  }
 }
