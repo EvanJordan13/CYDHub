@@ -2,17 +2,22 @@
 
 import TextInput from '../../components/TextInput';
 import ProgramCard from '../../components/ProgramCard';
-import { Box, Heading, Button, Stack, Text } from '@chakra-ui/react';
-import { Program } from '@prisma/client';
-import { User, Calendar, Award } from 'lucide-react';
-import { fetchAllPrograms, fetchProgramsByUser } from '@/src/lib/query/programs';
+import { Box, Heading, Button, Stack, Text, Flex, IconButton } from '@chakra-ui/react';
+import { Program, ModuleMaterial } from '@prisma/client';
+import { User, Calendar, Award, ChevronDown, ChevronUp } from 'lucide-react';
+import { fetchAllPrograms, fetchProgramsByUser, fetchProgramMaterials } from '@/src/lib/query/programs';
 import { useState } from 'react';
 
 export default function DevPage() {
   const [allPrograms, setAllPrograms] = useState<Program[]>([]);
   const [userPrograms, setUserPrograms] = useState<Program[]>([]);
+  const [programMaterials, setProgramMaterials] = useState<(ModuleMaterial & { moduleTitle: string })[]>([]);
   const [isLoadingAll, setIsLoadingAll] = useState(false);
   const [isLoadingUser, setIsLoadingUser] = useState(false);
+  const [isLoadingMaterials, setIsLoadingMaterials] = useState(false);
+  const [showAllPrograms, setShowAllPrograms] = useState(true);
+  const [showUserPrograms, setShowUserPrograms] = useState(true);
+  const [showMaterials, setShowMaterials] = useState(true);
 
   // Mock course data
   const mockProgram: Program = {
@@ -52,6 +57,19 @@ export default function DevPage() {
     }
   };
 
+  const testFetchProgramMaterials = async () => {
+    setIsLoadingMaterials(true);
+    try {
+      const materials = await fetchProgramMaterials(1);
+      console.log('Program materials', materials);
+      setProgramMaterials(materials);
+    } catch (error) {
+      console.error('Error fetching program materials:', error);
+    } finally {
+      setIsLoadingMaterials(false);
+    }
+  };
+
   return (
     <Box p={8} bg={'white'}>
       <Heading mb={6}>Development Page</Heading>
@@ -60,32 +78,104 @@ export default function DevPage() {
         <Button onClick={testFetchAllPrograms} mr={2} loading={isLoadingAll}>
           Test Fetch All Programs
         </Button>
-        <Button onClick={testFetchProgramsByUser} loading={isLoadingUser}>
+        <Button onClick={testFetchProgramsByUser} mr={2} loading={isLoadingUser}>
           Test Fetch Programs By User
+        </Button>
+        <Button onClick={testFetchProgramMaterials} loading={isLoadingMaterials}>
+          Test Fetch Program 1 Materials
         </Button>
       </Box>
 
-      <Stack gap={4} mb={8}>
-        <Box>
-          <Heading size="md" mb={2}>
-            All Programs ({allPrograms.length})
-          </Heading>
-          {allPrograms.map(program => (
-            <ProgramCard key={program.id} program={program} />
-          ))}
-        </Box>
+      <Flex gap={8}>
+        <Flex direction="column" flex={1}>
+          <Flex align="center" mb={2}>
+            <Heading size="md" flex={1}>
+              All Programs ({allPrograms.length})
+            </Heading>
+            <IconButton
+              as={showAllPrograms ? ChevronUp : ChevronDown}
+              onClick={() => setShowAllPrograms(!showAllPrograms)}
+              variant="ghost"
+              aria-label="Toggle all programs"
+              size="sm"
+            />
+          </Flex>
+          {showAllPrograms &&
+            (allPrograms.length > 0 ? (
+              <Stack>
+                {allPrograms.map(program => (
+                  <ProgramCard key={program.id} program={program} />
+                ))}
+              </Stack>
+            ) : (
+              <Text color="gray.500">No programs found</Text>
+            ))}
+        </Flex>
 
-        <Box>
-          <Heading size="md" mb={2}>
-            User Programs ({userPrograms.length})
-          </Heading>
-          {userPrograms.map(program => (
-            <ProgramCard key={program.id} program={program} />
-          ))}
-        </Box>
-      </Stack>
+        <Flex direction="column" flex={1}>
+          <Flex align="center" mb={2}>
+            <Heading size="md" flex={1}>
+              User Programs ({userPrograms.length})
+            </Heading>
+            <IconButton
+              as={showUserPrograms ? ChevronUp : ChevronDown}
+              onClick={() => setShowUserPrograms(!showUserPrograms)}
+              variant="ghost"
+              aria-label="Toggle user programs"
+              size="sm"
+            />
+          </Flex>
+          {showUserPrograms &&
+            (userPrograms.length > 0 ? (
+              <Stack>
+                {userPrograms.map(program => (
+                  <ProgramCard key={program.id} program={program} />
+                ))}
+              </Stack>
+            ) : (
+              <Text color="gray.500">No programs by user found</Text>
+            ))}
+        </Flex>
 
-      <Heading size="md" mb={4}>
+        <Flex direction="column" flex={1}>
+          <Flex align="center" mb={2}>
+            <Heading size="md" flex={1}>
+              Program 1 Materials
+            </Heading>
+            <IconButton
+              as={showMaterials ? ChevronUp : ChevronDown}
+              onClick={() => setShowMaterials(!showMaterials)}
+              variant="ghost"
+              aria-label="Toggle materials"
+              size="sm"
+            />
+          </Flex>
+          {showMaterials &&
+            (programMaterials.length > 0 ? (
+              <Stack>
+                {programMaterials.map(material => (
+                  <Box key={material.id} p={4} border="1px" borderColor="gray.200" borderRadius="md">
+                    <Text fontWeight="bold">{material.title}</Text>
+                    <Text color="gray.600">Module: {material.moduleTitle}</Text>
+                    <Text>Type: {material.materialType}</Text>
+                    {material.fileUrl && (
+                      <Text>
+                        File:{' '}
+                        <a href={material.fileUrl} target="_blank" rel="noopener noreferrer">
+                          {material.fileUrl}
+                        </a>
+                      </Text>
+                    )}
+                  </Box>
+                ))}
+              </Stack>
+            ) : (
+              <Text color="gray.500">No materials found</Text>
+            ))}
+        </Flex>
+      </Flex>
+
+      <Heading size="md" my={4}>
         Form Components Test
       </Heading>
       <TextInput label="Date of Birth" width={10} icon={<Calendar />} />
