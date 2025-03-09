@@ -18,7 +18,7 @@ export default function DevPage() {
 
   return (
     <Box bg={'white'}>
-      <SideBar/>
+      <SideBar page="To Do" />
     </Box>
   );
 }
