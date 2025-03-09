@@ -3,7 +3,8 @@ import type { Metadata } from 'next';
 import { siteConfig } from '@/src/config/site';
 import Footer from '@/src/components/Footer';
 import DropDownInput from '../components/DropDownInput';
-import { Stack } from '@chakra-ui/react';
+import DatePickerInput from '../components/DatePickerInput';
+import { Box, Stack } from '@chakra-ui/react';
 import Fonts from '../lib/themes/Fonts';
 
 export const metadata: Metadata = {
@@ -27,12 +28,22 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body suppressHydrationWarning>
         <Provider>
           <main>{children}</main>
-          <Stack width={48} margin={4}>
-            <DropDownInput labelText="Select Pronouns" helperText="Pronouns" options={pronouns} isRequired={true} />
+          <Stack gap={4} direction={'row'} width={96}>
+            <Box flex={1}>
+              <DropDownInput labelText="Select Pronouns" helperText="Pronouns" options={pronouns} isRequired={true} />
+            </Box>
+            <Box flex={1}>
+              <DatePickerInput
+                labelText="Select Date"
+                helperText="MM/DD/YYYY"
+                isRequired
+              />
+            </Box>
           </Stack>
+
           <Footer />
         </Provider>
       </body>
-    </html>
+    </html >
   );
 }

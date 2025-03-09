@@ -8,9 +8,11 @@ interface TextInputProps {
   label: string;
   width: number; // please provide width in rem for accessibility
   icon: React.ReactNode;
+  value?: string;
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-export default function TextInput({ label, width = 18.75, icon }: TextInputProps) {
+export default function TextInput({ label, width = 18.75, icon, value = "", onChange = () => { } }: TextInputProps) {
   const [isFocused, setIsFocused] = useState(false);
 
   return (
@@ -32,10 +34,12 @@ export default function TextInput({ label, width = 18.75, icon }: TextInputProps
         placeholder={label}
         aria-label={label} // important: allows input to be read by screen readers
         color={isFocused ? 'black' : 'black'}
+        value={value}
         borderColor="transparent"
         _focus={{ boxShadow: 'none', borderColor: 'transparent' }}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
+        onChange={onChange}
       />
     </Flex>
   );
