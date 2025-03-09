@@ -42,7 +42,9 @@ export default function SideBar({ page }: SideBarProps) {
       justify={'space-between'}
       height={'100vh'}
       width={'208px'}
-      boxShadow={'sm'}
+      // dropShadow={"sm"}
+      // boxShadow={'sm'}
+      shadow={'2px 2px 2px #e3dbdb'}
     >
       <Flex direction={'column'} height={'456px'} gap={'20px'}>
         <Image src="cyd-dashboard-logo.svg" height={'44px'} width={'50px'} marginBottom={'12px'} />
