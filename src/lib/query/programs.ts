@@ -8,20 +8,30 @@ export async function getAllPrograms(): Promise<Program[]> {
 }
 
 export async function getProgramsByUser(userId: number): Promise<Program[]> {
-  const programs = await prisma.user.findUnique({
-    where: {
-      id: userId,
-    },
-    include: {
-      programEnrollments: {
-        include: {
-          program: true,
+  try {
+    const programs = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+      include: {
+        programEnrollments: {
+          include: {
+            program: true,
+          },
         },
       },
-    },
-  });
-  
-  return programs ? programs.programEnrollments.map((enrollment) => enrollment.program) : [];
+    });
+
+    if (!programs) {
+      console.log(`No user found with ID ${userId}`);
+      return [];
+    }
+
+    return programs.programEnrollments.map(enrollment => enrollment.program);
+  } catch (error) {
+    console.error('[GET_PROGRAMS_BY_USER_ERROR]', error);
+    return [];
+  }
 }
 
 export async function fetchAllPrograms(): Promise<Program[]> {
@@ -38,6 +48,6 @@ export async function fetchProgramsByUser(userId: number): Promise<Program[]> {
     return await getProgramsByUser(userId);
   } catch (error) {
     console.error('[FETCH_PROGRAMS_BY_USER]', error);
-    throw new Error('Failed to fetch programs for user');
+    return [];
   }
 }
