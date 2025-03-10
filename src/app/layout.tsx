@@ -33,17 +33,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <DropDownInput labelText="Select Pronouns" helperText="Pronouns" options={pronouns} isRequired={true} />
             </Box>
             <Box flex={1}>
-              <DatePickerInput
-                labelText="Select Date"
-                helperText="MM/DD/YYYY"
-                isRequired
-              />
+              <DatePickerInput labelText="Select Date" helperText="MM/DD/YYYY" isRequired />
             </Box>
           </Stack>
 
           <Footer />
         </Provider>
       </body>
-    </html >
+    </html>
   );
 }
