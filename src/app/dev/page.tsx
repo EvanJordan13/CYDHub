@@ -19,7 +19,7 @@ export default function DevPage() {
 
   return (
     <Box p={8} bg={'white'}>
-      <Heading mb={6}>Development Page</Heading>
+      <Heading mb={6} color={"black"}>Development Page</Heading>
       <TextInput label="Date of Birth" width={10} icon={<Calendar />} />
       <br />
       <TextInput label="Name" width={18.75} icon={<User />} />
