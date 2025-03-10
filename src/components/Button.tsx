@@ -15,7 +15,13 @@ export default function Button({ type, text, height, width, disabled, onClick }:
       height={height}
       width={width}
       bg={disabled ? '#959494' : type === 'primary' ? '#BC3860' : 'white'}
-      _hover={disabled ? { bg: '#959494' } : type === 'primary' ? { bg: '#E44777' } : { bg: '#E7EDFF' }}
+      _hover={
+        disabled
+          ? { bg: '#959494' }
+          : type === 'primary'
+            ? { bg: '#E44777', textDecoration: 'underline', textDecorationColor: 'white' }
+            : { bg: '#E7EDFF', textDecoration: 'underline', textDecorationColor: '#4D80BB' }
+      }
       borderWidth={'1px'}
       borderColor={disabled ? '#959494' : type === 'primary' ? '#992B4D' : '#4D80BB'}
       borderRadius={'12px'}
@@ -27,7 +33,7 @@ export default function Button({ type, text, height, width, disabled, onClick }:
     >
       <Text
         fontSize={'16px'}
-        fontWeight={'semibold'}
+        fontWeight={'700'}
         color={type === 'primary' ? 'white' : type === 'secondary' ? '#4D80BB' : '#DEDEDE'}
       >
         {text}
