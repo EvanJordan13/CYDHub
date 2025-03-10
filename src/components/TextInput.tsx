@@ -6,31 +6,31 @@ import defaultTheme from '../lib/themes/default';
 
 interface TextInputProps {
   label: string;
-  width: number; // please provide width in rem for accessibility
   icon: React.ReactNode;
   value?: string;
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-export default function TextInput({ label, width = 18.75, icon, value = "", onChange = () => { } }: TextInputProps) {
+export default function TextInput({ label, icon, value = '', onChange = () => {} }: TextInputProps) {
   const [isFocused, setIsFocused] = useState(false);
 
   return (
     <Flex
       align="center"
-      border="0.125rem solid"
-      borderColor={isFocused ? '#8D608C' : '#AAAAAA'}
-      borderRadius="md"
+      borderWidth={'0.125rem'}
+      borderColor={isFocused ? 'Aqua' : '#AAAAAA'}
+      borderRadius="sm"
       px={3}
-      py={1}
-      width={`${width}rem`}
+      width={'100%'}
+      _hover={{ background: '#E0EEFF' }}
     >
-      <Box color={isFocused ? '#8D608C' : '#AAAAAA'} boxSize={6}>
+      <Box color={'#AAAAAA'} boxSize={6}>
         {icon}
       </Box>
       <Input
         variant="flushed"
         ml={2}
+        py={3}
         placeholder={label}
         aria-label={label} // important: allows input to be read by screen readers
         color={isFocused ? 'black' : 'black'}

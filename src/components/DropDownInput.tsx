@@ -21,6 +21,7 @@ const DropDownInput: React.FC<DropDownInputProps> = ({
   ...rest
 }) => {
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
+  const [isFocused, setIsFocused] = useState(false);
 
   const handleSelect = (option: string) => {
     setSelectedOption(option);
@@ -49,11 +50,16 @@ const DropDownInput: React.FC<DropDownInputProps> = ({
             width="100%"
             py={5}
             px={3}
-            borderWidth={'2px'}
+            borderWidth={'0.125rem'}
+            borderColor={isFocused ? 'Aqua' : '#AAAAAA'}
+            _hover={{ background: '#E0EEFF' }}
             _focus={{ outline: 'none' }}
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => setIsFocused(false)}
+            transition="none"
           >
             <Flex justify="space-between" align="center" width="100%">
-              <Text truncate color={'#AAAAAA'} fontSize={'sm'}>
+              <Text truncate color={'#AAAAAA'} fontSize={'sm'} noOfLines={1}>
                 {selectedOption || helperText}
               </Text>
               {showIcon && <ChevronDown color="#AAAAAA" />}
