@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { Box, Text } from '@chakra-ui/react';
 
 interface ButtonProps {
@@ -6,25 +5,31 @@ interface ButtonProps {
   text: string;
   height: string;
   width: string;
+  disabled?: boolean;
   onClick?: () => void;
 }
 
-export default function Button({ type, text, height, width, onClick }: ButtonProps) {
+export default function Button({ type, text, height, width, disabled, onClick }: ButtonProps) {
   return (
     <Box
       height={height}
       width={width}
-      bg={type === 'primary' ? '#BC3860' : 'white'}
+      bg={disabled ? '#959494' : type === 'primary' ? '#BC3860' : 'white'}
+      _hover={disabled ? { bg: '#959494' } : type === 'primary' ? { bg: '#E44777' } : { bg: '#E7EDFF' }}
       borderWidth={'1px'}
-      borderColor={type === 'primary' ? '#A01B43' : '#E5E5E5'}
+      borderColor={disabled ? '#959494' : type === 'primary' ? '#992B4D' : '#4D80BB'}
       borderRadius={'12px'}
       borderBottomWidth={'4px'}
       display="flex"
       alignItems={'center'}
       justifyContent={'center'}
-      onClick={onClick}
+      onClick={disabled ? undefined : onClick}
     >
-      <Text fontSize={'16px'} fontWeight={'semibold'} color={type === 'primary' ? 'white' : 'black'}>
+      <Text
+        fontSize={'16px'}
+        fontWeight={'semibold'}
+        color={type === 'primary' ? 'white' : type === 'secondary' ? '#4D80BB' : '#DEDEDE'}
+      >
         {text}
       </Text>
     </Box>
