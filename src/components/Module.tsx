@@ -6,7 +6,7 @@ import Resource from './Resource';
 import { ChevronDown, ChevronUp, ClipboardMinus, Video } from 'lucide-react';
 
 export default function Module() {
-  const [isClosed, setIsClosed] = useState(true);
+  const [isOpen, setIsOpen] = useState(true);
 
   return (
     <Collapsible.Root marginTop={9} width={'96.5%'} defaultOpen={true}>
@@ -25,13 +25,13 @@ export default function Module() {
           Week 1: Friday, February 28th - March 5th
         </Text>
         <IconButton
-          onClick={() => setIsClosed(!isClosed)}
+          onClick={() => setIsOpen(!isOpen)}
           variant="plain"
           colorScheme="whiteAlpha"
           aria-label="Toggle section"
           as={Collapsible.Trigger}
         >
-          {isClosed ? <ChevronDown /> : <ChevronUp />}
+          {isOpen ? <ChevronUp /> : <ChevronDown />}
         </IconButton>
       </Box>
       <Collapsible.Content>
