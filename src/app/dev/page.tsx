@@ -27,13 +27,11 @@ export default function DevPage() {
   const [showUserPrograms, setShowUserPrograms] = useState(true);
   const [showMaterials, setShowMaterials] = useState(true);
 
-
   // Open/close state for mood modal
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
-
 
   // Mock course data
   const mockProgram: Program = {
@@ -265,21 +263,11 @@ export default function DevPage() {
           zIndex={999}
           onClick={closeModal}
         >
-          <Box
-            position="fixed"
-            top="50%"
-            left="50%"
-            transform="translate(-50%, -50%)"
-            zIndex={1000}
-          >
+          <Box position="fixed" top="50%" left="50%" transform="translate(-50%, -50%)" zIndex={1000}>
             <MoodModal onClose={closeModal} />
           </Box>
         </Box>
       )}
-
-
-
-
     </Box>
   );
 }
