@@ -256,7 +256,7 @@ export default function DevPage() {
         </Flex>
       </Flex>
 
-      <MoodModal onClose={() => { }}></MoodModal>
-    </Box >
+      <MoodModal onClose={() => {}}></MoodModal>
+    </Box>
   );
 }

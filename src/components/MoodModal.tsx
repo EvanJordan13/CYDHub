@@ -10,13 +10,7 @@ interface MoodModalProps {
 export default function MoodModal({ onClose }: MoodModalProps) {
   return (
     <Box background={'white'} rounded={'xl'} width={425} shadow={'md'} p={10} position={'relative'}>
-      <IconButton
-        position={'absolute'}
-        bg={'transparent'}
-        top={3}
-        right={4}
-        onClick={onClose}
-      >
+      <IconButton position={'absolute'} bg={'transparent'} top={3} right={4} onClick={onClose}>
         <CircleX color="#44444A" />
       </IconButton>
       <Text fontWeight={'semibold'} fontSize={24}>
@@ -28,7 +22,7 @@ export default function MoodModal({ onClose }: MoodModalProps) {
 
       <Flex justify={'space-between'} mt={7}>
         <VStack>
-          <IconButton aria-label="happy" height={24} rounded={'3xl'} bg={'transparent'} onClick={() => { }}>
+          <IconButton aria-label="happy" height={24} rounded={'3xl'} bg={'transparent'} onClick={() => {}}>
             <Image
               src="/happy.svg"
               width={24}
@@ -42,7 +36,7 @@ export default function MoodModal({ onClose }: MoodModalProps) {
           </Text>
         </VStack>
         <VStack>
-          <IconButton aria-label="neutral" height={24} rounded={'3xl'} bg={'transparent'} onClick={() => { }}>
+          <IconButton aria-label="neutral" height={24} rounded={'3xl'} bg={'transparent'} onClick={() => {}}>
             <Image
               src="/neutral.svg"
               width={24}
@@ -56,7 +50,7 @@ export default function MoodModal({ onClose }: MoodModalProps) {
           </Text>
         </VStack>
         <VStack>
-          <IconButton aria-label="sad" height={24} rounded={'3xl'} bg={'transparent'} onClick={() => { }}>
+          <IconButton aria-label="sad" height={24} rounded={'3xl'} bg={'transparent'} onClick={() => {}}>
             <Image
               src="/sad.svg"
               width={24}
