@@ -1,14 +1,24 @@
-import { Box, Text, Flex, Image, VStack } from '@chakra-ui/react';
+'use client';
+
+import { Box, Text, Flex, Image, VStack, Button, IconButton } from '@chakra-ui/react';
 import { CircleX } from 'lucide-react';
 
-interface MoodModalProps {}
+interface MoodModalProps {
+  onClose: () => void;
+}
 
-export default function MoodModal({}: MoodModalProps) {
+export default function MoodModal({ onClose }: MoodModalProps) {
   return (
     <Box background={'white'} rounded={'xl'} width={425} shadow={'md'} p={10} position={'relative'}>
-      <Box position={'absolute'} top={4} right={5}>
+      <IconButton
+        position={'absolute'}
+        bg={'transparent'}
+        top={3}
+        right={4}
+        onClick={onClose}
+      >
         <CircleX color="#44444A" />
-      </Box>
+      </IconButton>
       <Text fontWeight={'semibold'} fontSize={24}>
         How are you feeling today?
       </Text>
@@ -18,19 +28,43 @@ export default function MoodModal({}: MoodModalProps) {
 
       <Flex justify={'space-between'} mt={7}>
         <VStack>
-          <Image src="/happy.svg"></Image>
+          <IconButton aria-label="happy" height={24} rounded={'3xl'} bg={'transparent'} onClick={() => { }}>
+            <Image
+              src="/happy.svg"
+              width={24}
+              _hover={{
+                filter: 'drop-shadow(0px 4px 2px rgba(0, 0, 0, 0.2))',
+              }}
+            />
+          </IconButton>
           <Text fontWeight={'semibold'} fontSize={18}>
             Happy
           </Text>
         </VStack>
         <VStack>
-          <Image src="/neutral.svg"></Image>
+          <IconButton aria-label="neutral" height={24} rounded={'3xl'} bg={'transparent'} onClick={() => { }}>
+            <Image
+              src="/neutral.svg"
+              width={24}
+              _hover={{
+                filter: 'drop-shadow(0px 4px 2px rgba(0, 0, 0, 0.2))',
+              }}
+            />
+          </IconButton>
           <Text fontWeight={'semibold'} fontSize={18}>
             Neutral
           </Text>
         </VStack>
         <VStack>
-          <Image src="/sad.svg"></Image>
+          <IconButton aria-label="sad" height={24} rounded={'3xl'} bg={'transparent'} onClick={() => { }}>
+            <Image
+              src="/sad.svg"
+              width={24}
+              _hover={{
+                filter: 'drop-shadow(0px 4px 2px rgba(0, 0, 0, 0.2))',
+              }}
+            />
+          </IconButton>
           <Text fontWeight={'semibold'} fontSize={18}>
             Sad
           </Text>

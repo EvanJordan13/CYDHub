@@ -4,8 +4,6 @@ import { siteConfig } from '@/src/config/site';
 import Footer from '@/src/components/Footer';
 import NavBar from '@/src/components/NavBar';
 import Fonts from '../lib/themes/Fonts';
-import MoodModal from '../components/MoodModal';
-import { Center } from '@chakra-ui/react';
 
 export const metadata: Metadata = {
   title: {
@@ -27,9 +25,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Provider>
           <main>{children}</main>
           <NavBar />
-          <Center>
-            <MoodModal />
-          </Center>
           <Footer />
         </Provider>
       </body>

@@ -14,6 +14,7 @@ import { ModuleMaterial } from '@prisma/client';
 import { IconButton } from '@chakra-ui/react';
 import { ChevronUp, ChevronDown } from 'lucide-react';
 import AnnouncementCard, { AnnouncementCardProps } from '@/src/components/AnnouncementCard';
+import MoodModal from '@/src/components/MoodModal';
 
 export default function DevPage() {
   const [allPrograms, setAllPrograms] = useState<Program[]>([]);
@@ -254,6 +255,8 @@ export default function DevPage() {
           <Button type="disabled" pageColor="aqua" text="Disabled" height="60px" width="130px" />
         </Flex>
       </Flex>
-    </Box>
+
+      <MoodModal onClose={() => { }}></MoodModal>
+    </Box >
   );
 }
