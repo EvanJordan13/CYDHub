@@ -17,8 +17,6 @@ export default function DevPage() {
     teacherId: null,
   };
 
-  const [tab, setTab] = useState<Tab>(Tab.Assignments);
-
   return (
     <Box p={8} bg={'white'}>
       <Heading mb={6}>Development Page</Heading>
