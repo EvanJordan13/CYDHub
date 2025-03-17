@@ -23,12 +23,3 @@ export async function getProgramModules(programId: number): Promise<Module[]> {
     return [];
   }
 }
-
-export async function fetchProgramModules(programId: number): Promise<Module[]> {
-  try {
-    return await getProgramModules(programId);
-  } catch (error) {
-    console.error('[FETCH_PROGRAM_MODULES]', error);
-    return [];
-  }
-}
