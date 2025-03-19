@@ -19,7 +19,6 @@ export default function Resource({ title, dueDate, icon, resourceType }: Resourc
 
   const buttonBg = isCompleted ? 'Sky' : 'Aqua';
   const buttonColor = isCompleted ? 'black' : 'white';
-  //   const hoverBg = isCompleted ? 'gray.300' : 'blue.700';
 
   const Icon = isCompleted ? (
     isAssignment ? (
@@ -48,7 +47,6 @@ export default function Resource({ title, dueDate, icon, resourceType }: Resourc
         onClick={() => setIsCompleted(!isCompleted)}
         bg={buttonBg}
         color={buttonColor}
-        // _hover={{ bg: hoverBg }}
         borderRadius="md"
         px={4}
         py={2}
