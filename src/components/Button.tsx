@@ -42,10 +42,10 @@ export default function Button({ type, pageColor, text, height, width, onClick }
                 type === 'primary'
                   ? pageColor === 'flamingo'
                     ? 'FlamingoHover'
-                    : 'white' // CHANGE TO AQUA HOVER COLOR
+                    : 'AquaHover' // CHANGE TO AQUA HOVER COLOR
                   : pageColor === 'flamingo'
                     ? 'SecondaryFlamingoHover'
-                    : 'white', // CHANGE TO SECONDARY AQUA HOVER COLOR
+                    : 'SecondaryAquaHover', // CHANGE TO SECONDARY AQUA HOVER COLOR
               textDecoration: 'underline',
               textDecorationColor: textColor,
             }
