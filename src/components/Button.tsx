@@ -50,16 +50,16 @@ export default function Button({ type, pageColor, text, height, width, onClick }
               textDecorationColor: textColor,
             }
       }
-      borderWidth={'1px'}
+      borderWidth={'thin'}
       borderColor={borderColor}
-      borderRadius={'12px'}
+      borderRadius={'xl'}
       borderBottomWidth={'4px'}
       display="flex"
       alignItems={'center'}
       justifyContent={'center'}
       onClick={type === 'disabled' ? undefined : onClick}
     >
-      <Text fontSize={'16px'} fontWeight={'700'} color={textColor}>
+      <Text fontWeight={'700'} color={textColor}>
         {text}
       </Text>
     </Box>
