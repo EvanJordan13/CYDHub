@@ -1,8 +1,9 @@
 import TextInput from '../../components/TextInput';
 import ProgramCard from '../../components/ProgramCard';
-import { Box, Heading } from '@chakra-ui/react';
+import { Box, Heading, Flex } from '@chakra-ui/react';
 import { Program } from '@prisma/client';
 import { User, Calendar, Award } from 'lucide-react';
+import Button from '@/src/components/Button';
 
 export default function DevPage() {
   // Mock course data
@@ -26,6 +27,18 @@ export default function DevPage() {
       <br />
       <TextInput label="Achievement" width={25} icon={<Award />} />
       <ProgramCard program={mockProgram} />
+      <Flex direction={'row'} gap={'50px'}>
+        <Flex direction={'column'} gap={'20px'}>
+          <Button type="primary" pageColor="flamingo" text="Primary" height="60px" width="130px" />
+          <Button type="secondary" pageColor="flamingo" text="Secondary" height="60px" width="130px" />
+          <Button type="disabled" pageColor="flamingo" text="Disabled" height="60px" width="130px" />
+        </Flex>
+        <Flex direction={'column'} gap={'20px'}>
+          <Button type="primary" pageColor="aqua" text="Primary" height="60px" width="130px" />
+          <Button type="secondary" pageColor="aqua" text="Secondary" height="60px" width="130px" />
+          <Button type="disabled" pageColor="aqua" text="Disabled" height="60px" width="130px" />
+        </Flex>
+      </Flex>
     </Box>
   );
 }
