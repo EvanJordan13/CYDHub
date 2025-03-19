@@ -63,29 +63,3 @@ export default function Resource({ title, dueDate, icon, resourceType }: Resourc
     </Flex>
   );
 }
-
-{
-  /* <Box as="span" fontSize="lg" mr={3}>
-        Icon
-      </Box> */
-}
-{
-  /* <Button size="sm" bg="gray.200" _hover={{ bg: 'gray.300' }}>
-        ✓ Completed
-      </Button> */
-}
-
-// import { Box, Text } from '@chakra-ui/react';
-
-// export default function Resource() {
-//   return (
-//     <Box>
-//       <Box>Icon</Box>
-//       <Box>
-//         <Box>Syllabus</Box>
-//         <Box>Due Date: March 1st</Box>
-//       </Box>
-//       <Box>Button</Box>
-//     </Box>
-//   );
-// }
