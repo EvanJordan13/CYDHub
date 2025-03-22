@@ -8,30 +8,23 @@ export async function getAllPrograms(): Promise<Program[]> {
 }
 
 export async function getProgramsByUser(userId: number): Promise<Program[]> {
-  try {
-    const programs = await prisma.user.findUnique({
-      where: {
-        id: userId,
-      },
-      include: {
-        programEnrollments: {
-          include: {
-            program: true,
-          },
+  const programs = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+    include: {
+      programEnrollments: {
+        include: {
+          program: true,
         },
       },
-    });
-
-    if (!programs) {
-      console.log(`No user found with ID ${userId}`);
-      return [];
-    }
-
-    return programs.programEnrollments.map(enrollment => enrollment.program);
-  } catch (error) {
-    console.error('[GET_PROGRAMS_BY_USER_ERROR]', error);
-    return [];
+    },
+  });
+  if (!programs) {
+    throw new Error(`No user found with ID ${userId}`);
   }
+
+  return programs.programEnrollments.map(enrollment => enrollment.program);
 }
 
 export async function fetchAllPrograms(): Promise<Program[]> {
@@ -81,8 +74,7 @@ export async function getProgramMaterials(programId: number): Promise<(ModuleMat
 
     return flattenedMaterials;
   } catch (error) {
-    console.error('[GET_PROGRAM_MATERIALS_ERROR]', error);
-    return [];
+    throw error;
   }
 }
 
@@ -91,6 +83,6 @@ export async function fetchProgramMaterials(programId: number): Promise<(ModuleM
     return await getProgramMaterials(programId);
   } catch (error) {
     console.error('[FETCH_PROGRAM_MATERIALS]', error);
-    return [];
+    throw error;
   }
 }

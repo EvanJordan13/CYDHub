@@ -1,12 +1,18 @@
 'use client';
 
+import { useState } from 'react';
 import TextInput from '../../components/TextInput';
 import ProgramCard from '../../components/ProgramCard';
-import { Box, Heading, Button, Stack, Text, Flex, IconButton } from '@chakra-ui/react';
-import { Program, ModuleMaterial } from '@prisma/client';
-import { User, Calendar, Award, ChevronDown, ChevronUp } from 'lucide-react';
+import { Box, Heading, Stack, Text } from '@chakra-ui/react';
+import { Program } from '@prisma/client';
+import { User, Calendar, Award } from 'lucide-react';
 import { fetchAllPrograms, fetchProgramsByUser, fetchProgramMaterials } from '@/src/lib/query/programs';
-import { useState } from 'react';
+import { Flex } from '@chakra-ui/react';
+import Button from '@/src/components/Button';
+import { Button as ChakraButton } from '@chakra-ui/react';
+import { ModuleMaterial } from '@prisma/client';
+import { IconButton } from '@chakra-ui/react';
+import { ChevronUp, ChevronDown } from 'lucide-react';
 
 export default function DevPage() {
   const [allPrograms, setAllPrograms] = useState<Program[]>([]);
@@ -75,15 +81,15 @@ export default function DevPage() {
       <Heading mb={6}>Development Page</Heading>
 
       <Box mb={6}>
-        <Button onClick={testFetchAllPrograms} mr={2} loading={isLoadingAll}>
+        <ChakraButton onClick={testFetchAllPrograms} mr={2} loading={isLoadingAll}>
           Test Fetch All Programs
-        </Button>
-        <Button onClick={testFetchProgramsByUser} mr={2} loading={isLoadingUser}>
+        </ChakraButton>
+        <ChakraButton onClick={testFetchProgramsByUser} mr={2} loading={isLoadingUser}>
           Test Fetch Programs By User
-        </Button>
-        <Button onClick={testFetchProgramMaterials} loading={isLoadingMaterials}>
+        </ChakraButton>
+        <ChakraButton onClick={testFetchProgramMaterials} loading={isLoadingMaterials}>
           Test Fetch Program 1 Materials
-        </Button>
+        </ChakraButton>
       </Box>
 
       <Flex gap={8}>
@@ -175,7 +181,27 @@ export default function DevPage() {
         </Flex>
       </Flex>
 
-      <Heading size="md" my={4}>
+      <Stack gap={4} mb={8}>
+        <Box>
+          <Heading size="md" mb={2}>
+            All Programs ({allPrograms.length})
+          </Heading>
+          {allPrograms.map(program => (
+            <ProgramCard key={program.id} program={program} />
+          ))}
+        </Box>
+
+        <Box>
+          <Heading size="md" mb={2}>
+            User Programs ({userPrograms.length})
+          </Heading>
+          {userPrograms.map(program => (
+            <ProgramCard key={program.id} program={program} />
+          ))}
+        </Box>
+      </Stack>
+
+      <Heading size="md" mb={4}>
         Form Components Test
       </Heading>
       <TextInput label="Date of Birth" width={10} icon={<Calendar />} />
@@ -183,6 +209,19 @@ export default function DevPage() {
       <TextInput label="Name" width={18.75} icon={<User />} />
       <br />
       <TextInput label="Achievement" width={25} icon={<Award />} />
+      <ProgramCard program={mockProgram} />
+      <Flex direction={'row'} gap={'50px'}>
+        <Flex direction={'column'} gap={'20px'}>
+          <Button type="primary" pageColor="flamingo" text="Primary" height="60px" width="130px" />
+          <Button type="secondary" pageColor="flamingo" text="Secondary" height="60px" width="130px" />
+          <Button type="disabled" pageColor="flamingo" text="Disabled" height="60px" width="130px" />
+        </Flex>
+        <Flex direction={'column'} gap={'20px'}>
+          <Button type="primary" pageColor="aqua" text="Primary" height="60px" width="130px" />
+          <Button type="secondary" pageColor="aqua" text="Secondary" height="60px" width="130px" />
+          <Button type="disabled" pageColor="aqua" text="Disabled" height="60px" width="130px" />
+        </Flex>
+      </Flex>
     </Box>
   );
 }
