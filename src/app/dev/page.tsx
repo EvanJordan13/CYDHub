@@ -250,6 +250,19 @@ export default function DevPage() {
       <TextInput label="Achievement" width={25} icon={<Award />} />
       <ProgramCard program={mockProgram} />
 
+      <Flex direction={'row'} gap={'50px'}>
+        <Flex direction={'column'} gap={'20px'}>
+          <Button type="primary" pageColor="flamingo" text="Primary" height="60px" width="130px" />
+          <Button type="secondary" pageColor="flamingo" text="Secondary" height="60px" width="130px" />
+          <Button type="disabled" pageColor="flamingo" text="Disabled" height="60px" width="130px" />
+        </Flex>
+        <Flex direction={'column'} gap={'20px'}>
+          <Button type="primary" pageColor="aqua" text="Primary" height="60px" width="130px" />
+          <Button type="secondary" pageColor="aqua" text="Secondary" height="60px" width="130px" />
+          <Button type="disabled" pageColor="aqua" text="Disabled" height="60px" width="130px" />
+        </Flex>
+      </Flex>
+
       <ChakraButton onClick={openModal}>Open Mood Modal</ChakraButton>
 
       {isModalOpen && (
