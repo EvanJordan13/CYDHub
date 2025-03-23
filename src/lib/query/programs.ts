@@ -1,7 +1,7 @@
 'use server';
 
 import prisma from '../postgres/db';
-import { Program } from '@prisma/client';
+import { Program, ModuleMaterial } from '@prisma/client';
 
 export async function getAllPrograms(): Promise<Program[]> {
   return prisma.program.findMany();
@@ -20,7 +20,6 @@ export async function getProgramsByUser(userId: number): Promise<Program[]> {
       },
     },
   });
-
   if (!programs) {
     throw new Error(`No user found with ID ${userId}`);
   }
@@ -42,6 +41,48 @@ export async function fetchProgramsByUser(userId: number): Promise<Program[]> {
     return await getProgramsByUser(userId);
   } catch (error) {
     console.error('[FETCH_PROGRAMS_BY_USER]', error);
+    return [];
+  }
+}
+
+export async function getProgramMaterials(programId: number): Promise<(ModuleMaterial & { moduleTitle: string })[]> {
+  try {
+    const materials = await prisma.program.findUnique({
+      where: {
+        id: programId,
+      },
+      include: {
+        modules: {
+          include: {
+            materials: true,
+          },
+        },
+      },
+    });
+
+    if (!materials) {
+      console.log(`No program found with ID ${programId}`);
+      return [];
+    }
+
+    const flattenedMaterials = materials.modules.flatMap(module =>
+      module.materials.map(material => ({
+        ...material,
+        moduleTitle: module.title,
+      })),
+    );
+
+    return flattenedMaterials;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export async function fetchProgramMaterials(programId: number): Promise<(ModuleMaterial & { moduleTitle: string })[]> {
+  try {
+    return await getProgramMaterials(programId);
+  } catch (error) {
+    console.error('[FETCH_PROGRAM_MATERIALS]', error);
     throw error;
   }
 }
