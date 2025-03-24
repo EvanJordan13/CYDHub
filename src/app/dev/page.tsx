@@ -1,10 +1,11 @@
 import TextInput from '../../components/TextInput';
 import ProgramCard from '../../components/ProgramCard';
-import { Box, Heading } from '@chakra-ui/react';
+import { Box, Heading, Text, VStack } from '@chakra-ui/react';
 import { Program } from '@prisma/client';
 import { User, Calendar, Award } from 'lucide-react';
+import { getProgramAnnouncements } from '@/src/lib/query/announcements';
 
-export default function DevPage() {
+export default async function DevPage() {
   // Mock course data
   const mockProgram: Program = {
     id: 1,
@@ -17,15 +18,26 @@ export default function DevPage() {
     teacherId: null,
   };
 
+  const announcements = await getProgramAnnouncements(3);
+
   return (
-    <Box p={8} bg={'white'}>
-      <Heading mb={6} color={"black"}>Development Page</Heading>
-      <TextInput label="Date of Birth" width={10} icon={<Calendar />} />
-      <br />
-      <TextInput label="Name" width={18.75} icon={<User />} />
-      <br />
-      <TextInput label="Achievement" width={25} icon={<Award />} />
-      <ProgramCard program={mockProgram} />
+    <Box p={8} bg="white" minH="100vh">
+      <Heading mb={6}> DEV: Program Materials</Heading>
+
+      {announcements.length === 0 ? (
+        <Text>No materials found for program #1</Text>
+      ) : (
+        <VStack align="start" gap={4}>
+          {announcements.map(a => (
+            <Box key={a.id} p={4} borderWidth="1px" borderRadius="md" w="100%">
+              <Text fontWeight="bold">{a.title}</Text>
+              <Text fontSize="sm" color="gray">
+                {a.content}
+              </Text>
+            </Box>
+          ))}
+        </VStack>
+      )}
     </Box>
   );
 }
