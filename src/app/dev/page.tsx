@@ -247,14 +247,6 @@ export default function DevPage() {
                     <Text>Module: {assignment.moduleTitle}</Text>
                     <Text>Description: {assignment.description}</Text>
                     {assignment.dueDate ? <Text>Due Date: {assignment.dueDate.toString()}</Text> : <Text></Text>}
-                    {assignment.fileUrl && (
-                      <Text>
-                        File:{' '}
-                        <a href={assignment.fileUrl} target="_blank" rel="noopener noreferrer">
-                          {assignment.fileUrl}
-                        </a>
-                      </Text>
-                    )}
                   </Box>
                 ))}
               </Stack>
