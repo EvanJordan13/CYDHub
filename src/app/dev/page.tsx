@@ -1,9 +1,8 @@
 'use client';
 
-import { useState } from 'react';
 import TextInput from '../../components/TextInput';
 import ProgramCard from '../../components/ProgramCard';
-import { Box, Heading, Stack, Text, VStack } from '@chakra-ui/react';
+import { Box, Center, Heading, Stack, Text, VStack } from '@chakra-ui/react';
 import { Program } from '@prisma/client';
 import { User, Calendar, Award } from 'lucide-react';
 import { fetchAllPrograms, fetchProgramsByUser, fetchProgramMaterials } from '@/src/lib/query/programs';
@@ -14,6 +13,8 @@ import { ModuleMaterial } from '@prisma/client';
 import { IconButton } from '@chakra-ui/react';
 import { ChevronUp, ChevronDown } from 'lucide-react';
 import AnnouncementCard, { AnnouncementCardProps } from '@/src/components/AnnouncementCard';
+import MoodModal from '@/src/components/MoodModal';
+import { useState } from 'react';
 
 export default function DevPage() {
   const [allPrograms, setAllPrograms] = useState<Program[]>([]);
@@ -25,6 +26,12 @@ export default function DevPage() {
   const [showAllPrograms, setShowAllPrograms] = useState(true);
   const [showUserPrograms, setShowUserPrograms] = useState(true);
   const [showMaterials, setShowMaterials] = useState(true);
+
+  // Open/close state for mood modal
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
 
   // Mock course data
   const mockProgram: Program = {
@@ -242,6 +249,7 @@ export default function DevPage() {
       <br />
       <TextInput label="Achievement" width={25} icon={<Award />} />
       <ProgramCard program={mockProgram} />
+
       <Flex direction={'row'} gap={'50px'}>
         <Flex direction={'column'} gap={'20px'}>
           <Button type="primary" pageColor="flamingo" text="Primary" height="60px" width="130px" />
@@ -254,6 +262,25 @@ export default function DevPage() {
           <Button type="disabled" pageColor="aqua" text="Disabled" height="60px" width="130px" />
         </Flex>
       </Flex>
+
+      <ChakraButton onClick={openModal}>Open Mood Modal</ChakraButton>
+
+      {isModalOpen && (
+        <Box
+          position="fixed"
+          top={0}
+          left={0}
+          right={0}
+          bottom={0}
+          bg="rgba(0, 0, 0, 0.5)"
+          zIndex={999}
+          onClick={closeModal}
+        >
+          <Box position="fixed" top="50%" left="50%" transform="translate(-50%, -50%)" zIndex={1000}>
+            <MoodModal onClose={closeModal} />
+          </Box>
+        </Box>
+      )}
     </Box>
   );
 }
