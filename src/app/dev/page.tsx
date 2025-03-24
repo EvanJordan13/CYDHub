@@ -3,9 +3,14 @@
 import TextInput from '../../components/TextInput';
 import ProgramCard from '../../components/ProgramCard';
 import { Box, Center, Heading, Stack, Text, VStack } from '@chakra-ui/react';
-import { Program } from '@prisma/client';
+import { Program, Announcement } from '@prisma/client';
 import { User, Calendar, Award } from 'lucide-react';
-import { fetchAllPrograms, fetchProgramsByUser, fetchProgramMaterials } from '@/src/lib/query/programs';
+import {
+  fetchAllPrograms,
+  fetchProgramsByUser,
+  fetchProgramMaterials,
+  getProgramAnnouncements,
+} from '@/src/lib/query/programs';
 import { Flex } from '@chakra-ui/react';
 import Button from '@/src/components/Button';
 import { Button as ChakraButton } from '@chakra-ui/react';
@@ -26,6 +31,8 @@ export default function DevPage() {
   const [showAllPrograms, setShowAllPrograms] = useState(true);
   const [showUserPrograms, setShowUserPrograms] = useState(true);
   const [showMaterials, setShowMaterials] = useState(true);
+  const [isLoadingAnnouncements, setIsLoadingAnnouncements] = useState(false);
+  const [programAnnouncements, setProgramAnnouncements] = useState<Announcement[]>([]);
 
   // Open/close state for mood modal
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -103,6 +110,19 @@ export default function DevPage() {
     },
   ];
 
+  const testFetchProgramAnnouncements = async () => {
+    setIsLoadingAnnouncements(true);
+    try {
+      const announcements = await getProgramAnnouncements(1);
+      console.log('Program Announcements', announcements);
+      setProgramAnnouncements(announcements);
+    } catch (error) {
+      console.error('Error fetching program announcements:', error);
+    } finally {
+      setIsLoadingAnnouncements(false);
+    }
+  };
+
   return (
     <Box p={8} bg={'white'}>
       <Heading mb={6}>Development Page</Heading>
@@ -116,6 +136,9 @@ export default function DevPage() {
         </ChakraButton>
         <ChakraButton onClick={testFetchProgramMaterials} loading={isLoadingMaterials}>
           Test Fetch Program 1 Materials
+        </ChakraButton>
+        <ChakraButton onClick={testFetchProgramAnnouncements} loading={isLoadingAnnouncements}>
+          Test Fetch Program 1 Announcements
         </ChakraButton>
       </Box>
 
@@ -281,6 +304,24 @@ export default function DevPage() {
           </Box>
         </Box>
       )}
+      <Box p={8} bg="white" minH="100vh">
+        <Heading mb={6}> Program Announcements</Heading>
+
+        {programAnnouncements.length === 0 ? (
+          <Text color={'black'}>No materials found for program #1</Text>
+        ) : (
+          <VStack align="start" gap={4}>
+            {programAnnouncements.map(a => (
+              <Box key={a.id} p={4} borderWidth="1px" borderRadius="md" w="100%">
+                <Text fontWeight="bold">{a.title}</Text>
+                <Text fontSize="sm" color="gray">
+                  {a.content}
+                </Text>
+              </Box>
+            ))}
+          </VStack>
+        )}
+      </Box>
     </Box>
   );
 }
