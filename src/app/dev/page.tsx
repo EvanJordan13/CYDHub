@@ -6,11 +6,16 @@ import ProgramCard from '../../components/ProgramCard';
 import { Box, Heading, Stack, Text, VStack } from '@chakra-ui/react';
 import { Program } from '@prisma/client';
 import { User, Calendar, Award } from 'lucide-react';
-import { fetchAllPrograms, fetchProgramsByUser, fetchProgramMaterials } from '@/src/lib/query/programs';
+import {
+  fetchAllPrograms,
+  fetchProgramsByUser,
+  fetchProgramMaterials,
+  fetchProgramAssignments,
+} from '@/src/lib/query/programs';
 import { Flex } from '@chakra-ui/react';
 import Button from '@/src/components/Button';
 import { Button as ChakraButton } from '@chakra-ui/react';
-import { ModuleMaterial } from '@prisma/client';
+import { ModuleMaterial, Assignment } from '@prisma/client';
 import { IconButton } from '@chakra-ui/react';
 import { ChevronUp, ChevronDown } from 'lucide-react';
 import AnnouncementCard, { AnnouncementCardProps } from '@/src/components/AnnouncementCard';
@@ -19,12 +24,15 @@ export default function DevPage() {
   const [allPrograms, setAllPrograms] = useState<Program[]>([]);
   const [userPrograms, setUserPrograms] = useState<Program[]>([]);
   const [programMaterials, setProgramMaterials] = useState<(ModuleMaterial & { moduleTitle: string })[]>([]);
+  const [programAssignments, setProgramAssignments] = useState<(Assignment & { moduleTitle: string })[]>([]);
   const [isLoadingAll, setIsLoadingAll] = useState(false);
   const [isLoadingUser, setIsLoadingUser] = useState(false);
   const [isLoadingMaterials, setIsLoadingMaterials] = useState(false);
+  const [isLoadingAssignments, setIsLoadingAssignments] = useState(false);
   const [showAllPrograms, setShowAllPrograms] = useState(true);
   const [showUserPrograms, setShowUserPrograms] = useState(true);
   const [showMaterials, setShowMaterials] = useState(true);
+  const [showAssignments, setShowAssignments] = useState(true);
 
   // Mock course data
   const mockProgram: Program = {
@@ -76,6 +84,20 @@ export default function DevPage() {
       setIsLoadingMaterials(false);
     }
   };
+
+  const testFetchProgramAssignments = async () => {
+    setIsLoadingAssignments(true);
+    try {
+      const assignments = await fetchProgramAssignments(1);
+      console.log('Program assignments', assignments);
+      setProgramAssignments(assignments);
+    } catch (error) {
+      console.error('Error fetching program assignments:', error);
+    } finally {
+      setIsLoadingAssignments(false);
+    }
+  };
+
   const mockAnnouncements: AnnouncementCardProps[] = [
     {
       subject: 'Portfolio Graded',
@@ -97,7 +119,7 @@ export default function DevPage() {
   ];
 
   return (
-    <Box p={8} bg={'white'}>
+    <Box p={8} bg={'white'} color={'black'}>
       <Heading mb={6}>Development Page</Heading>
 
       <Box mb={6}>
@@ -109,6 +131,9 @@ export default function DevPage() {
         </ChakraButton>
         <ChakraButton onClick={testFetchProgramMaterials} loading={isLoadingMaterials}>
           Test Fetch Program 1 Materials
+        </ChakraButton>
+        <ChakraButton onClick={testFetchProgramAssignments} loading={isLoadingAssignments}>
+          Test Fetch Program 1 Assignments
         </ChakraButton>
       </Box>
 
@@ -197,6 +222,44 @@ export default function DevPage() {
               </Stack>
             ) : (
               <Text color="gray.500">No materials found</Text>
+            ))}
+        </Flex>
+
+        <Flex direction="column" flex={1}>
+          <Flex align="center" mb={2}>
+            <Heading size="md" flex={1}>
+              Program 1 Assignments
+            </Heading>
+            <IconButton
+              as={showAssignments ? ChevronUp : ChevronDown}
+              onClick={() => setShowAssignments(!showAssignments)}
+              variant="ghost"
+              aria-label="Toggle assignments"
+              size="sm"
+            />
+          </Flex>
+          {showAssignments &&
+            (programAssignments.length > 0 ? (
+              <Stack>
+                {programAssignments.map(assignment => (
+                  <Box key={assignment.id} p={4} border="1px" borderColor="gray.200" borderRadius="md">
+                    <Text fontWeight="bold">{assignment.title}</Text>
+                    <Text>Module: {assignment.moduleTitle}</Text>
+                    <Text>Description: {assignment.description}</Text>
+                    <Text>Due Date: {assignment.dueDate.toString()}</Text>
+                    {assignment.fileUrl && (
+                      <Text>
+                        File:{' '}
+                        <a href={assignment.fileUrl} target="_blank" rel="noopener noreferrer">
+                          {assignment.fileUrl}
+                        </a>
+                      </Text>
+                    )}
+                  </Box>
+                ))}
+              </Stack>
+            ) : (
+              <Text color="gray.500">No assignment found</Text>
             ))}
         </Flex>
       </Flex>
