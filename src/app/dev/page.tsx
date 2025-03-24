@@ -255,7 +255,7 @@ export default function DevPage() {
           <Button type="disabled" pageColor="aqua" text="Disabled" height="60px" width="130px" />
         </Flex>
       </Flex>
-      <SideBar page={"To Do"}/>
+      <SideBar page={'To Do'} />
     </Box>
   );
 }

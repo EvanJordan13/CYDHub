@@ -23,7 +23,7 @@ function Bar({ Icon, text, current, link }: BarProps) {
         _hover={{ bg: 'LightGray' }}
         bg={current ? 'Sky' : ''}
       >
-        <Icon color={current ? 'black' : '#5A5A63'} /> 
+        <Icon color={current ? 'black' : '#5A5A63'} />
         <Text color={current ? 'black' : 'DarkGray'}>{text}</Text>
       </Flex>
     </Link>
