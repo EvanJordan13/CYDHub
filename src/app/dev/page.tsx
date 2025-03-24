@@ -246,7 +246,7 @@ export default function DevPage() {
                     <Text fontWeight="bold">{assignment.title}</Text>
                     <Text>Module: {assignment.moduleTitle}</Text>
                     <Text>Description: {assignment.description}</Text>
-                    <Text>Due Date: {assignment.dueDate.toString()}</Text>
+                    (assignment.dueDate && <Text>Due Date: {assignment.dueDate.toString()}</Text>)
                     {assignment.fileUrl && (
                       <Text>
                         File:{' '}
