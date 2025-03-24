@@ -10,10 +10,23 @@ const defaultTheme = createSystem(defaultConfig, {
       },
       colors: {
         Slate: { value: '#071116' },
-        Flamingo: { value: '#BC3860' },
-        Aqua: { value: '#4D80BB' },
         Sky: { value: '#BBD0E5' },
-        Lavender: { value: '8D608C' },
+        Lavender: { value: '#8D608C' },
+
+        Flamingo: { value: '#BC3860' },
+        FlamingoBorder: { value: '#992B4D' },
+        FlamingoHover: { value: '#E44777' },
+        SecondaryFlamingoHover: { value: '#FFE6F1' },
+
+        Aqua: { value: '#4D80BB' },
+        AquaBorder: { value: '#1F60AB' },
+        AquaHover: { value: '#4899EA' }, // CHANGE TO AQUA HOVER COLOR
+        SecondaryAquaHover: { value: '#C3DAF2' }, // CHANGE TO SECONDARY AQUA HOVER COLOR
+
+        Gray: { value: '#959494' },
+        LightGray: { value: '#F0EFEF' },
+        DarkGray: { value: '#5A5A63' },
+        DisabledWhite: { value: '#DEDEDE' },
       },
     },
   },

@@ -3,12 +3,12 @@ import { House, AlarmClockCheck, CodeXml, Calendar, Store, Archive, Settings, Lo
 
 type BarProps = {
   Icon: React.FC<React.SVGProps<SVGSVGElement>>;
-  txt: string;
+  text: string;
   current: boolean;
   link: string;
 };
 
-function Bar({ Icon, txt, current, link }: BarProps) {
+function Bar({ Icon, text, current, link }: BarProps) {
   return (
     <Link href={link}>
       <Flex
@@ -20,11 +20,11 @@ function Bar({ Icon, txt, current, link }: BarProps) {
         px="20px"
         py="16px"
         gap="16px"
-        _hover={{ bg: '#F0EFEF' }}
-        bg={current ? '#BBD0E5' : ''}
+        _hover={{ bg: 'LightGray' }}
+        bg={current ? 'Sky' : ''}
       >
-        <Icon color={current ? 'black' : '#5A5A63'} />
-        <Text color={current ? 'black' : '#5A5A63'}>{txt}</Text>
+        <Icon color={current ? 'black' : '#5A5A63'} /> 
+        <Text color={current ? 'black' : 'DarkGray'}>{text}</Text>
       </Flex>
     </Link>
   );
@@ -51,16 +51,16 @@ export default function SideBar({ page }: SideBarProps) {
     >
       <Flex direction={'column'} height={'456px'} gap={'20px'}>
         <Image src="cyd-dashboard-logo.svg" height={'44px'} width={'50px'} marginBottom={'12px'} />
-        <Bar Icon={House} txt="Home" current={page == 'Home'} link={'/'} />
-        <Bar Icon={AlarmClockCheck} txt="To Do" current={page == 'To Do'} link={'/'} />
-        <Bar Icon={CodeXml} txt="Editor" current={page == 'Editor'} link={'/'} />
-        <Bar Icon={Calendar} txt="Calendar" current={page == 'Calendar'} link={'/'} />
-        <Bar Icon={Store} txt="Shop" current={page == 'Shop'} link={'/'} />
+        <Bar Icon={House} text="Home" current={page == 'Home'} link={'/'} />
+        <Bar Icon={AlarmClockCheck} text="To Do" current={page == 'To Do'} link={'/'} />
+        <Bar Icon={CodeXml} text="Editor" current={page == 'Editor'} link={'/'} />
+        <Bar Icon={Calendar} text="Calendar" current={page == 'Calendar'} link={'/'} />
+        <Bar Icon={Store} text="Shop" current={page == 'Shop'} link={'/'} />
       </Flex>
       <Flex direction={'column'} height={'220px'} gap={'20px'}>
-        <Bar Icon={Archive} txt="Archived" current={page == 'Archived'} link={'/'} />
-        <Bar Icon={Settings} txt="Settings" current={page == 'Settings'} link={'/'} />
-        <Bar Icon={LogOut} txt="Log Out" current={page == 'Log Out'} link={'/'} />
+        <Bar Icon={Archive} text="Archived" current={page == 'Archived'} link={'/'} />
+        <Bar Icon={Settings} text="Settings" current={page == 'Settings'} link={'/'} />
+        <Bar Icon={LogOut} text="Log Out" current={page == 'Log Out'} link={'/'} />
       </Flex>
     </Flex>
   );
