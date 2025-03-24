@@ -1,7 +1,7 @@
 'use server';
 
 import prisma from '../postgres/db';
-import { Program, ModuleMaterial } from '@prisma/client';
+import { Program, ModuleMaterial, Module } from '@prisma/client';
 
 export async function getAllPrograms(): Promise<Program[]> {
   return prisma.program.findMany();
@@ -84,5 +84,28 @@ export async function fetchProgramMaterials(programId: number): Promise<(ModuleM
   } catch (error) {
     console.error('[FETCH_PROGRAM_MATERIALS]', error);
     throw error;
+  }
+}
+
+export async function getProgramModules(programId: number): Promise<Module[]> {
+  try {
+    const program = await prisma.program.findUnique({
+      where: {
+        id: programId,
+      },
+      include: {
+        modules: true,
+      },
+    });
+
+    if (!program) {
+      console.log(`No program found with ID ${programId}`);
+      return [];
+    }
+
+    return program.modules;
+  } catch (error) {
+    console.error('[GET_PROGRAM_MODULES_ERROR]', error);
+    return [];
   }
 }
