@@ -31,8 +31,8 @@ export default function LandingPage() {
                 <Text fontSize="18px" color="Slate" fontFamily={"Poppins"} fontWeight={700}>Welcome to the Student Hub</Text>
                 <Text fontSize="72px" color="Flamingo" fontWeight={700}>Code Your Dreams</Text>
                 <HStack paddingY="30px">
-                    <Button type="secondary" text="Learn More" width="178px" height="56px" link="https://www.linkedin.com/in/sidharth-hejamadi" />
-                    <Button type="primary" text="Get Started" width="178px" height="56px" link="https://www.linkedin.com/in/sidharth-hejamadi" />
+                    <Button type="secondary" text="Learn More" width="178px" height="56px" pageColor="flamingo"/>
+                    <Button type="primary" text="Get Started" width="178px" height="56px" pageColor="flamingo"/>
                 </HStack>
                 </VStack>
                 <Image src="/temp-screen.png" width="931px" height="596px" />
