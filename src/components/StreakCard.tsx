@@ -9,10 +9,8 @@ interface StreakCardProps {
   nextRewardPoints: number;
 }
 
-const StreakCard: React.FC<StreakCardProps> = ({ currentPoints, nextRewardPoints, ...rest }) => {
+const StreakCard: React.FC<StreakCardProps> = ({ currentPoints = 0, nextRewardPoints = 0, ...rest }) => {
   const progress = (currentPoints / nextRewardPoints) * 100;
-
-  console.log(progress);
 
   return (
     <Box width="100%" bg={'white'} borderRadius={'md'} shadow={'sm'} paddingX={5} paddingY={6} {...rest}>
@@ -23,7 +21,7 @@ const StreakCard: React.FC<StreakCardProps> = ({ currentPoints, nextRewardPoints
         </Flex>
 
         <Center transform={'scale(2.5)'} transformOrigin={'top'} mb={32}>
-          <ProgressCircle.Root value={progress} size={'xl'}>
+          <ProgressCircle.Root value={50} size={'xl'}>
             <ProgressCircle.Circle>
               <ProgressCircle.Track />
               <ProgressCircle.Range strokeLinecap="round" stroke={'#FFC700'} />
