@@ -22,6 +22,7 @@ import MoodModal from '@/src/components/MoodModal';
 import { useState } from 'react';
 import DropDownInput from '@/src/components/DropDownInput';
 import DatePickerInput from '@/src/components/DatePickerInput';
+import StreakCard from '@/src/components/StreakCard';
 
 export default function DevPage() {
   const [allPrograms, setAllPrograms] = useState<Program[]>([]);
@@ -355,6 +356,10 @@ export default function DevPage() {
       <br />
 
       <DatePickerInput labelText={'Birthday'} helperText={'MM/DD/YYYY'} isRequired={true}></DatePickerInput>
+
+      <Box width={80} margin={6}>
+        <StreakCard currentPoints={25} nextRewardPoints={100} />
+      </Box>
     </Box>
   );
 }

@@ -1,52 +1,47 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Box, Text, Image, Flex, Center } from '@chakra-ui/react';
-import { ChevronDown } from 'lucide-react';
+import { Box, Text, Flex, Center } from '@chakra-ui/react';
+import { ProgressCircle } from '@chakra-ui/react';
+import { InfoTip } from '@/src/components/ui/toggle-tip';
 
 interface StreakCardProps {
-  streak: string | number;
-  message: string;
+  currentPoints: number;
+  nextRewardPoints: number;
 }
 
-const StreakCard: React.FC<StreakCardProps> = ({ streak, message, ...rest }) => {
+const StreakCard: React.FC<StreakCardProps> = ({ currentPoints, nextRewardPoints, ...rest }) => {
+  const progress = (currentPoints / nextRewardPoints) * 100;
+
+  console.log(progress);
+
   return (
     <Box width="100%" bg={'white'} borderRadius={'md'} shadow={'sm'} paddingX={5} paddingY={6} {...rest}>
-      <Box as="span" display="inline-flex" alignItems="center">
-        <Image src="streak-card-icon.svg" width={6} />
-        <Text fontSize={48} fontWeight={'bold'} color={'#FFCE29'} marginLeft={3} marginTop={-4} marginBottom={-5}>
-          {streak}
-        </Text>
-      </Box>
-      <Text fontSize={14} fontWeight={'bold'} marginTop={2}>
-        {message}
-      </Text>
+      <Flex direction={'column'} justify={'center'} align={'center'}>
+        <Flex gap={0.5} align={'center'} justify={'center'} mb={8}>
+          <Text fontWeight={'bold'}>Your Points</Text>
+          <InfoTip content="Earn points by completing your assignments" />
+        </Flex>
 
-      <Flex direction={'row'} justify={'space-between'} align={'center'} gap={1} marginX={1} marginTop={4}>
-        <DayIcon day="M" />
-        <DayIcon day="T" />
-        <DayIcon day="W" />
-        <DayIcon day="Th" />
-        <DayIcon day="F" />
+        <Center transform={'scale(2.5)'} transformOrigin={'top'} mb={32}>
+          <ProgressCircle.Root value={progress} size={'xl'}>
+            <ProgressCircle.Circle>
+              <ProgressCircle.Track />
+              <ProgressCircle.Range strokeLinecap="round" stroke={'#FFC700'} />
+            </ProgressCircle.Circle>
+          </ProgressCircle.Root>
+
+          <Text position={'absolute'} fontWeight={'bold'} color={'#FFC700'} fontSize={'16px'}>
+            {currentPoints}
+          </Text>
+        </Center>
+
+        <Center width="100%" bg={'white'} borderRadius={'md'} shadow={'sm'} paddingX={2} paddingY={3} {...rest}>
+          <Text textAlign={'center'} fontSize={'14px'} color={'#5A5A63'}>
+            {nextRewardPoints - currentPoints} points away from next reward!
+          </Text>
+        </Center>
       </Flex>
     </Box>
-  );
-};
-
-interface DayIconProps {
-  day: string;
-}
-
-const DayIcon: React.FC<DayIconProps> = ({ day }) => {
-  return (
-    <Flex direction={'column'} justify={'center'} align={'center'}>
-      <Center width={8} height={8} borderRadius={'full'} bg={'Flamingo'}>
-        <Image src="streak-card-icon.svg" width={2.5} />
-      </Center>
-      <Text as={'span'} fontWeight={'bold'} marginTop={2}>
-        {day}
-      </Text>
-    </Flex>
   );
 };
 
