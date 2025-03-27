@@ -248,11 +248,11 @@ export default function DevPage() {
         </VStack>
       </Box>
 
-      <TextInput label="Date of Birth" width={10} icon={<Calendar />} />
+      <TextInput label="Date of Birth" icon={<Calendar />} />
       <br />
-      <TextInput label="Name" width={18.75} icon={<User />} />
+      <TextInput label="Name" icon={<User />} />
       <br />
-      <TextInput label="Achievement" width={25} icon={<Award />} />
+      <TextInput label="Achievement" icon={<Award />} />
       <ProgramCard program={mockProgram} />
 
       <Flex direction={'row'} gap={'50px'}>
