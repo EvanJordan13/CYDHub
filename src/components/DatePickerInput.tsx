@@ -53,7 +53,7 @@ const DatePickerInput: React.FC<DatePickerInputProps> = ({
   return (
     <Box width="100%" {...rest}>
       {labelText && (
-        <Text mb={2} fontSize="sm">
+        <Text mb={2} fontSize="sm" fontWeight={'medium'}>
           {labelText}
           {isRequired && (
             <Text as="span" color="red.500">

@@ -30,7 +30,7 @@ const DropDownInput: React.FC<DropDownInputProps> = ({
   return (
     <Box width="100%" {...rest}>
       {labelText && (
-        <Text mb={2} fontSize="sm">
+        <Text mb={2} fontSize="sm" fontWeight={'medium'}>
           {labelText}
           {isRequired && (
             <Text as="span" color="red.500">
@@ -46,10 +46,8 @@ const DropDownInput: React.FC<DropDownInputProps> = ({
           <Button
             variant="outline"
             size="sm"
-            rounded={'sm'}
+            rounded={'md'}
             width="100%"
-            py={5}
-            px={3}
             borderWidth={'0.125rem'}
             borderColor={isFocused ? 'Aqua' : '#AAAAAA'}
             _hover={{ background: '#E0EEFF' }}
@@ -57,9 +55,11 @@ const DropDownInput: React.FC<DropDownInputProps> = ({
             onFocus={() => setIsFocused(true)}
             onBlur={() => setIsFocused(false)}
             transition="none"
+            height={12}
+            aria-label={selectedOption ? `Selected option is ${selectedOption}` : 'Select an option'}
           >
             <Flex justify="space-between" align="center" width="100%">
-              <Text truncate color={'#AAAAAA'} fontSize={'sm'}>
+              <Text truncate color={selectedOption ? 'black' : '#AAAAAA'} fontWeight={'normal'} fontSize={'sm'}>
                 {selectedOption || helperText}
               </Text>
               {showIcon && <ChevronDown color="#AAAAAA" />}
