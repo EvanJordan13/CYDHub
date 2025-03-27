@@ -53,7 +53,6 @@ const DatePickerInput: React.FC<DatePickerInputProps> = ({
 
       <TextInput
         label={helperText}
-        width={20}
         icon={showIcon ? <Calendar /> : undefined}
         onChange={handleChange}
         value={value}
