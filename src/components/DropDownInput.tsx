@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Button, MenuContent, MenuItem, MenuRoot, MenuTrigger, Menu, Box, Text, Flex } from '@chakra-ui/react';
+import { Button, MenuContent, MenuItem, MenuRoot, MenuTrigger, Box, Text, Flex } from '@chakra-ui/react';
 import { ChevronDown } from 'lucide-react';
 
 interface DropDownInputProps {
@@ -59,7 +59,7 @@ const DropDownInput: React.FC<DropDownInputProps> = ({
             transition="none"
           >
             <Flex justify="space-between" align="center" width="100%">
-              <Text truncate color={'#AAAAAA'} fontSize={'sm'} noOfLines={1}>
+              <Text truncate color={'#AAAAAA'} fontSize={'sm'}>
                 {selectedOption || helperText}
               </Text>
               {showIcon && <ChevronDown color="#AAAAAA" />}

@@ -19,17 +19,19 @@ const DatePickerInput: React.FC<DatePickerInputProps> = ({
   showIcon = true,
   ...rest
 }) => {
-  const [value, setValue] = useState<string>('');
+  const [value, setValue] = useState('');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let inputValue = e.target.value;
+    let inputValue = e.target.value.replace(/\D/g, '');
 
-    inputValue = inputValue.replace(/[^0-9/]/g, '');
+    if (inputValue.length > 8) {
+      inputValue = inputValue.slice(0, 8);
+    }
 
-    inputValue = inputValue.replace(/(\d{2})(\d{2})(\d{2})/, '$1/$2/$3');
-
-    if (inputValue.length > 10) {
-      inputValue = inputValue.slice(0, 10);
+    if (inputValue.length >= 2 && inputValue.length < 4) {
+      inputValue = inputValue.slice(0, 2) + '/' + inputValue.slice(2);
+    } else if (inputValue.length >= 4) {
+      inputValue = inputValue.slice(0, 2) + '/' + inputValue.slice(2, 4) + '/' + inputValue.slice(4);
     }
 
     setValue(inputValue);
@@ -49,7 +51,13 @@ const DatePickerInput: React.FC<DatePickerInputProps> = ({
         </Text>
       )}
 
-      <TextInput label={helperText} value={value} onChange={handleChange} icon={showIcon ? <Calendar /> : undefined} />
+      <TextInput
+        label={helperText}
+        width={20}
+        icon={showIcon ? <Calendar /> : undefined}
+        onChange={handleChange}
+        value={value}
+      />
     </Box>
   );
 };

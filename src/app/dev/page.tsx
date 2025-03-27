@@ -15,6 +15,8 @@ import { ChevronUp, ChevronDown } from 'lucide-react';
 import AnnouncementCard, { AnnouncementCardProps } from '@/src/components/AnnouncementCard';
 import MoodModal from '@/src/components/MoodModal';
 import { useState } from 'react';
+import DropDownInput from '@/src/components/DropDownInput';
+import DatePickerInput from '@/src/components/DatePickerInput';
 
 export default function DevPage() {
   const [allPrograms, setAllPrograms] = useState<Program[]>([]);
@@ -102,6 +104,9 @@ export default function DevPage() {
       link: '/modules/2',
     },
   ];
+
+  // Drop down select input
+  const pronouns = ['He/Him', 'She/Her', 'They/Them', 'Prefer not to answer'];
 
   return (
     <Box p={8} bg={'white'}>
@@ -281,6 +286,20 @@ export default function DevPage() {
           </Box>
         </Box>
       )}
+
+      <br />
+      <br />
+
+      <DropDownInput
+        labelText="Select Pronouns"
+        helperText="Pronouns"
+        options={pronouns}
+        isRequired={true}
+      ></DropDownInput>
+
+      <br />
+
+      <DatePickerInput labelText={'Birthday'} helperText={'MM/DD/YYYY'} isRequired={true}></DatePickerInput>
     </Box>
   );
 }
