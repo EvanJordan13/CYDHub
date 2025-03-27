@@ -22,19 +22,32 @@ const DatePickerInput: React.FC<DatePickerInputProps> = ({
   const [value, setValue] = useState('');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let inputValue = e.target.value.replace(/\D/g, '');
+    const inputEvent = e.nativeEvent as InputEvent;
+    const isBackspace = inputEvent.inputType === 'deleteContentBackward';
 
-    if (inputValue.length > 8) {
-      inputValue = inputValue.slice(0, 8);
+    let formattedValue = e.target.value.replace(/\D/g, '');
+
+    if (formattedValue.length > 8) {
+      formattedValue = formattedValue.slice(0, 8);
     }
 
-    if (inputValue.length >= 2 && inputValue.length < 4) {
-      inputValue = inputValue.slice(0, 2) + '/' + inputValue.slice(2);
-    } else if (inputValue.length >= 4) {
-      inputValue = inputValue.slice(0, 2) + '/' + inputValue.slice(2, 4) + '/' + inputValue.slice(4);
+    if (formattedValue.length >= 2 && formattedValue.length < 4) {
+      formattedValue = formattedValue.slice(0, 2) + '/' + formattedValue.slice(2);
+    } else if (formattedValue.length >= 4) {
+      formattedValue = formattedValue.slice(0, 2) + '/' + formattedValue.slice(2, 4) + '/' + formattedValue.slice(4);
     }
 
-    setValue(inputValue);
+    const lastIsSlash = formattedValue.charAt(formattedValue.length - 1) === '/';
+
+    if (isBackspace && lastIsSlash) {
+      formattedValue = formattedValue.slice(0, formattedValue.length - 1);
+
+      console.log(formattedValue);
+      setValue(formattedValue.slice(0, formattedValue.length));
+      return;
+    }
+
+    setValue(formattedValue);
   };
 
   return (
@@ -51,12 +64,7 @@ const DatePickerInput: React.FC<DatePickerInputProps> = ({
         </Text>
       )}
 
-      <TextInput
-        label={helperText}
-        icon={showIcon ? <Calendar /> : undefined}
-        onChange={handleChange}
-        value={value}
-      />
+      <TextInput label={helperText} icon={showIcon ? <Calendar /> : undefined} onChange={handleChange} value={value} />
     </Box>
   );
 };
