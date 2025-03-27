@@ -21,7 +21,7 @@ const StreakCard: React.FC<StreakCardProps> = ({ currentPoints = 0, nextRewardPo
         </Flex>
 
         <Center transform={'scale(2.5)'} transformOrigin={'top'} mb={32}>
-          <ProgressCircle.Root value={50} size={'xl'}>
+          <ProgressCircle.Root value={progress} size={'xl'}>
             <ProgressCircle.Circle>
               <ProgressCircle.Track />
               <ProgressCircle.Range strokeLinecap="round" stroke={'#FFC700'} />
