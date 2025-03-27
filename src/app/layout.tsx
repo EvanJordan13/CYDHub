@@ -4,7 +4,6 @@ import { siteConfig } from '@/src/config/site';
 import Footer from '@/src/components/Footer';
 import NavBar from '@/src/components/NavBar';
 import Fonts from '../lib/themes/Fonts';
-import DevPage from './dev/page';
 
 export const metadata: Metadata = {
   title: {
