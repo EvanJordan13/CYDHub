@@ -1,6 +1,6 @@
 import { Popover as ChakraPopover, IconButton, Portal } from '@chakra-ui/react';
 import * as React from 'react';
-import { HiOutlineInformationCircle } from 'react-icons/hi';
+import { Info } from 'lucide-react';
 
 export interface ToggleTipProps extends ChakraPopover.RootProps {
   showArrow?: boolean;
@@ -36,7 +36,7 @@ export const InfoTip = React.forwardRef<HTMLDivElement, Partial<ToggleTipProps>>
   return (
     <ToggleTip content={children} {...rest} ref={ref}>
       <IconButton variant="ghost" aria-label="info" size="2xs" colorPalette="gray">
-        <HiOutlineInformationCircle />
+        <Info />
       </IconButton>
     </ToggleTip>
   );
