@@ -6,13 +6,12 @@ import defaultTheme from '../lib/themes/default';
 
 interface TextInputProps {
   label: string;
-  width: number; // please provide width in rem for accessibility
   icon: React.ReactNode;
   value?: string;
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-export default function TextInput({ label, width = 18.75, icon, value, onChange }: TextInputProps) {
+export default function TextInput({ label, icon, value, onChange }: TextInputProps) {
   const [isFocused, setIsFocused] = useState(false);
 
   return (
@@ -23,7 +22,7 @@ export default function TextInput({ label, width = 18.75, icon, value, onChange 
       borderRadius="md"
       px={3}
       py={1}
-      width={`${width}rem`}
+      width={`100%`}
     >
       <Box color={isFocused ? '#8D608C' : '#AAAAAA'} boxSize={6}>
         {icon}
