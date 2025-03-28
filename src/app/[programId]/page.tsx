@@ -1,32 +1,35 @@
 'use client';
 
 import Module from '@/src/components/Module';
-import { Sidebar } from 'lucide-react';
+import SideBar from '@/src/components/SideBar';
 import { Text, Heading, Box, Image, Tabs, Flex } from '@chakra-ui/react';
 import AnnouncementCard from '@/src/components/AnnouncementCard';
 import { getProgramAnnouncements, getUniqueProgram, getUniqueUser } from '@/src/lib/query/programs';
 import { Announcement, Program, User } from '@prisma/client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import prisma from '@/src/lib/postgres/db';
 
-export default function ProgramPage() {
-  const programId = 1;
+export default function ProgramPage({params,}: {params: { programId: number }}) {
+  const programId = Number(params.programId);
   const [isLoadingAnnouncements, setIsLoadingAnnouncements] = useState(false);
   const [programAnnouncements, setProgramAnnouncements] = useState<Announcement[]>([]);
-
-  const [program, setProgram] = useState<Program>();
-  const [user, setUser] = useState<User>();
+  const [program, setProgram] = useState<Program | undefined>();
+  const [user, setUser] = useState<User | undefined>();
 
   const fetchProgramAnnouncements = async () => {
     setIsLoadingAnnouncements(true);
     try {
-      const program = await getUniqueProgram(programId);
+      const programData = await getUniqueProgram(programId);
       const announcements = await getProgramAnnouncements(programId);
-      const user = await getUniqueUser(program.teacherId);
+      const teacherId = programData.teacherId;
+      if (!teacherId) {
+        throw new Error('teacherId is null or undefined');
+      }
+      const userData = await getUniqueUser(teacherId);
       console.log('Program Announcements', announcements);
       setProgramAnnouncements(announcements);
-      setProgram(program);
-      setUser(user);
+      setProgram(programData);
+      setUser(userData);
     } catch (error) {
       console.error('Error fetching program announcements:', error);
     } finally {
@@ -34,9 +37,13 @@ export default function ProgramPage() {
     }
   };
 
+  useEffect(() => {
+    fetchProgramAnnouncements();
+  }, [programId]);
+
   return (
-    <Box display={'flex'} backgroundColor={'white'} color={'black'}>
-      
+    <Box display={'flex'} backgroundColor={'white'} color={'black'} gap={"48px"}>
+      <SideBar page='Home'/>
       <Box marginY={6} style={{ flexBasis: '85%' }}>
         <Box display={'flex'} height={'28px'} justifyContent={'space-between'}>
           <Heading fontSize={35} fontWeight={'bold'} color={'Aqua'}>
@@ -69,7 +76,7 @@ export default function ProgramPage() {
                   fontWeight: '700',
                   borderBottom: '4px solid #4D80BB',
                 }}
-                onClick={fetchProgramAnnouncements}
+                onClick={() => fetchProgramAnnouncements()}
               >
                 <Text>Announcements</Text>
               </Tabs.Trigger>
@@ -92,13 +99,13 @@ export default function ProgramPage() {
 
             <Tabs.Content value="announcements">
               <Flex direction="column" paddingTop={'16px'} paddingBottom={'16px'} gap={'32px'}>
-                {!isLoadingAnnouncements &&
+                {!isLoadingAnnouncements && user &&
                   programAnnouncements.map(a => (
                     <AnnouncementCard
                       subject={program ? program.name : ''}
                       title={a.title}
                       message={a.content}
-                      name={user.name}
+                      name={user.name ? user.name : ''}
                       avatarUrl={user.avatarUrl}
                       createdAt={a.createdAt}
                       link="/"
