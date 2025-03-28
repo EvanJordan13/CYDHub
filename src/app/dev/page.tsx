@@ -19,6 +19,8 @@ import { ModuleMaterial, Assignment } from '@prisma/client';
 import { IconButton } from '@chakra-ui/react';
 import { ChevronUp, ChevronDown } from 'lucide-react';
 import AnnouncementCard, { AnnouncementCardProps } from '@/src/components/AnnouncementCard';
+
+import SideBar from '../../components/SideBar';
 import MoodModal from '@/src/components/MoodModal';
 import { useState } from 'react';
 import TodoCard from '@/src/components/dashboard/TodoCard';
@@ -344,6 +346,7 @@ export default function DevPage() {
           <Button type="disabled" pageColor="aqua" text="Disabled" height="60px" width="130px" />
         </Flex>
       </Flex>
+      <SideBar page={'To Do'} />
 
       <ChakraButton onClick={openModal}>Open Mood Modal</ChakraButton>
 

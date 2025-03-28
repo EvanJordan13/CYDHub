@@ -20,10 +20,12 @@ const defaultTheme = createSystem(defaultConfig, {
 
         Aqua: { value: '#4D80BB' },
         AquaBorder: { value: '#1F60AB' },
-        AquaHover: { value: '#E44777' }, // CHANGE TO AQUA HOVER COLOR
-        SecondaryAquaHover: { value: '#FFE6F1' }, // CHANGE TO SECONDARY AQUA HOVER COLOR
+        AquaHover: { value: '#4899EA' },
+        SecondaryAquaHover: { value: '#C3DAF2' },
 
         Gray: { value: '#959494' },
+        LightGray: { value: '#F0EFEF' },
+        DarkGray: { value: '#5A5A63' },
         DisabledWhite: { value: '#DEDEDE' },
       },
     },
