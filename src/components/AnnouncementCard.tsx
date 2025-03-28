@@ -25,6 +25,7 @@ const formatDate = (date: Date) => {
 };
 
 export interface AnnouncementCardProps {
+  key: number;
   subject?: string;
   title?: string;
   message: string;
@@ -35,6 +36,7 @@ export interface AnnouncementCardProps {
 }
 
 export default function AnnouncementCard({
+  key,
   subject,
   title,
   message,

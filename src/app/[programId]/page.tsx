@@ -104,6 +104,7 @@ export default function ProgramPage({ params }: { params: { programId: number } 
                   user &&
                   programAnnouncements.map(a => (
                     <AnnouncementCard
+                      key={a.id}
                       subject={program ? program.name : ''}
                       title={a.title}
                       message={a.content}
