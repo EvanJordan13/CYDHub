@@ -1,10 +1,42 @@
 'use server';
 
 import prisma from '../postgres/db';
-import { Program, ModuleMaterial, Module } from '@prisma/client';
+import { Program, ModuleMaterial, Module, Announcement, User } from '@prisma/client';
 
 export async function getAllPrograms(): Promise<Program[]> {
   return prisma.program.findMany();
+}
+
+export async function getUniqueProgram(programId: number): Promise<Program> {
+  const program = await prisma.program.findUnique({
+    where: {
+      id: programId,
+    },
+  });
+
+  if (!program) {
+    throw new Error(`No program found with ID ${programId}`);
+  }
+
+  return program;
+}
+
+export async function getUniqueUser(userId: number): Promise<User> {
+  if (userId === null) {
+    throw new Error(`Id provided is null`);
+  }
+
+  const user = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+  });
+
+  if (!user) {
+    throw new Error(`No user found with ID ${userId}`);
+  }
+
+  return user;
 }
 
 export async function getProgramsByUser(userId: number): Promise<Program[]> {
@@ -106,6 +138,29 @@ export async function getProgramModules(programId: number): Promise<Module[]> {
     return program.modules;
   } catch (error) {
     console.error('[GET_PROGRAM_MODULES_ERROR]', error);
+    return [];
+  }
+}
+
+export async function getProgramAnnouncements(programId: number): Promise<Announcement[]> {
+  try {
+    const program = await prisma.program.findUnique({
+      where: {
+        id: programId,
+      },
+      include: {
+        announcements: true,
+      },
+    });
+
+    if (!program) {
+      console.log(`No program found with ID ${programId}`);
+      return [];
+    }
+
+    return program.announcements;
+  } catch (error) {
+    console.log(`[GET_PROGRAM_ANNOUNCEMENTS_ERROR]`, error);
     return [];
   }
 }

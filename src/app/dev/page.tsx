@@ -100,6 +100,7 @@ export default function DevPage() {
       name: 'Jane Smith',
       createdAt: new Date('2025-01-14 06:56:14.46'),
       link: '/modules/2',
+      avatarUrl: null,
     },
   ];
 
