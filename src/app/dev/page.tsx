@@ -20,6 +20,7 @@ import { ChevronUp, ChevronDown } from 'lucide-react';
 import AnnouncementCard, { AnnouncementCardProps } from '@/src/components/AnnouncementCard';
 import MoodModal from '@/src/components/MoodModal';
 import { useState } from 'react';
+import TodoCard from '@/src/components/dashboard/TodoCard';
 
 export default function DevPage() {
   const [allPrograms, setAllPrograms] = useState<Program[]>([]);
@@ -286,6 +287,8 @@ export default function DevPage() {
       <Heading size="md" mb={4}>
         Form Components Test
       </Heading>
+      {/* Todo Card Section */}
+      <TodoCard assignments={programAssignments} />
       {/* Announcements Section */}
       <Box my={8} width={'1136px'}>
         <Heading as="h2" size="lg" mb={4}>
