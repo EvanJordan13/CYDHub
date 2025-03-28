@@ -1,31 +1,54 @@
 'use client';
 
-import { useState } from 'react';
 import TextInput from '../../components/TextInput';
 import ProgramCard from '../../components/ProgramCard';
-import { Box, Heading, Stack, Text, VStack } from '@chakra-ui/react';
-import { Program } from '@prisma/client';
+import { Box, Center, Heading, Stack, Text, VStack } from '@chakra-ui/react';
+import { Program, Announcement } from '@prisma/client';
 import { User, Calendar, Award } from 'lucide-react';
-import { fetchAllPrograms, fetchProgramsByUser, fetchProgramMaterials } from '@/src/lib/query/programs';
+import {
+  fetchAllPrograms,
+  fetchProgramsByUser,
+  fetchProgramMaterials,
+  getProgramAnnouncements,
+  fetchProgramAssignments,
+} from '@/src/lib/query/programs';
 import { Flex } from '@chakra-ui/react';
 import Button from '@/src/components/Button';
 import { Button as ChakraButton } from '@chakra-ui/react';
-import { ModuleMaterial } from '@prisma/client';
+import { ModuleMaterial, Assignment } from '@prisma/client';
 import { IconButton } from '@chakra-ui/react';
 import { ChevronUp, ChevronDown } from 'lucide-react';
 import AnnouncementCard, { AnnouncementCardProps } from '@/src/components/AnnouncementCard';
+
 import SideBar from '../../components/SideBar';
+import MoodModal from '@/src/components/MoodModal';
+import { useState } from 'react';
+import TodoCard from '@/src/components/dashboard/TodoCard';
+import DropDownInput from '@/src/components/DropDownInput';
+import DatePickerInput from '@/src/components/DatePickerInput';
+import StreakCard from '@/src/components/StreakCard';
 
 export default function DevPage() {
   const [allPrograms, setAllPrograms] = useState<Program[]>([]);
   const [userPrograms, setUserPrograms] = useState<Program[]>([]);
   const [programMaterials, setProgramMaterials] = useState<(ModuleMaterial & { moduleTitle: string })[]>([]);
+  const [programAssignments, setProgramAssignments] = useState<(Assignment & { moduleTitle: string })[]>([]);
   const [isLoadingAll, setIsLoadingAll] = useState(false);
   const [isLoadingUser, setIsLoadingUser] = useState(false);
   const [isLoadingMaterials, setIsLoadingMaterials] = useState(false);
+  const [isLoadingAssignments, setIsLoadingAssignments] = useState(false);
   const [showAllPrograms, setShowAllPrograms] = useState(true);
   const [showUserPrograms, setShowUserPrograms] = useState(true);
   const [showMaterials, setShowMaterials] = useState(true);
+  const [isLoadingAnnouncements, setIsLoadingAnnouncements] = useState(false);
+  const [programAnnouncements, setProgramAnnouncements] = useState<Announcement[]>([]);
+  const [showAssignments, setShowAssignments] = useState(true);
+
+  // Open/close state for mood modal
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
 
   // Mock course data
   const mockProgram: Program = {
@@ -77,6 +100,20 @@ export default function DevPage() {
       setIsLoadingMaterials(false);
     }
   };
+
+  const testFetchProgramAssignments = async () => {
+    setIsLoadingAssignments(true);
+    try {
+      const assignments = await fetchProgramAssignments(1);
+      console.log('Program assignments', assignments);
+      setProgramAssignments(assignments);
+    } catch (error) {
+      console.error('Error fetching program assignments:', error);
+    } finally {
+      setIsLoadingAssignments(false);
+    }
+  };
+
   const mockAnnouncements: AnnouncementCardProps[] = [
     {
       subject: 'Portfolio Graded',
@@ -97,8 +134,23 @@ export default function DevPage() {
     },
   ];
 
+  const testFetchProgramAnnouncements = async () => {
+    setIsLoadingAnnouncements(true);
+    try {
+      const announcements = await getProgramAnnouncements(1);
+      console.log('Program Announcements', announcements);
+      setProgramAnnouncements(announcements);
+    } catch (error) {
+      console.error('Error fetching program announcements:', error);
+    } finally {
+      setIsLoadingAnnouncements(false);
+    }
+  };
+  // Drop down select input
+  const pronouns = ['He/Him', 'She/Her', 'They/Them', 'Prefer not to answer'];
+
   return (
-    <Box p={8} bg={'white'}>
+    <Box p={8} bg={'white'} color={'black'}>
       <Heading mb={6}>Development Page</Heading>
 
       <Box mb={6}>
@@ -110,6 +162,12 @@ export default function DevPage() {
         </ChakraButton>
         <ChakraButton onClick={testFetchProgramMaterials} loading={isLoadingMaterials}>
           Test Fetch Program 1 Materials
+        </ChakraButton>
+        <ChakraButton onClick={testFetchProgramAnnouncements} loading={isLoadingAnnouncements}>
+          Test Fetch Program 1 Announcements
+        </ChakraButton>
+        <ChakraButton onClick={testFetchProgramAssignments} loading={isLoadingAssignments}>
+          Test Fetch Program 1 Assignments
         </ChakraButton>
       </Box>
 
@@ -200,6 +258,36 @@ export default function DevPage() {
               <Text color="gray.500">No materials found</Text>
             ))}
         </Flex>
+
+        <Flex direction="column" flex={1}>
+          <Flex align="center" mb={2}>
+            <Heading size="md" flex={1}>
+              Program 1 Assignments
+            </Heading>
+            <IconButton
+              as={showAssignments ? ChevronUp : ChevronDown}
+              onClick={() => setShowAssignments(!showAssignments)}
+              variant="ghost"
+              aria-label="Toggle assignments"
+              size="sm"
+            />
+          </Flex>
+          {showAssignments &&
+            (programAssignments.length > 0 ? (
+              <Stack>
+                {programAssignments.map(assignment => (
+                  <Box key={assignment.id} p={4} border="1px" borderColor="gray.200" borderRadius="md">
+                    <Text fontWeight="bold">{assignment.title}</Text>
+                    <Text>Module: {assignment.moduleTitle}</Text>
+                    <Text>Description: {assignment.description}</Text>
+                    {assignment.dueDate ? <Text>Due Date: {assignment.dueDate.toString()}</Text> : <Text></Text>}
+                  </Box>
+                ))}
+              </Stack>
+            ) : (
+              <Text color="gray.500">No assignment found</Text>
+            ))}
+        </Flex>
       </Flex>
 
       <Stack gap={4} mb={8}>
@@ -225,6 +313,8 @@ export default function DevPage() {
       <Heading size="md" mb={4}>
         Form Components Test
       </Heading>
+      {/* Todo Card Section */}
+      <TodoCard assignments={programAssignments} />
       {/* Announcements Section */}
       <Box my={8} width={'1136px'}>
         <Heading as="h2" size="lg" mb={4}>
@@ -237,12 +327,13 @@ export default function DevPage() {
         </VStack>
       </Box>
 
-      <TextInput label="Date of Birth" width={10} icon={<Calendar />} />
+      <TextInput label="Date of Birth" icon={<Calendar />} />
       <br />
-      <TextInput label="Name" width={18.75} icon={<User />} />
+      <TextInput label="Name" icon={<User />} />
       <br />
-      <TextInput label="Achievement" width={25} icon={<Award />} />
+      <TextInput label="Achievement" icon={<Award />} />
       <ProgramCard program={mockProgram} />
+
       <Flex direction={'row'} gap={'50px'}>
         <Flex direction={'column'} gap={'20px'}>
           <Button type="primary" pageColor="flamingo" text="Primary" height="60px" width="130px" />
@@ -256,6 +347,60 @@ export default function DevPage() {
         </Flex>
       </Flex>
       <SideBar page={'To Do'} />
+
+      <ChakraButton onClick={openModal}>Open Mood Modal</ChakraButton>
+
+      {isModalOpen && (
+        <Box
+          position="fixed"
+          top={0}
+          left={0}
+          right={0}
+          bottom={0}
+          bg="rgba(0, 0, 0, 0.5)"
+          zIndex={999}
+          onClick={closeModal}
+        >
+          <Box position="fixed" top="50%" left="50%" transform="translate(-50%, -50%)" zIndex={1000}>
+            <MoodModal onClose={closeModal} />
+          </Box>
+        </Box>
+      )}
+      <Box p={8} bg="white" minH="100vh">
+        <Heading mb={6}> Program Announcements</Heading>
+
+        {programAnnouncements.length === 0 ? (
+          <Text color={'black'}>No materials found for program #1</Text>
+        ) : (
+          <VStack align="start" gap={4}>
+            {programAnnouncements.map(a => (
+              <Box key={a.id} p={4} borderWidth="1px" borderRadius="md" w="100%">
+                <Text fontWeight="bold">{a.title}</Text>
+                <Text fontSize="sm" color="gray">
+                  {a.content}
+                </Text>
+              </Box>
+            ))}
+          </VStack>
+        )}
+      </Box>
+      <br />
+      <br />
+
+      <DropDownInput
+        labelText="Select Pronouns"
+        helperText="Pronouns"
+        options={pronouns}
+        isRequired={true}
+      ></DropDownInput>
+
+      <br />
+
+      <DatePickerInput labelText={'Birthday'} helperText={'MM/DD/YYYY'} isRequired={true}></DatePickerInput>
+
+      <Box width={80} margin={6}>
+        <StreakCard currentPoints={25} nextRewardPoints={100} />
+      </Box>
     </Box>
   );
 }

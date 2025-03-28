@@ -1,7 +1,7 @@
 'use server';
 
 import prisma from '../postgres/db';
-import { Program, ModuleMaterial, Module } from '@prisma/client';
+import { Program, ModuleMaterial, Module, Announcement, Assignment } from '@prisma/client';
 
 export async function getAllPrograms(): Promise<Program[]> {
   return prisma.program.findMany();
@@ -87,6 +87,48 @@ export async function fetchProgramMaterials(programId: number): Promise<(ModuleM
   }
 }
 
+export async function getProgramAssignments(programId: number): Promise<(Assignment & { moduleTitle: string })[]> {
+  try {
+    const assignments = await prisma.program.findUnique({
+      where: {
+        id: programId,
+      },
+      include: {
+        modules: {
+          include: {
+            assignments: true,
+          },
+        },
+      },
+    });
+
+    if (!assignments) {
+      console.log(`No program found with ID ${programId}`);
+      return [];
+    }
+
+    const flattenedAssignments = assignments.modules.flatMap(module =>
+      module.assignments.map(assignment => ({
+        ...assignment,
+        moduleTitle: module.title,
+      })),
+    );
+
+    return flattenedAssignments;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export async function fetchProgramAssignments(programId: number): Promise<(Assignment & { moduleTitle: string })[]> {
+  try {
+    return await getProgramAssignments(programId);
+  } catch (error) {
+    console.error('[FETCH_PROGRAM_ASSIGNMENTS]', error);
+    throw error;
+  }
+}
+
 export async function getProgramModules(programId: number): Promise<Module[]> {
   try {
     const program = await prisma.program.findUnique({
@@ -106,6 +148,29 @@ export async function getProgramModules(programId: number): Promise<Module[]> {
     return program.modules;
   } catch (error) {
     console.error('[GET_PROGRAM_MODULES_ERROR]', error);
+    return [];
+  }
+}
+
+export async function getProgramAnnouncements(programId: number): Promise<Announcement[]> {
+  try {
+    const program = await prisma.program.findUnique({
+      where: {
+        id: programId,
+      },
+      include: {
+        announcements: true,
+      },
+    });
+
+    if (!program) {
+      console.log(`No program found with ID ${programId}`);
+      return [];
+    }
+
+    return program.announcements;
+  } catch (error) {
+    console.log(`[GET_PROGRAM_ANNOUNCEMENTS_ERROR]`, error);
     return [];
   }
 }
