@@ -6,36 +6,41 @@ import defaultTheme from '../lib/themes/default';
 
 interface TextInputProps {
   label: string;
-  width: number; // please provide width in rem for accessibility
   icon: React.ReactNode;
+  value?: string;
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-export default function TextInput({ label, width = 18.75, icon }: TextInputProps) {
+export default function TextInput({ label, icon, value, onChange }: TextInputProps) {
   const [isFocused, setIsFocused] = useState(false);
 
   return (
     <Flex
       align="center"
       border="0.125rem solid"
-      borderColor={isFocused ? '#8D608C' : '#AAAAAA'}
+      borderColor={isFocused ? 'Aqua' : '#AAAAAA'}
       borderRadius="md"
-      px={3}
-      py={1}
-      width={`${width}rem`}
+      width={`100%`}
+      height={12}
+      _hover={{ background: '#E0EEFF' }}
     >
-      <Box color={isFocused ? '#8D608C' : '#AAAAAA'} boxSize={6}>
+      <Box color={'#AAAAAA'} ml={2.5} transform={'scale(0.9)'}>
         {icon}
       </Box>
       <Input
         variant="flushed"
         ml={2}
         placeholder={label}
+        _placeholder={{ color: '#AAAAAA' }}
         aria-label={label} // important: allows input to be read by screen readers
-        color={isFocused ? 'black' : 'black'}
+        color={'black'}
         borderColor="transparent"
         _focus={{ boxShadow: 'none', borderColor: 'transparent' }}
+        onChange={onChange}
+        value={value}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
+        fontSize="sm"
       />
     </Flex>
   );
