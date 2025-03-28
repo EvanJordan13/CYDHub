@@ -1,6 +1,7 @@
 'use client';
 
 import Module from '@/src/components/Module';
+import { Sidebar } from 'lucide-react';
 import { Text, Heading, Box, Image, Tabs, Flex } from '@chakra-ui/react';
 import AnnouncementCard from '@/src/components/AnnouncementCard';
 import { getProgramAnnouncements, getUniqueProgram, getUniqueUser } from '@/src/lib/query/programs';
@@ -35,9 +36,7 @@ export default function ProgramPage() {
 
   return (
     <Box display={'flex'} backgroundColor={'white'} color={'black'}>
-      <Box style={{ flexBasis: '15%' }}>
-        <Text>Sidebar</Text>
-      </Box>
+      
       <Box marginY={6} style={{ flexBasis: '85%' }}>
         <Box display={'flex'} height={'28px'} justifyContent={'space-between'}>
           <Heading fontSize={35} fontWeight={'bold'} color={'Aqua'}>
