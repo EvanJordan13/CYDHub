@@ -8,7 +8,7 @@ import { getProgramAnnouncements, getUniqueProgram, getUniqueUser } from '@/src/
 import { Announcement, Program, User } from '@prisma/client';
 import { useState, useEffect } from 'react';
 
-export default function ProgramPage({params,}: {params: { programId: number }}) {
+export default function ProgramPage({ params }: { params: { programId: number } }) {
   const programId = Number(params.programId);
   const [isLoadingAnnouncements, setIsLoadingAnnouncements] = useState(false);
   const [programAnnouncements, setProgramAnnouncements] = useState<Announcement[]>([]);
@@ -41,7 +41,7 @@ export default function ProgramPage({params,}: {params: { programId: number }}) 
   }, [programId]);
 
   return (
-    <Box display={'flex'} backgroundColor={'white'} color={'black'} gap={"48px"}>
+    <Box display={'flex'} backgroundColor={'white'} color={'black'} gap={'48px'}>
       <Box position="sticky" top="0" alignSelf="flex-start">
         <SideBar page="Home" />
       </Box>
@@ -100,7 +100,8 @@ export default function ProgramPage({params,}: {params: { programId: number }}) 
 
             <Tabs.Content value="announcements">
               <Flex direction="column" paddingTop={'16px'} paddingBottom={'16px'} gap={'32px'}>
-                {!isLoadingAnnouncements && user &&
+                {!isLoadingAnnouncements &&
+                  user &&
                   programAnnouncements.map(a => (
                     <AnnouncementCard
                       subject={program ? program.name : ''}
