@@ -21,6 +21,9 @@ import AnnouncementCard, { AnnouncementCardProps } from '@/src/components/Announ
 import MoodModal from '@/src/components/MoodModal';
 import { useState } from 'react';
 import TodoCard from '@/src/components/dashboard/TodoCard';
+import DropDownInput from '@/src/components/DropDownInput';
+import DatePickerInput from '@/src/components/DatePickerInput';
+import StreakCard from '@/src/components/StreakCard';
 
 export default function DevPage() {
   const [allPrograms, setAllPrograms] = useState<Program[]>([]);
@@ -125,6 +128,9 @@ export default function DevPage() {
       link: '/modules/2',
     },
   ];
+
+  // Drop down select input
+  const pronouns = ['He/Him', 'She/Her', 'They/Them', 'Prefer not to answer'];
 
   return (
     <Box p={8} bg={'white'} color={'black'}>
@@ -301,11 +307,11 @@ export default function DevPage() {
         </VStack>
       </Box>
 
-      <TextInput label="Date of Birth" width={10} icon={<Calendar />} />
+      <TextInput label="Date of Birth" icon={<Calendar />} />
       <br />
-      <TextInput label="Name" width={18.75} icon={<User />} />
+      <TextInput label="Name" icon={<User />} />
       <br />
-      <TextInput label="Achievement" width={25} icon={<Award />} />
+      <TextInput label="Achievement" icon={<Award />} />
       <ProgramCard program={mockProgram} />
 
       <Flex direction={'row'} gap={'50px'}>
@@ -339,6 +345,24 @@ export default function DevPage() {
           </Box>
         </Box>
       )}
+
+      <br />
+      <br />
+
+      <DropDownInput
+        labelText="Select Pronouns"
+        helperText="Pronouns"
+        options={pronouns}
+        isRequired={true}
+      ></DropDownInput>
+
+      <br />
+
+      <DatePickerInput labelText={'Birthday'} helperText={'MM/DD/YYYY'} isRequired={true}></DatePickerInput>
+
+      <Box width={80} margin={6}>
+        <StreakCard currentPoints={25} nextRewardPoints={100} />
+      </Box>
     </Box>
   );
 }
