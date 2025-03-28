@@ -7,7 +7,6 @@ import AnnouncementCard from '@/src/components/AnnouncementCard';
 import { getProgramAnnouncements, getUniqueProgram, getUniqueUser } from '@/src/lib/query/programs';
 import { Announcement, Program, User } from '@prisma/client';
 import { useState, useEffect } from 'react';
-import prisma from '@/src/lib/postgres/db';
 
 export default function ProgramPage({params,}: {params: { programId: number }}) {
   const programId = Number(params.programId);
@@ -43,7 +42,9 @@ export default function ProgramPage({params,}: {params: { programId: number }}) 
 
   return (
     <Box display={'flex'} backgroundColor={'white'} color={'black'} gap={"48px"}>
-      <SideBar page='Home'/>
+      <Box position="sticky" top="0" alignSelf="flex-start">
+        <SideBar page="Home" />
+      </Box>
       <Box marginY={6} style={{ flexBasis: '85%' }}>
         <Box display={'flex'} height={'28px'} justifyContent={'space-between'}>
           <Heading fontSize={35} fontWeight={'bold'} color={'Aqua'}>
