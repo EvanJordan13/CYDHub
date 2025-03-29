@@ -76,8 +76,8 @@ model Program {
   type           ProgramType
 
   // Primary teacher (optional) who manages this program.
-  teacher   User? @relation("TeacherPrograms", fields: [teacherId], references: [id])
-  teacherId Int?
+  teacher   User @relation("TeacherPrograms", fields: [teacherId], references: [id])
+  teacherId Int
 
   // Enrollment join table for students (and additional teachers if needed).
   enrollments ProgramUser[]
