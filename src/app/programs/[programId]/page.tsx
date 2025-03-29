@@ -4,7 +4,7 @@ import Module from '@/src/components/Module';
 import SideBar from '@/src/components/SideBar';
 import { Text, Heading, Box, Image, Tabs, Flex } from '@chakra-ui/react';
 import AnnouncementCard from '@/src/components/AnnouncementCard';
-import { getProgramAnnouncements, getUniqueProgram, getUniqueUser } from '@/src/lib/query/programs';
+import { getProgramAnnouncements, getProgramById, getUserById } from '@/src/lib/query/programs';
 import { Announcement, Program, User } from '@prisma/client';
 import { useState, useEffect } from 'react';
 
@@ -18,13 +18,13 @@ export default function ProgramPage({ params }: { params: { programId: number } 
   const fetchProgramAnnouncements = async () => {
     setIsLoadingAnnouncements(true);
     try {
-      const programData = await getUniqueProgram(programId);
+      const programData = await getProgramById(programId);
       const announcements = await getProgramAnnouncements(programId);
       const teacherId = programData.teacherId;
       if (!teacherId) {
         throw new Error('teacherId is null or undefined');
       }
-      const userData = await getUniqueUser(teacherId);
+      const userData = await getUserById(teacherId);
       console.log('Program Announcements', announcements);
       setProgramAnnouncements(announcements);
       setProgram(programData);

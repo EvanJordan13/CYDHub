@@ -50,7 +50,7 @@ export default function SideBar({ page }: SideBarProps) {
     >
       <Flex direction={'column'} height={'456px'} gap={'20px'}>
         <Link href="/">
-          <Image src="cyd-dashboard-logo.svg" height={'44px'} width={'50px'} marginBottom={'12px'} />
+          <Image src="/cyd-dashboard-logo.svg" height={'44px'} width={'50px'} marginBottom={'12px'} />
         </Link>
         <Bar Icon={House} text="Home" current={page == 'Home'} link={'/'} />
         <Bar Icon={AlarmClockCheck} text="To Do" current={page == 'To Do'} link={'/'} />

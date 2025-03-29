@@ -7,7 +7,7 @@ export async function getAllPrograms(): Promise<Program[]> {
   return prisma.program.findMany();
 }
 
-export async function getUniqueProgram(programId: number): Promise<Program> {
+export async function getProgramById(programId: number): Promise<Program> {
   const program = await prisma.program.findUnique({
     where: {
       id: programId,
@@ -21,7 +21,7 @@ export async function getUniqueProgram(programId: number): Promise<Program> {
   return program;
 }
 
-export async function getUniqueUser(userId: number): Promise<User> {
+export async function getUserById(userId: number): Promise<User> {
   if (userId === null) {
     throw new Error(`Id provided is null`);
   }
