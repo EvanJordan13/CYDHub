@@ -129,6 +129,16 @@ export async function fetchProgramAssignments(programId: number): Promise<(Assig
   }
 }
 
+export async function fetchProgramAssignmentsByUser(userId: number): Promise<(Assignment & { moduleTitle: string })[]> {
+  try {
+    const programs = await getProgramsByUser(userId);
+    const assignments = await Promise.all(programs.map(program => fetchProgramAssignments(program.id)));
+    return assignments.flat();
+  } catch (error) {
+    console.error('[FETCH_PROGRAM_ASSIGNMENTS_BY_USER]', error);
+    throw error;
+  }
+}
 export async function getProgramModules(programId: number): Promise<Module[]> {
   try {
     const program = await prisma.program.findUnique({
