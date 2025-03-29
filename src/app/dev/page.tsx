@@ -59,7 +59,7 @@ export default function DevPage() {
     createdAt: new Date('2024-03-01'),
     updatedAt: new Date(),
     type: 'IN_PERSON',
-    teacherId: null,
+    teacherId: 1,
   };
 
   const testFetchAllPrograms = async () => {
@@ -131,6 +131,7 @@ export default function DevPage() {
       name: 'Jane Smith',
       createdAt: new Date('2025-01-14 06:56:14.46'),
       link: '/modules/2',
+      avatarUrl: null,
     },
   ];
 

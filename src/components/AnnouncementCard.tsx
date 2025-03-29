@@ -29,7 +29,7 @@ export interface AnnouncementCardProps {
   title?: string;
   message: string;
   name: string;
-  avatarUrl?: string;
+  avatarUrl: string | null;
   createdAt: Date;
   link?: string;
 }
