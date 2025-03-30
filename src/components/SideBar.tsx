@@ -56,16 +56,16 @@ export default function SideBar({ page }: SideBarProps) {
         <Link href="/">
           <Image src="/cyd-dashboard-logo.svg" height={'44px'} width={'50px'} marginBottom={'12px'} />
         </Link>
-        <Bar Icon={House} text="Home" current={page == 'Home'} link={'/'} />
-        <Bar Icon={AlarmClockCheck} text="To Do" current={page == 'To Do'} link={'/'} />
-        <Bar Icon={CodeXml} text="Editor" current={page == 'Editor'} link={'/'} />
-        <Bar Icon={Calendar} text="Calendar" current={page == 'Calendar'} link={'/'} />
-        <Bar Icon={Store} text="Shop" current={page == 'Shop'} link={'/'} />
+        <Bar Icon={House} text="Home" current={page == 'Home'} link={'/dashboard'} />
+        <Bar Icon={AlarmClockCheck} text="To Do" current={page == 'To Do'} link={'/dashboard'} />
+        <Bar Icon={CodeXml} text="Editor" current={page == 'Editor'} link={'/dashboard'} />
+        <Bar Icon={Calendar} text="Calendar" current={page == 'Calendar'} link={'/dashboard'} />
+        <Bar Icon={Store} text="Shop" current={page == 'Shop'} link={'/dashboard'} />
       </Flex>
       <Flex direction={'column'} height={'220px'} gap={'20px'}>
-        <Bar Icon={Archive} text="Archived" current={page == 'Archived'} link={'/'} />
-        <Bar Icon={Settings} text="Settings" current={page == 'Settings'} link={'/'} />
-        <Bar Icon={LogOut} text="Log Out" current={page == 'Log Out'} link={'/'} />
+        <Bar Icon={Archive} text="Archived" current={page == 'Archived'} link={'/dashboard'} />
+        <Bar Icon={Settings} text="Settings" current={page == 'Settings'} link={'/dashboard'} />
+        <Bar Icon={LogOut} text="Log Out" current={page == 'Log Out'} link={'/dashboard'} />
       </Flex>
     </Flex>
   );

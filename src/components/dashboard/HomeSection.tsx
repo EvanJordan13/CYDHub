@@ -3,6 +3,7 @@ import { Box, Heading, Flex, Text, Skeleton } from '@chakra-ui/react';
 import StreakCard from '../StreakCard';
 import TodoCard from '@/src/components/dashboard/TodoCard';
 import ProgramCard from '@/src/components/ProgramCard';
+import Link from 'next/link';
 
 interface HomeSectionProps {
   userInfo: User | null;
@@ -40,7 +41,12 @@ export default function HomeSection({ userInfo, assignments, programs, isLoading
           {isLoading
             ? // Show 2 skeleton program cards while loading
               [...Array(2)].map((_, index) => <Skeleton key={index} width="420px" height="136px" />)
-            : programs.map(program => <ProgramCard key={program.id} program={program} />)}
+            : // Map over programs and wrap each ProgramCard with a Link
+              programs.map(program => (
+                <Link key={program.id} href={`/programs/${program.id}`} passHref style={{ textDecoration: 'none' }}>
+                  <ProgramCard program={program} />
+                </Link>
+              ))}
         </Flex>
       </Box>
     </Box>
