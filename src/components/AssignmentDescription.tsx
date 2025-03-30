@@ -2,31 +2,62 @@ import { Box, Text, Stack } from '@chakra-ui/react';
 import Button from './Button';
 
 interface AssignmentDescriptionProps {
-  assignmentNumber: number;
+  assignmentNumber: number | null;
   assignmentTitle: string;
-  dueDate: string;
-  numQuestions: number;
+  dueDate: Date | null;
+  questionCount: number | null;
   description: string;
 }
+
+const formatDate = (date: Date) => {
+  const month = date.toLocaleDateString('en-US', { month: 'long' });
+  const day = date.getDate();
+  const suffix =
+    day % 10 === 1 && day !== 11
+      ? 'st'
+      : day % 10 === 2 && day !== 12
+        ? 'nd'
+        : day % 10 === 3 && day !== 13
+          ? 'rd'
+          : 'th';
+  const time = date
+    .toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+    })
+    .toLowerCase()
+    .replace(' ', '');
+
+  return `${month} ${day}${suffix}, ${time}`;
+};
 
 export default function AssignmentDescription({
   assignmentNumber,
   assignmentTitle,
   dueDate,
-  numQuestions,
+  questionCount,
   description,
 }: AssignmentDescriptionProps) {
+  console.log("q count", questionCount);
   return (
     <Box position={'relative'}>
       <Box position={'absolute'} top={0} right={0}>
         <Button type={'secondary'} pageColor={'aqua'} text={'Start Assignment'} height={'12'} width={'44'} />
       </Box>
+
       <Text fontWeight={'bold'} fontSize={'24px'}>
-        Assignment #{assignmentNumber}: {assignmentTitle}
+        {assignmentNumber && (
+          <Box as="span">
+            Assignment {assignmentNumber}:
+          </Box>
+        )}
+        {' '}
+        {assignmentTitle}
       </Text>
 
-      <Stack direction={'row'} spaceX={2} mt={6}>
-        <Box
+      {(dueDate || questionCount) && <Stack direction={'row'} spaceX={2} mt={6}>
+        {dueDate && <Box
           bg={'white'}
           borderWidth={'1px'}
           borderColor={'Aqua'}
@@ -40,11 +71,11 @@ export default function AssignmentDescription({
             <Box as="span" fontWeight="bold">
               Due Date:
             </Box>{' '}
-            {dueDate}
+            {formatDate(dueDate)}
           </Text>
-        </Box>
+        </Box>}
 
-        <Box
+        {questionCount && <Box
           bg={'white'}
           borderWidth={'1px'}
           borderColor={'Aqua'}
@@ -58,10 +89,10 @@ export default function AssignmentDescription({
             <Box as="span" fontWeight="bold">
               # of Questions:
             </Box>{' '}
-            {numQuestions}
+            {questionCount}
           </Text>
-        </Box>
-      </Stack>
+        </Box>}
+      </Stack>}
 
       <Text fontWeight={'bold'} fontSize={'18px'} mt={6}>
         Instructions:

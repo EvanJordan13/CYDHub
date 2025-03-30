@@ -177,10 +177,10 @@ export default function ProgramPage({ params }: { params: { programId: number } 
                 selectedResource ? (
                   selectedResource.type === 'assignment' ? (
                     <AssignmentDescription
-                      assignmentNumber={0}
+                      assignmentNumber={selectedResource.data.assignmentNumber}
                       assignmentTitle={selectedResource.data.title}
-                      dueDate={selectedResource.data.dueDate?.toDateString() ?? 'No due date'}
-                      numQuestions={0}
+                      dueDate={selectedResource.data.dueDate}
+                      questionCount={selectedResource.data.questionCount}
                       description={selectedResource.data.description ?? 'No description provided'}
                     />
                   ) : (
