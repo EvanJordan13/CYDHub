@@ -3,7 +3,7 @@ import InformationCard from '@/src/components/InformationCard';
 import Button from '@/src/components/Button';
 import NavBar from '@/src/components/NavBar';
 import Footer from '@/src/components/Footer';
-
+//update
 export default function LandingPage() {
   return (
     <>
