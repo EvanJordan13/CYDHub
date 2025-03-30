@@ -24,8 +24,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body suppressHydrationWarning>
         <Provider>
           <main>{children}</main>
-          <NavBar />
-          <Footer />
         </Provider>
       </body>
     </html>

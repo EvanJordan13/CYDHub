@@ -9,8 +9,11 @@ import DatePickerInput from '@/src/components/DatePickerInput';
 import DropDownInput from '@/src/components/DropDownInput';
 import { User, LockKeyhole } from 'lucide-react';
 import { parse, isValid } from 'date-fns';
+import { useRouter } from 'next/navigation';
 
 export default function OnboardingPage() {
+  const router = useRouter();
+
   const pronouns = ['He/Him', 'She/Her', 'They/Them', 'Prefer not to answer'];
 
   const [displayName, setDisplayName] = useState('');
@@ -30,6 +33,12 @@ export default function OnboardingPage() {
 
   const formValid =
     displayName.trim() !== '' && selectedPronoun.trim() !== '' && date.trim() !== '' && isValidDate(date) && checked;
+
+  const handleNextClick = () => {
+    if (formValid) {
+      router.push('/dashboard');
+    }
+  };
 
   return (
     <Box bg="white" height="100vh" width="100vw">
@@ -78,7 +87,7 @@ export default function OnboardingPage() {
                   <Flex direction="column" gap="6px" width="35%" height="100%">
                     <Box width="100%">
                       <DropDownInput
-                        labelText="Select Pronouns"
+                        labelText="Pronouns"
                         helperText="Pronouns"
                         options={pronouns}
                         isRequired={true}
@@ -90,7 +99,7 @@ export default function OnboardingPage() {
                   </Flex>
                   <Flex direction="column" gap="6px">
                     <Text color="black" fontSize="113%" fontWeight="medium">
-                      Date
+                      Date of Birth
                       <Text as="span" color="#BC3860">
                         *
                       </Text>
@@ -110,7 +119,8 @@ export default function OnboardingPage() {
                 <Checkbox
                   size="lg"
                   borderColor="gray.400"
-                  variant="subtle"
+                  borderStartEndRadius={'full'}
+                  variant="outline"
                   colorPalette="white"
                   _checked={{ bg: 'white', borderColor: 'gray.400' }}
                   checked={checked}
@@ -133,6 +143,7 @@ export default function OnboardingPage() {
                 text="Next"
                 height="70px"
                 width="79%"
+                onClick={handleNextClick}
               />
             </Flex>
           </Box>
