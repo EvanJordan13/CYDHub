@@ -1,10 +1,42 @@
 'use server';
 
 import prisma from '../postgres/db';
-import { Program, ModuleMaterial, Module, Announcement, Assignment } from '@prisma/client';
+import { Program, ModuleMaterial, Module, Announcement, Assignment, User } from '@prisma/client';
 
 export async function getAllPrograms(): Promise<Program[]> {
   return prisma.program.findMany();
+}
+
+export async function getProgramById(programId: number): Promise<Program> {
+  const program = await prisma.program.findUnique({
+    where: {
+      id: programId,
+    },
+  });
+
+  if (!program) {
+    throw new Error(`No program found with ID ${programId}`);
+  }
+
+  return program;
+}
+
+export async function getUserById(userId: number): Promise<User> {
+  if (userId === null) {
+    throw new Error(`Id provided is null`);
+  }
+
+  const user = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+  });
+
+  if (!user) {
+    throw new Error(`No user found with ID ${userId}`);
+  }
+
+  return user;
 }
 
 export async function getProgramsByUser(userId: number): Promise<Program[]> {

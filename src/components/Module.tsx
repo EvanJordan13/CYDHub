@@ -47,7 +47,7 @@ export default function Module({ title, materials, assignments }: ModuleProps) {
         </IconButton>
       </Box>
       <Collapsible.Content>
-        <Box borderColor={'#B3B3BB'} borderWidth={1.5} height={72} borderBottomRadius={5}>
+        <Box borderColor={'#B3B3BB'} borderWidth={1.5} borderBottomRadius={5}>
           {assignments.map((assignment, index) => (
             <Resource
               key={index}

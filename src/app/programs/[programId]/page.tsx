@@ -4,8 +4,16 @@ import Module from '@/src/components/Module';
 import SideBar from '@/src/components/SideBar';
 import { ChevronUp, ChevronDown } from 'lucide-react';
 import { Text, Heading, Box, Image, Tabs, Button as ChakraButton, Flex, IconButton, Stack } from '@chakra-ui/react';
-import { fetchProgramMaterials, fetchProgramAssignments, getProgramModules } from '@/src/lib/query/programs';
-import { ModuleMaterial, Assignment, Module as Mod } from '@prisma/client';
+import AnnouncementCard from '@/src/components/AnnouncementCard';
+import {
+  fetchProgramMaterials,
+  fetchProgramAssignments,
+  getProgramModules,
+  getProgramAnnouncements,
+  getProgramById,
+  getUserById,
+} from '@/src/lib/query/programs';
+import { ModuleMaterial, Assignment, Module as Mod, Announcement, Program, User } from '@prisma/client';
 import { useState, useEffect } from 'react';
 
 type ModuleWithRelations = Mod & {
@@ -13,7 +21,8 @@ type ModuleWithRelations = Mod & {
   assignments: Assignment[];
 };
 
-export default function ProgramPage() {
+export default function ProgramPage({ params }: { params: { programId: number } }) {
+  const programId = Number(params.programId);
   const [programMaterials, setProgramMaterials] = useState<(ModuleMaterial & { moduleTitle: string })[]>([]);
   const [programAssignments, setProgramAssignments] = useState<(Assignment & { moduleTitle: string })[]>([]);
   const [programModules, setProgramModules] = useState<ModuleWithRelations[]>([]);
@@ -24,11 +33,15 @@ export default function ProgramPage() {
   const [showMaterials, setShowMaterials] = useState(true);
   const [showAssignments, setShowAssignments] = useState(true);
   const [showModules, setShowModules] = useState(true);
+  const [isLoadingAnnouncements, setIsLoadingAnnouncements] = useState(false);
+  const [programAnnouncements, setProgramAnnouncements] = useState<Announcement[]>([]);
+  const [program, setProgram] = useState<Program | undefined>();
+  const [user, setUser] = useState<User | undefined>();
 
   const testFetchProgramMaterials = async () => {
     setIsLoadingMaterials(true);
     try {
-      const materials = await fetchProgramMaterials(1);
+      const materials = await fetchProgramMaterials(programId);
       console.log('Program materials', materials);
       setProgramMaterials(materials);
     } catch (error) {
@@ -41,7 +54,7 @@ export default function ProgramPage() {
   const testFetchProgramAssignments = async () => {
     setIsLoadingAssignments(true);
     try {
-      const assignments = await fetchProgramAssignments(1);
+      const assignments = await fetchProgramAssignments(programId);
       console.log('Program assignments', assignments);
       setProgramAssignments(assignments);
     } catch (error) {
@@ -52,10 +65,9 @@ export default function ProgramPage() {
   };
 
   const testFetchProgramModules = async () => {
-    setIsLoadingAssignments(true);
+    setIsLoadingModules(true);
     try {
-      const modules = await getProgramModules(1);
-      // const modules = mockModules;
+      const modules = await getProgramModules(programId);
       console.log('Program modules', modules);
       setProgramModules(modules as ModuleWithRelations[]);
     } catch (error) {
@@ -65,11 +77,33 @@ export default function ProgramPage() {
     }
   };
 
+  const fetchProgramAnnouncements = async () => {
+    setIsLoadingAnnouncements(true);
+    try {
+      const programData = await getProgramById(programId);
+      const announcements = await getProgramAnnouncements(programId);
+      const teacherId = programData.teacherId;
+      if (!teacherId) {
+        throw new Error('teacherId is null or undefined');
+      }
+      const userData = await getUserById(teacherId);
+      console.log('Program Announcements', announcements);
+      setProgramAnnouncements(announcements);
+      setProgram(programData);
+      setUser(userData);
+    } catch (error) {
+      console.error('Error fetching program announcements:', error);
+    } finally {
+      setIsLoadingAnnouncements(false);
+    }
+  };
+
   useEffect(() => {
     testFetchProgramMaterials();
     testFetchProgramAssignments();
     testFetchProgramModules();
-  }, []);
+    fetchProgramAnnouncements();
+  }, [programId]);
 
   return (
     <Box display={'flex'} backgroundColor={'white'} color={'black'}>
@@ -106,6 +140,7 @@ export default function ProgramPage() {
                   fontWeight: '700',
                   borderBottom: '4px solid #4D80BB',
                 }}
+                onClick={() => fetchProgramAnnouncements()}
               >
                 <Text>Announcements</Text>
               </Tabs.Trigger>
@@ -120,15 +155,42 @@ export default function ProgramPage() {
                 <Text>Feedback</Text>
               </Tabs.Trigger>
             </Tabs.List>
+
+            <Tabs.Content value="modules">
+              {!isLoadingMaterials && !isLoadingAssignments && !isLoadingModules ? (
+                programModules.map((module, index) => (
+                  <Module
+                    key={index}
+                    title={module.title}
+                    materials={module.materials}
+                    assignments={module.assignments}
+                  />
+                ))
+              ) : (
+                <Text marginTop={10}>Loading...</Text>
+              )}
+            </Tabs.Content>
+
+            <Tabs.Content value="announcements">
+              <Flex direction="column" paddingTop={'16px'} paddingBottom={'16px'} gap={'32px'}>
+                {!isLoadingAnnouncements &&
+                  user &&
+                  programAnnouncements.map(a => (
+                    <AnnouncementCard
+                      key={a.id}
+                      subject={program ? program.name : ''}
+                      title={a.title}
+                      message={a.content}
+                      name={user.name ? user.name : ''}
+                      avatarUrl={user.avatarUrl}
+                      createdAt={a.createdAt}
+                      link="/"
+                    />
+                  ))}
+              </Flex>
+            </Tabs.Content>
           </Tabs.Root>
         </Box>
-        {!isLoadingMaterials && !isLoadingAssignments && !isLoadingModules ? (
-          programModules.map((module, index) => (
-            <Module key={index} title={module.title} materials={module.materials} assignments={module.assignments} />
-          ))
-        ) : (
-          <Text marginTop={10}>Loading...</Text>
-        )}
       </Box>
     </Box>
   );
