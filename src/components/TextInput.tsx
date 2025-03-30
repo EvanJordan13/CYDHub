@@ -1,42 +1,63 @@
 'use client';
 
 import { useState } from 'react';
-import { Input, Flex, Box } from '@chakra-ui/react';
-import defaultTheme from '../lib/themes/default';
+import { Input, Flex, Box, Field } from '@chakra-ui/react';
 
 interface TextInputProps {
   label: string;
-  width: number; // please provide width in rem for accessibility
   icon: React.ReactNode;
+  value?: string;
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  disabled?: boolean;
+  height?: number;
+  invalidFunction?: () => boolean;
 }
 
-export default function TextInput({ label, width = 18.75, icon }: TextInputProps) {
-  const [isFocused, setIsFocused] = useState(false);
+export default function TextInput({
+  label,
+  icon,
+  value,
+  onChange,
+  disabled = false,
+  height = 12,
+  invalidFunction = () => !value || value.trim() === '',
+}: TextInputProps) {
+  const [hasBeenTouched, setHasBeenTouched] = useState(false);
+  const isInvalid = hasBeenTouched && invalidFunction();
 
   return (
-    <Flex
-      align="center"
-      border="0.125rem solid"
-      borderColor={isFocused ? '#8D608C' : '#AAAAAA'}
-      borderRadius="md"
-      px={3}
-      py={1}
-      width={`${width}rem`}
-    >
-      <Box color={isFocused ? '#8D608C' : '#AAAAAA'} boxSize={6}>
-        {icon}
-      </Box>
-      <Input
-        variant="flushed"
-        ml={2}
-        placeholder={label}
-        aria-label={label} // important: allows input to be read by screen readers
-        color={isFocused ? 'black' : 'black'}
-        borderColor="transparent"
-        _focus={{ boxShadow: 'none', borderColor: 'transparent' }}
-        onFocus={() => setIsFocused(true)}
-        onBlur={() => setIsFocused(false)}
-      />
-    </Flex>
+    <Field.Root required>
+      <Flex
+        align="center"
+        border="0.125rem solid"
+        borderColor={isInvalid ? 'red' : disabled || !hasBeenTouched ? '#AAAAAA' : 'Aqua'}
+        borderRadius="md"
+        width="100%"
+        height={height}
+        _hover={{ background: disabled ? '' : '#E0EEFF' }}
+        bgColor={disabled ? '#F0EFEF' : ''}
+      >
+        <Box color="#AAAAAA" ml="4%" transform="scale(1.2)" bgColor={disabled ? '#F0EFEF' : ''}>
+          {icon}
+        </Box>
+
+        <Input
+          variant="flushed"
+          ml={3}
+          placeholder={label}
+          _placeholder={{ color: '#AAAAAA' }}
+          aria-label={label}
+          color="black"
+          borderColor="transparent"
+          _focus={{ boxShadow: 'none', borderColor: 'transparent' }}
+          onChange={onChange}
+          value={value}
+          onBlur={() => setHasBeenTouched(true)}
+          fontSize="120%"
+          fontWeight={500}
+          disabled={disabled}
+        />
+      </Flex>
+    </Field.Root>
   );
 }
