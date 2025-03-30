@@ -6,7 +6,7 @@ import { getUserById } from '@/src/lib/query/users';
 import { User, Assignment, Program, Announcement } from '@prisma/client';
 import { fetchProgramsByUser, fetchProgramAssignmentsByUser } from '@/src/lib/query/programs';
 
-import { Flex, Box } from '@chakra-ui/react';
+import { Flex, Box, Heading } from '@chakra-ui/react';
 import HomeSection from '@/src/components/dashboard/HomeSection';
 import SideBar from '@/src/components/dashboard/SideBar';
 import { Tab } from '@/src/components/dashboard/types';
@@ -70,12 +70,49 @@ export default function DashboardPage() {
         isLoading={isLoadingUser || isLoadingAssignments || isLoadingPrograms}
       />
     ),
-    todo: <></>,
-    editor: <></>,
-    calendar: <></>,
-    shop: <></>,
-    archived: <></>,
-    settings: <></>,
+    todo: (
+      <>
+        {' '}
+        <Heading fontSize="40px" fontWeight={700} p="32px 48px 16px 48px" lineHeight={'48px'}>
+          Page Under Construction!
+        </Heading>
+      </>
+    ),
+    editor: (
+      <>
+        <Heading fontSize="40px" fontWeight={700} p="32px 48px 16px 48px" lineHeight={'48px'}>
+          Page Under Construction!
+        </Heading>
+      </>
+    ),
+    calendar: (
+      <>
+        <Heading fontSize="40px" fontWeight={700} p="32px 48px 16px 48px" lineHeight={'48px'}>
+          Page Under Construction!
+        </Heading>
+      </>
+    ),
+    shop: (
+      <>
+        <Heading fontSize="40px" fontWeight={700} p="32px 48px 16px 48px" lineHeight={'48px'}>
+          Page Under Construction!
+        </Heading>
+      </>
+    ),
+    archived: (
+      <>
+        <Heading fontSize="40px" fontWeight={700} p="32px 48px 16px 48px" lineHeight={'48px'}>
+          Page Under Construction!
+        </Heading>
+      </>
+    ),
+    settings: (
+      <>
+        <Heading fontSize="40px" fontWeight={700} p="32px 48px 16px 48px" lineHeight={'48px'}>
+          Page Under Construction!
+        </Heading>
+      </>
+    ),
   };
 
   return (

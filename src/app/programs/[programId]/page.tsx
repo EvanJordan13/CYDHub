@@ -235,10 +235,9 @@ export default function ProgramPage({ params }: { params: { programId: number } 
                       description={selectedResource.data.description}
                     />
                   ) : (
-                    <Box mt={4} p={4} borderWidth="1px" borderRadius="md">
-                      <Heading size="md">Material Details</Heading>
-                      <Text mt={2}>Title: {selectedResource.data.title}</Text>
-                    </Box>
+                    <Heading fontSize="40px" fontWeight={700} p="32px 48px 16px 48px" lineHeight={'48px'}>
+                      Page Under Construction!
+                    </Heading>
                   )
                 ) : programModules.length > 0 ? (
                   programModules.map((module, index) => (
@@ -293,7 +292,11 @@ export default function ProgramPage({ params }: { params: { programId: number } 
                 </Flex>
               </Tabs.Content>
 
-              <Tabs.Content value="feedback"></Tabs.Content>
+              <Tabs.Content value="feedback">
+                <Heading fontSize="40px" fontWeight={700} p="32px 48px 16px 48px" lineHeight={'48px'}>
+                  Page Under Construction!
+                </Heading>
+              </Tabs.Content>
             </Tabs.Root>
           </Box>
         </Box>
