@@ -20,7 +20,7 @@ import { IconButton } from '@chakra-ui/react';
 import { ChevronUp, ChevronDown } from 'lucide-react';
 import AnnouncementCard, { AnnouncementCardProps } from '@/src/components/AnnouncementCard';
 
-import SideBar from '../../components/SideBar';
+import SideBar from '../../components/dashboard/SideBar';
 import MoodModal from '@/src/components/MoodModal';
 import { useState } from 'react';
 import TodoCard from '@/src/components/dashboard/TodoCard';
@@ -54,6 +54,7 @@ export default function DevPage() {
   const mockProgram: Program = {
     id: 1,
     name: 'Introduction to Data Science',
+    subject: 'Data Science',
     description: 'A beginner-friendly course covering the fundamentals of Data Science.',
     syllabus: 'Week 1: Introduction to Python\nWeek 2: Data Wrangling\nWeek 3: Machine Learning Basics',
     createdAt: new Date('2024-03-01'),
@@ -347,7 +348,7 @@ export default function DevPage() {
           <Button type="disabled" pageColor="aqua" text="Disabled" height="60px" width="130px" />
         </Flex>
       </Flex>
-      <SideBar page={'To Do'} />
+      <SideBar currentTab={'todo'} onTabChange={() => {}} />
 
       <ChakraButton onClick={openModal}>Open Mood Modal</ChakraButton>
 

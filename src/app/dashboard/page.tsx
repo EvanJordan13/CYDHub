@@ -6,11 +6,10 @@ import { getUserById } from '@/src/lib/query/users';
 import { User, Assignment, Program, Announcement } from '@prisma/client';
 import { fetchProgramsByUser, fetchProgramAssignmentsByUser } from '@/src/lib/query/programs';
 
-import { Flex } from '@chakra-ui/react';
+import { Flex, Box } from '@chakra-ui/react';
 import HomeSection from '@/src/components/dashboard/HomeSection';
-import SideBar from '@/src/components/SideBar';
-
-type Tab = 'home' | 'todo' | 'editor' | 'calendar' | 'shop';
+import SideBar from '@/src/components/dashboard/SideBar';
+import { Tab } from '@/src/components/dashboard/types';
 
 export default function DashboardPage() {
   const [tab, setTab] = useState<Tab>('home');
@@ -21,7 +20,7 @@ export default function DashboardPage() {
   const [isLoadingAssignments, setIsLoadingAssignments] = useState(true);
   const [isLoadingPrograms, setIsLoadingPrograms] = useState(true);
 
-  const testUserId = 1;
+  const testUserId = 4;
 
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -75,12 +74,18 @@ export default function DashboardPage() {
     editor: <></>,
     calendar: <></>,
     shop: <></>,
+    archived: <></>,
+    settings: <></>,
   };
 
   return (
-    <Flex height="100vh" width="100vw">
-      <SideBar page={tab} />
-      {tabs[tab]}
+    <Flex height="100vh" width="100vw" position="relative">
+      <Box position="fixed" height="100vh" left={0} top={0}>
+        <SideBar currentTab={tab} onTabChange={setTab} />
+      </Box>
+      <Box flex={1} ml="240px" height="100vh" overflowY="auto">
+        {tabs[tab]}
+      </Box>
     </Flex>
   );
 }

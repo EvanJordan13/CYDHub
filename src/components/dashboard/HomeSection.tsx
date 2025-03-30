@@ -13,21 +13,29 @@ interface HomeSectionProps {
 
 export default function HomeSection({ userInfo, assignments, programs, isLoading }: HomeSectionProps) {
   return (
-    <Box>
+    <Box width={'100%'}>
       {isLoading ? (
-        <Skeleton width="300px" height="40px" mb={4} />
+        <Skeleton width="279px" height="60px" m="32px 48px 16px 48px" />
       ) : (
-        <Heading mb={4}>Welcome, {userInfo?.name}</Heading>
+        <Heading fontSize="40px" fontWeight={700} p="32px 48px 16px 48px" lineHeight={'48px'}>
+          Welcome, {userInfo?.name}
+        </Heading>
       )}
-      <Flex flexDirection={'column'} gap={4}>
-        <Heading>Overview</Heading>
+      <Flex flexDirection={'column'} gap={'20px'} p="20px 48px" mt="16px">
+        <Heading fontSize="28px" fontWeight={700}>
+          Overview
+        </Heading>
         <Flex flexDirection={'row'} gap={4}>
-          <StreakCard currentPoints={10} nextRewardPoints={100} />
-          {isLoading ? <Skeleton width="776px" height="200px" /> : <TodoCard assignments={assignments} />}
+          {isLoading ? (
+            <Skeleton width="323px" height="343px" />
+          ) : (
+            <StreakCard currentPoints={userInfo?.points || 0} nextRewardPoints={200} />
+          )}
+          {isLoading ? <Skeleton flex={1} height="343px" /> : <TodoCard assignments={assignments} />}
         </Flex>
       </Flex>
-      <Box>
-        <Heading>Programs</Heading>
+      <Box p="20px 48px">
+        <Heading mb={'16px'}>Programs</Heading>
         <Flex flexDirection={'row'} gap={4} flexWrap="wrap">
           {isLoading
             ? // Show 2 skeleton program cards while loading
