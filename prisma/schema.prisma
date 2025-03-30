@@ -74,6 +74,7 @@ model Program {
   name           String
   description    String?
   type           ProgramType
+  subject        String
 
   // Primary teacher (optional) who manages this program.
   teacher   User @relation("TeacherPrograms", fields: [teacherId], references: [id])
@@ -176,7 +177,7 @@ model AssignmentQuestion {
   order        Int?
 }
 
-/// A student’s submission to an assignment.
+/// A student's submission to an assignment.
 model Submission {
   id              Int        @id @default(autoincrement())
   assignment      Assignment @relation(fields: [assignmentId], references: [id])
@@ -218,7 +219,7 @@ model SurveyQuestion {
   SurveyResponse SurveyResponse[]
 }
 
-/// A student’s response to a survey question.
+/// A student's response to a survey question.
 model SurveyResponse {
   id               Int            @id @default(autoincrement())
   surveyQuestion   SurveyQuestion @relation(fields: [surveyQuestionId], references: [id])

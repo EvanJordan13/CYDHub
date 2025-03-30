@@ -1,7 +1,7 @@
 'use client';
 
 import Module from '@/src/components/Module';
-import SideBar from '@/src/components/SideBar';
+import SideBar from '@/src/components/dashboard/SideBar';
 import { Text, Heading, Box, Image, Tabs, Flex } from '@chakra-ui/react';
 import AnnouncementCard from '@/src/components/AnnouncementCard';
 import { getProgramAnnouncements, getProgramById, getUserById } from '@/src/lib/query/programs';
@@ -43,7 +43,7 @@ export default function ProgramPage({ params }: { params: { programId: number } 
   return (
     <Box display={'flex'} backgroundColor={'white'} color={'black'} gap={'48px'}>
       <Box position="sticky" top="0" alignSelf="flex-start">
-        <SideBar page="Home" />
+        <SideBar currentTab={'home'} onTabChange={() => {}} />
       </Box>
       <Box marginY={6} style={{ flexBasis: '85%' }}>
         <Box display={'flex'} height={'28px'} justifyContent={'space-between'}>
