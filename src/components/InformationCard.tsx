@@ -10,7 +10,7 @@ export default function InformationCard({ title, description }: InformationCardP
   return (
     <Box
       height={266}
-      width={408}
+      width={'28%'}
       bg={'white'}
       borderWidth={'2px'}
       borderColor={'lightgray'}

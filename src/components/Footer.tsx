@@ -23,7 +23,7 @@ const footerCards: FooterCard[] = [
 
 export default function Footer() {
   return (
-    <Box px={'80px'} py={'48px'} width={'100%'} height={'311px'}>
+    <Box px={'80px'} py={'48px'} width={'100%'} height={'311px'} boxShadow="0 0px 4px 0px rgba(0, 0, 0, 0.25)">
       <Flex justifyContent="center" alignItems="center" gap={'209px'}>
         <Box>
           <Heading fontSize={'32px'} fontFamily={'logo'} fontWeight={'normal'} color={'Flamingo'}>

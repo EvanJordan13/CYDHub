@@ -18,7 +18,5 @@ export async function getUserById(userId: number): Promise<User> {
     throw new Error(`No user found with ID ${userId}`);
   }
 
-  console.log('found user', user);
-
   return user;
 }
