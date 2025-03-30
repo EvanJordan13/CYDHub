@@ -3,7 +3,6 @@
 import AssignmentDescription from '@/src/components/AssignmentDescription';
 import Module from '@/src/components/Module';
 import SideBar from '@/src/components/SideBar';
-import { ChevronUp, ChevronDown } from 'lucide-react';
 import {
   Text,
   Heading,
@@ -12,7 +11,6 @@ import {
   Tabs,
   Button as ChakraButton,
   Flex,
-  IconButton,
   Stack,
   Skeleton,
   SkeletonText,
@@ -117,7 +115,7 @@ export default function ProgramPage({ params }: { params: { programId: number } 
   };
 
   const fetchAnnouncementsAndProgram = async (setLoading = true) => {
-    if (setLoading) setIsLoadingAnnouncements(true); // Controls skeleton *within* announcement tab
+    if (setLoading) setIsLoadingAnnouncements(true); // Controls skeleton within announcement tab
     try {
       // Fetch program, announcements, and user data concurrently where possible
       const programData = await getProgramById(programId);
@@ -131,14 +129,14 @@ export default function ProgramPage({ params }: { params: { programId: number } 
       const teacherId = programData.teacherId;
       if (!teacherId) {
         console.warn('Teacher ID not found for program, user data will be unavailable.');
-        setUser(undefined); // Ensure user is cleared if no teacherId
+        setUser(undefined);
       } else {
         const userData = await getUserById(teacherId);
         setUser(userData);
       }
     } catch (error) {
       console.error('Error fetching program/announcements/user:', error);
-      if (setLoading) throw error; // Only re-throw if part of initial load or specific error handling needed
+      if (setLoading) throw error; // Only re-throw if part of initial load
     } finally {
       if (setLoading) setIsLoadingAnnouncements(false);
     }
@@ -150,23 +148,16 @@ export default function ProgramPage({ params }: { params: { programId: number } 
       setSelectedResource(null);
 
       try {
-        // Reset previous states if necessary (optional)
+        // Reset previous states
         setProgramModules([]);
         setProgramAnnouncements([]);
         setProgram(undefined);
         setUser(undefined);
 
         // Wait for all essential initial fetches to complete
-        await Promise.all([
-          fetchMaterials(),
-          fetchAssignments(),
-          fetchModules(),
-          fetchAnnouncementsAndProgram(false), // Fetch program/ann/user data but don't set isLoadingAnnouncements
-          // as initial loading handles the overall skeleton
-        ]);
+        await Promise.all([fetchMaterials(), fetchAssignments(), fetchModules(), fetchAnnouncementsAndProgram(false)]);
       } catch (error) {
         console.error('Error fetching initial program data:', error);
-        // Optionally set an error state to display an error message
       } finally {
         setIsInitialLoading(false); // Finish overall loading
       }
@@ -247,7 +238,6 @@ export default function ProgramPage({ params }: { params: { programId: number } 
                     <Box mt={4} p={4} borderWidth="1px" borderRadius="md">
                       <Heading size="md">Material Details</Heading>
                       <Text mt={2}>Title: {selectedResource.data.title}</Text>
-                      {/* Add more material details or component here */}
                     </Box>
                   )
                 ) : programModules.length > 0 ? (
@@ -257,7 +247,7 @@ export default function ProgramPage({ params }: { params: { programId: number } 
                       title={module.title}
                       materials={module.materials}
                       assignments={module.assignments}
-                      onClick={handleModuleClick} // ADD: Pass click handler
+                      onClick={handleModuleClick}
                     />
                   ))
                 ) : (
@@ -267,7 +257,6 @@ export default function ProgramPage({ params }: { params: { programId: number } 
 
               <Tabs.Content value="announcements">
                 <Flex direction="column" paddingTop={'16px'} paddingBottom={'16px'} gap={'32px'}>
-                  {/* Use isLoadingAnnouncements specifically for this tab's content */}
                   {isLoadingAnnouncements ? (
                     // Skeleton specifically for announcements list
                     [...Array(2)].map((_, i) => (
@@ -304,8 +293,7 @@ export default function ProgramPage({ params }: { params: { programId: number } 
                 </Flex>
               </Tabs.Content>
 
-              {/* Feedback Tab Content - Currently empty */}
-              <Tabs.Content value="feedback">{/* Add content or skeleton for feedback here if needed */}</Tabs.Content>
+              <Tabs.Content value="feedback"></Tabs.Content>
             </Tabs.Root>
           </Box>
         </Box>
