@@ -48,9 +48,12 @@ export default function SideBar({ page }: SideBarProps) {
       shadow={'2px 2px 2px #e3dbdb'}
       filter={'auto'}
       dropShadow={'10px 10px 0px rgba(0, 0, 0, 0.5)'}
+      position={'fixed'}
+      top={0}
+      left={0}
     >
       <Flex direction={'column'} height={'456px'} gap={'20px'}>
-        <Image src="cyd-dashboard-logo.svg" height={'44px'} width={'50px'} marginBottom={'12px'} />
+        <Image src="/cyd-dashboard-logo.svg" height={'44px'} width={'50px'} marginBottom={'12px'} />
         <Bar Icon={House} text="Home" current={page == 'Home'} link={'/'} />
         <Bar Icon={AlarmClockCheck} text="To Do" current={page == 'To Do'} link={'/'} />
         <Bar Icon={CodeXml} text="Editor" current={page == 'Editor'} link={'/'} />
