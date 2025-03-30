@@ -9,9 +9,10 @@ interface ResourceProps {
   dueDate: string;
   icon: React.ReactNode;
   resourceType: string;
+  onClick: () => void;
 }
 
-export default function Resource({ title, dueDate, icon, resourceType }: ResourceProps) {
+export default function Resource({ title, dueDate, icon, resourceType, onClick }: ResourceProps) {
   const [isCompleted, setIsCompleted] = useState(false);
 
   const isAssignment = resourceType === 'assignment';
@@ -33,18 +34,35 @@ export default function Resource({ title, dueDate, icon, resourceType }: Resourc
   );
 
   return (
-    <Flex align="center" justify="space-between" bg="white" p={4} borderRadius="md" width="100%" marginTop={3}>
+    <Flex
+      align="center"
+      justify="space-between"
+      bg="white"
+      p={4}
+      borderRadius="md"
+      width="100%"
+      marginTop={3}
+      onClick={onClick}
+    >
       <Box marginRight={4}>{icon}</Box>
 
       <Box flex="1">
-        <Text fontWeight="semibold" fontSize="md">
+        <Text
+          fontWeight="semibold"
+          fontSize="md"
+          display="inline"
+          _hover={{ textDecoration: 'underline', cursor: 'pointer' }}
+        >
           {title}
         </Text>
         <Text fontSize="sm">Due Date: {dueDate}</Text>
       </Box>
 
       <Button
-        onClick={() => setIsCompleted(!isCompleted)}
+        onClick={e => {
+          e.stopPropagation();
+          setIsCompleted(!isCompleted);
+        }}
         bg={buttonBg}
         color={buttonColor}
         borderRadius="md"

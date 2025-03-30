@@ -8,6 +8,236 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+/// The central User model. This serves for students, teachers, and admins.
+model User {
+  id                 Int               @id @default(autoincrement())
+  name               String?
+  email              String            @unique
+  role               UserRole
+  avatarUrl          String?
+  githubHandle       String?
+  signupComplete     Boolean           @default(false)
+  points             Int               @default(0)
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+  Invitation         Invitation[]
+  notifications      Notification[]
+  createdPrograms    Program[]         @relation("TeacherPrograms")
+  programEnrollments ProgramUser[]
+  submissions        Submission[]
+  surveyResponses    SurveyResponse[]
+  achievements       UserAchievement[]
+}
+
+/// A Program which may be in-person, online, or async.
+/// Teachers invite students and assign programs to a program.
+model Program {
+  id            Int            @id @default(autoincrement())
+  name          String
+  description   String?
+  type          ProgramType
+  subject       String
+  teacherId     Int
+  syllabus      String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  announcements Announcement[]
+  Invitation    Invitation[]
+  meetings      Meeting[]
+  modules       Module[]       @relation("ModuleToProgram")
+  teacher       User           @relation("TeacherPrograms", fields: [teacherId], references: [id])
+  enrollments   ProgramUser[]
+  Survey        Survey[]
+}
+
+/// Join table for Users and Programs.
+model ProgramUser {
+  id        Int       @id @default(autoincrement())
+  userId    Int
+  programId Int
+  role      UserRole?
+  joinedAt  DateTime  @default(now())
+  program   Program   @relation(fields: [programId], references: [id])
+  user      User      @relation(fields: [userId], references: [id])
+
+  @@unique([userId, programId])
+}
+
+/// Modules that contain curriculum content.
+/// These can be shared among many programs.
+model Module {
+  id          Int              @id @default(autoincrement())
+  programId   Int
+  title       String
+  description String?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  assignments Assignment[]
+  program     Program          @relation("ModuleToProgram", fields: [programId], references: [id])
+  materials   ModuleMaterial[]
+}
+
+/// Materials (e.g. slides, recordings, files) linked to a program.
+model ModuleMaterial {
+  id           Int          @id @default(autoincrement())
+  moduleId     Int
+  title        String
+  content      String?
+  materialType MaterialType
+  fileUrl      String?
+  order        Int?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  module       Module       @relation(fields: [moduleId], references: [id])
+}
+
+/// Assignments which can be pushed to students via a module.
+model Assignment {
+  id          Int                  @id @default(autoincrement())
+  moduleId    Int?
+  assignmentNumber Int?
+  title       String
+  description String?
+  dueDate     DateTime?
+  questionCount Int?
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+  module      Module?              @relation(fields: [moduleId], references: [id])
+  questions   AssignmentQuestion[]
+  submissions Submission[]
+}
+
+/// Questions that make up an assignment.
+/// Supports various types (multiple choice, short answer, code editor, file upload).
+model AssignmentQuestion {
+  id           Int          @id @default(autoincrement())
+  assignmentId Int
+  questionText String
+  questionType QuestionType
+  options      String?
+  order        Int?
+  assignment   Assignment   @relation(fields: [assignmentId], references: [id])
+}
+
+/// A student’s submission to an assignment.
+model Submission {
+  id              Int        @id @default(autoincrement())
+  assignmentId    Int
+  studentId       Int
+  content         String?
+  fileUrl         String?
+  grade           Float?
+  teacherFeedback String?
+  submittedAt     DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+  assignment      Assignment @relation(fields: [assignmentId], references: [id])
+  student         User       @relation(fields: [studentId], references: [id])
+}
+
+/// Surveys for collecting pre/post (or other) feedback.
+model Survey {
+  id          Int              @id @default(autoincrement())
+  title       String
+  description String?
+  surveyType  SurveyType
+  programId   Int?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  program     Program?         @relation(fields: [programId], references: [id])
+  questions   SurveyQuestion[]
+}
+
+/// Questions for a survey.
+model SurveyQuestion {
+  id             Int              @id @default(autoincrement())
+  surveyId       Int
+  questionText   String
+  questionType   QuestionType
+  order          Int?
+  survey         Survey           @relation(fields: [surveyId], references: [id])
+  SurveyResponse SurveyResponse[]
+}
+
+/// A student’s response to a survey question.
+model SurveyResponse {
+  id               Int            @id @default(autoincrement())
+  surveyQuestionId Int
+  studentId        Int
+  response         String?
+  submittedAt      DateTime       @default(now())
+  student          User           @relation(fields: [studentId], references: [id])
+  surveyQuestion   SurveyQuestion @relation(fields: [surveyQuestionId], references: [id])
+}
+
+/// Achievements to reward students (or even teachers) for milestones.
+model Achievement {
+  id              Int               @id @default(autoincrement())
+  title           String
+  description     String?
+  createdAt       DateTime          @default(now())
+  UserAchievement UserAchievement[]
+}
+
+/// Join table to record which users have earned which achievements.
+model UserAchievement {
+  id            Int         @id @default(autoincrement())
+  userId        Int
+  achievementId Int
+  earnedAt      DateTime    @default(now())
+  achievement   Achievement @relation(fields: [achievementId], references: [id])
+  user          User        @relation(fields: [userId], references: [id])
+
+  @@unique([userId, achievementId])
+}
+
+/// Notifications for upcoming assignments, deadlines, or announcements.
+model Notification {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  message   String
+  link      String?
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+/// Meetings (program schedules) within a program.
+model Meeting {
+  id          Int      @id @default(autoincrement())
+  programId   Int
+  title       String
+  description String?
+  meetingTime DateTime
+  meetingLink String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  program     Program  @relation(fields: [programId], references: [id])
+}
+
+/// Announcements made within a program.
+model Announcement {
+  id        Int      @id @default(autoincrement())
+  programId Int
+  title     String
+  content   String
+  createdAt DateTime @default(now())
+  program   Program  @relation(fields: [programId], references: [id])
+}
+
+/// Invitations used by teachers to invite students to a program.
+model Invitation {
+  id          Int       @id @default(autoincrement())
+  programId   Int
+  email       String
+  token       String    @unique
+  invitedById Int
+  status      String
+  createdAt   DateTime  @default(now())
+  acceptedAt  DateTime?
+  invitedBy   User      @relation(fields: [invitedById], references: [id])
+  program     Program   @relation(fields: [programId], references: [id])
+}
+
 /// Enums to standardize various roles and types.
 enum UserRole {
   STUDENT
@@ -40,261 +270,4 @@ enum SurveyType {
   PRE
   POST
   OTHER
-}
-
-/// The central User model. This serves for students, teachers, and admins.
-model User {
-  id             Int      @id @default(autoincrement())
-  name           String?
-  email          String   @unique
-  role           UserRole
-  avatarUrl      String?
-  githubHandle   String?
-  signupComplete Boolean  @default(false)
-  points         Int      @default(0) // For gamification
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-
-  // Relations
-  programEnrollments   ProgramUser[]
-  submissions          Submission[]
-  surveyResponses      SurveyResponse[]
-  notifications        Notification[]
-  achievements         UserAchievement[]
-
-  // If a teacher, the programs they primarily manage.
-  createdPrograms   Program[]  @relation("TeacherPrograms")
-  Invitation        Invitation[]
-}
-
-/// A Program which may be in-person, online, or async.
-/// Teachers invite students and assign programs to a program.
-model Program {
-  id             Int           @id @default(autoincrement())
-  name           String
-  description    String?
-  type           ProgramType
-  subject        String
-
-  // Primary teacher (optional) who manages this program.
-  teacher   User @relation("TeacherPrograms", fields: [teacherId], references: [id])
-  teacherId Int
-
-  // Enrollment join table for students (and additional teachers if needed).
-  enrollments ProgramUser[]
-
-  // Additional program features.
-  syllabus      String? // Detailed program outline
-  meetings      Meeting[]
-  announcements Announcement[]
-
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
-  Survey     Survey[]
-  Invitation Invitation[]
-
-  // One-to-many relation with Module (module is linked only to one program)
-  modules   Module[]  @relation("ModuleToProgram")
-}
-
-/// Join table for Users and Programs.
-model ProgramUser {
-  id          Int       @id @default(autoincrement())
-  user        User      @relation(fields: [userId], references: [id])
-  userId      Int
-  program     Program @relation(fields: [programId], references: [id])
-  programId   Int
-
-  // This role can override the global role (for example, a teacher in one program).
-  role        UserRole?
-  joinedAt    DateTime  @default(now())
-
-  @@unique([userId, programId])
-}
-
-/// Modules that contain curriculum content.
-/// These can be shared among many programs.
-model Module {
-  id             Int          @id @default(autoincrement())
-  program        Program      @relation("ModuleToProgram", fields: [programId], references: [id])
-  programId      Int
-  title          String
-  description    String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  materials   ModuleMaterial[]
-  assignments Assignment[]
-}
-
-
-/// Materials (e.g. slides, recordings, files) linked to a program.
-model ModuleMaterial {
-  id           Int          @id @default(autoincrement())
-  module       Module      @relation(fields: [moduleId], references: [id])
-  moduleId     Int
-  title        String
-  content      String? // Markdown/text content
-  materialType MaterialType
-  fileUrl      String? // For file uploads
-  order        Int? // Ordering within a module
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-/// Assignments which can be pushed to students via a module.
-model Assignment {
-  id          Int        @id @default(autoincrement())
-  // An assignment is linked to a module.
-  module      Module?    @relation(fields: [moduleId], references: [id])
-  moduleId    Int?
-
-  title       String
-  description String?
-  dueDate     DateTime? // When the assignment is due
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // A teacher may break an assignment into multiple questions.
-  questions   AssignmentQuestion[]
-  // Student submissions.
-  submissions Submission[]
-}
-
-/// Questions that make up an assignment.
-/// Supports various types (multiple choice, short answer, code editor, file upload).
-model AssignmentQuestion {
-  id           Int          @id @default(autoincrement())
-  assignment   Assignment   @relation(fields: [assignmentId], references: [id])
-  assignmentId Int
-  questionText String
-  questionType QuestionType
-  // For multiple-choice questions, options may be stored as a JSON string or comma‐separated list.
-  options      String?
-  order        Int?
-}
-
-/// A student's submission to an assignment.
-model Submission {
-  id              Int        @id @default(autoincrement())
-  assignment      Assignment @relation(fields: [assignmentId], references: [id])
-  assignmentId    Int
-  student         User       @relation(fields: [studentId], references: [id])
-  studentId       Int
-  content         String? // Text or code content
-  fileUrl         String? // For file uploads (e.g. S3 path)
-  grade           Float? // Optional grading
-  teacherFeedback String?
-  submittedAt     DateTime   @default(now())
-  updatedAt       DateTime   @updatedAt
-}
-
-/// Surveys for collecting pre/post (or other) feedback.
-model Survey {
-  id          Int        @id @default(autoincrement())
-  title       String
-  description String?
-  surveyType  SurveyType
-  // A survey is associated with a program.
-  program      Program?    @relation(fields: [programId], references: [id])
-  programId    Int?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  questions SurveyQuestion[]
-}
-
-/// Questions for a survey.
-model SurveyQuestion {
-  id             Int              @id @default(autoincrement())
-  survey         Survey           @relation(fields: [surveyId], references: [id])
-  surveyId       Int
-  questionText   String
-  questionType   QuestionType // Reusing the same enum for simplicity
-  order          Int?
-  SurveyResponse SurveyResponse[]
-}
-
-/// A student's response to a survey question.
-model SurveyResponse {
-  id               Int            @id @default(autoincrement())
-  surveyQuestion   SurveyQuestion @relation(fields: [surveyQuestionId], references: [id])
-  surveyQuestionId Int
-  student          User           @relation(fields: [studentId], references: [id])
-  studentId        Int
-  response         String?
-  submittedAt      DateTime       @default(now())
-}
-
-/// Achievements to reward students (or even teachers) for milestones.
-model Achievement {
-  id              Int               @id @default(autoincrement())
-  title           String
-  description     String?
-  createdAt       DateTime          @default(now())
-  UserAchievement UserAchievement[]
-}
-
-/// Join table to record which users have earned which achievements.
-model UserAchievement {
-  id            Int         @id @default(autoincrement())
-  user          User        @relation(fields: [userId], references: [id])
-  userId        Int
-  achievement   Achievement @relation(fields: [achievementId], references: [id])
-  achievementId Int
-  earnedAt      DateTime    @default(now())
-
-  @@unique([userId, achievementId])
-}
-
-/// Notifications for upcoming assignments, deadlines, or announcements.
-model Notification {
-  id        Int      @id @default(autoincrement())
-  user      User     @relation(fields: [userId], references: [id])
-  userId    Int
-  message   String
-  link      String? // Optional link to details
-  read      Boolean  @default(false)
-  createdAt DateTime @default(now())
-}
-
-/// Meetings (program schedules) within a program.
-model Meeting {
-  id          Int       @id @default(autoincrement())
-  program   Program @relation(fields: [programId], references: [id])
-  programId Int
-  title       String
-  description String?
-  meetingTime DateTime
-  meetingLink String? // E.g., Zoom or similar
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-}
-
-/// Announcements made within a program.
-model Announcement {
-  id          Int       @id @default(autoincrement())
-  program   Program @relation(fields: [programId], references: [id])
-  programId Int
-  title       String
-  content     String
-  createdAt   DateTime  @default(now())
-}
-
-/// Invitations used by teachers to invite students to a program.
-model Invitation {
-  id          Int       @id @default(autoincrement())
-  program   Program @relation(fields: [programId], references: [id])
-  programId Int
-  email       String
-  token       String    @unique
-  invitedBy   User      @relation(fields: [invitedById], references: [id])
-  invitedById Int
-  status      String // Consider an enum (e.g., PENDING, ACCEPTED, DECLINED)
-  createdAt   DateTime  @default(now())
-  acceptedAt  DateTime?
 }
