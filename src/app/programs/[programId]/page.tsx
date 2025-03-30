@@ -1,19 +1,81 @@
 'use client';
 
 import Module from '@/src/components/Module';
-import SideBar from '@/src/components/dashboard/SideBar';
-import { Text, Heading, Box, Image, Tabs, Flex } from '@chakra-ui/react';
+import SideBar from '@/src/components/SideBar';
+import { ChevronUp, ChevronDown } from 'lucide-react';
+import { Text, Heading, Box, Image, Tabs, Button as ChakraButton, Flex, IconButton, Stack } from '@chakra-ui/react';
 import AnnouncementCard from '@/src/components/AnnouncementCard';
-import { getProgramAnnouncements, getProgramById, getUserById } from '@/src/lib/query/programs';
-import { Announcement, Program, User } from '@prisma/client';
+import {
+  fetchProgramMaterials,
+  fetchProgramAssignments,
+  getProgramModules,
+  getProgramAnnouncements,
+  getProgramById,
+  getUserById,
+} from '@/src/lib/query/programs';
+import { ModuleMaterial, Assignment, Module as Mod, Announcement, Program, User } from '@prisma/client';
 import { useState, useEffect } from 'react';
+
+type ModuleWithRelations = Mod & {
+  materials: ModuleMaterial[];
+  assignments: Assignment[];
+};
 
 export default function ProgramPage({ params }: { params: { programId: number } }) {
   const programId = Number(params.programId);
+  const [programMaterials, setProgramMaterials] = useState<(ModuleMaterial & { moduleTitle: string })[]>([]);
+  const [programAssignments, setProgramAssignments] = useState<(Assignment & { moduleTitle: string })[]>([]);
+  const [programModules, setProgramModules] = useState<ModuleWithRelations[]>([]);
+  const [isLoadingAll, setIsLoadingAll] = useState(false);
+  const [isLoadingMaterials, setIsLoadingMaterials] = useState(false);
+  const [isLoadingAssignments, setIsLoadingAssignments] = useState(false);
+  const [isLoadingModules, setIsLoadingModules] = useState(false);
+  const [showMaterials, setShowMaterials] = useState(true);
+  const [showAssignments, setShowAssignments] = useState(true);
+  const [showModules, setShowModules] = useState(true);
   const [isLoadingAnnouncements, setIsLoadingAnnouncements] = useState(false);
   const [programAnnouncements, setProgramAnnouncements] = useState<Announcement[]>([]);
   const [program, setProgram] = useState<Program | undefined>();
   const [user, setUser] = useState<User | undefined>();
+
+  const testFetchProgramMaterials = async () => {
+    setIsLoadingMaterials(true);
+    try {
+      const materials = await fetchProgramMaterials(programId);
+      console.log('Program materials', materials);
+      setProgramMaterials(materials);
+    } catch (error) {
+      console.error('Error fetching program materials:', error);
+    } finally {
+      setIsLoadingMaterials(false);
+    }
+  };
+
+  const testFetchProgramAssignments = async () => {
+    setIsLoadingAssignments(true);
+    try {
+      const assignments = await fetchProgramAssignments(programId);
+      console.log('Program assignments', assignments);
+      setProgramAssignments(assignments);
+    } catch (error) {
+      console.error('Error fetching program assignments:', error);
+    } finally {
+      setIsLoadingAssignments(false);
+    }
+  };
+
+  const testFetchProgramModules = async () => {
+    setIsLoadingModules(true);
+    try {
+      const modules = await getProgramModules(programId);
+      console.log('Program modules', modules);
+      setProgramModules(modules as ModuleWithRelations[]);
+    } catch (error) {
+      console.error('Error fetching program modules:', error);
+    } finally {
+      setIsLoadingModules(false);
+    }
+  };
 
   const fetchProgramAnnouncements = async () => {
     setIsLoadingAnnouncements(true);
@@ -37,18 +99,19 @@ export default function ProgramPage({ params }: { params: { programId: number } 
   };
 
   useEffect(() => {
+    testFetchProgramMaterials();
+    testFetchProgramAssignments();
+    testFetchProgramModules();
     fetchProgramAnnouncements();
   }, [programId]);
 
   return (
-    <Box display={'flex'} backgroundColor={'white'} color={'black'} gap={'48px'}>
-      <Box position="sticky" top="0" alignSelf="flex-start">
-        <SideBar currentTab={'home'} onTabChange={() => {}} />
-      </Box>
-      <Box marginY={6} style={{ flexBasis: '85%' }}>
+    <Box display={'flex'} backgroundColor={'white'} color={'black'}>
+      <SideBar page="Program" />
+      <Box marginY={6} marginLeft={250} style={{ flexBasis: '80%' }}>
         <Box display={'flex'} height={'28px'} justifyContent={'space-between'}>
           <Heading fontSize={35} fontWeight={'bold'} color={'Aqua'}>
-            HTML Basics
+            Web Development
           </Heading>
           <Box display={'flex'} alignItems={'center'} gap={2}>
             <Image width={'19px'} height={'28px'} src={'/streak-card-icon.svg'} />
@@ -94,8 +157,18 @@ export default function ProgramPage({ params }: { params: { programId: number } 
             </Tabs.List>
 
             <Tabs.Content value="modules">
-              <Module />
-              <Module />
+              {!isLoadingMaterials && !isLoadingAssignments && !isLoadingModules ? (
+                programModules.map((module, index) => (
+                  <Module
+                    key={index}
+                    title={module.title}
+                    materials={module.materials}
+                    assignments={module.assignments}
+                  />
+                ))
+              ) : (
+                <Text marginTop={10}>Loading...</Text>
+              )}
             </Tabs.Content>
 
             <Tabs.Content value="announcements">
