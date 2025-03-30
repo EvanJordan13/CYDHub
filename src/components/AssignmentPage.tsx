@@ -1,7 +1,5 @@
-import { useState } from 'react';
-import { Box, Text, IconButton, Collapsible, Span, Center, Stack } from '@chakra-ui/react';
-import Resource from './Resource';
-import { ChevronDown, ChevronUp, ClipboardMinus, Video } from 'lucide-react';
+import { Box, Text, Stack } from '@chakra-ui/react';
+import Button from './Button';
 
 interface AssignmentPageProps {
     assignmentNumber: number;
@@ -14,7 +12,10 @@ interface AssignmentPageProps {
 export default function AssignmentPage({ assignmentNumber, assignmentTitle, dueDate, numQuestions, description }: AssignmentPageProps) {
 
     return (
-        <Box>
+        <Box position={'relative'}>
+            <Box position={'absolute'} top={0} right={0}>
+                <Button type={'secondary'} pageColor={'aqua'} text={'Start Assignment'} height={'12'} width={'44'} />
+            </Box>
             <Text fontWeight={'bold'} fontSize={'24px'}>
                 Assignment #{assignmentNumber}: {assignmentTitle}
             </Text>
@@ -40,9 +41,6 @@ export default function AssignmentPage({ assignmentNumber, assignmentTitle, dueD
             <Text mt={2}>
                 {description}
             </Text>
-
-
-
         </Box >
     )
 
