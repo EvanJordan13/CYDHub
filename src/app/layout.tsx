@@ -20,13 +20,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" suppressHydrationWarning>
       <body suppressHydrationWarning>
         <Provider>
-<<<<<<< HEAD
           <main>{children}</main>
-=======
-          <NavBar />
-          <main>{children}</main>
-          <Footer />
->>>>>>> vt/create-landing-page
         </Provider>
       </body>
     </html>
