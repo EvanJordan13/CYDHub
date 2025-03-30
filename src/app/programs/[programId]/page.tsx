@@ -181,7 +181,7 @@ export default function ProgramPage({ params }: { params: { programId: number } 
                       assignmentTitle={selectedResource.data.title}
                       dueDate={selectedResource.data.dueDate}
                       questionCount={selectedResource.data.questionCount}
-                      description={selectedResource.data.description ?? 'No description provided'}
+                      description={selectedResource.data.description}
                     />
                   ) : (
                     // module material page

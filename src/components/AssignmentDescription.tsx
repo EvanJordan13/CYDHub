@@ -6,7 +6,7 @@ interface AssignmentDescriptionProps {
   assignmentTitle: string;
   dueDate: Date | null;
   questionCount: number | null;
-  description: string;
+  description: string | null;
 }
 
 const formatDate = (date: Date) => {
@@ -39,66 +39,69 @@ export default function AssignmentDescription({
   questionCount,
   description,
 }: AssignmentDescriptionProps) {
-  console.log("q count", questionCount);
   return (
-    <Box position={'relative'}>
+    <Box position={'relative'} mt={6}>
       <Box position={'absolute'} top={0} right={0}>
         <Button type={'secondary'} pageColor={'aqua'} text={'Start Assignment'} height={'12'} width={'44'} />
       </Box>
 
       <Text fontWeight={'bold'} fontSize={'24px'}>
-        {assignmentNumber && (
-          <Box as="span">
-            Assignment {assignmentNumber}:
-          </Box>
-        )}
-        {' '}
-        {assignmentTitle}
+        {assignmentNumber && <Box as="span">Assignment {assignmentNumber}:</Box>} {assignmentTitle}
       </Text>
 
-      {(dueDate || questionCount) && <Stack direction={'row'} spaceX={2} mt={6}>
-        {dueDate && <Box
-          bg={'white'}
-          borderWidth={'1px'}
-          borderColor={'Aqua'}
-          borderRadius={'lg'}
-          shadow={'sm'}
-          width={'fit-content'}
-          px={3}
-          py={2}
-        >
-          <Text>
-            <Box as="span" fontWeight="bold">
-              Due Date:
-            </Box>{' '}
-            {formatDate(dueDate)}
+      {(dueDate || questionCount) && (
+        <Stack direction={'row'} spaceX={2} mt={6}>
+          {dueDate && (
+            <Box
+              bg={'white'}
+              borderWidth={'1px'}
+              borderColor={'Aqua'}
+              borderRadius={'lg'}
+              shadow={'sm'}
+              width={'fit-content'}
+              px={3}
+              py={2}
+            >
+              <Text>
+                <Box as="span" fontWeight="bold">
+                  Due Date:
+                </Box>{' '}
+                {formatDate(dueDate)}
+              </Text>
+            </Box>
+          )}
+
+          {questionCount && (
+            <Box
+              bg={'white'}
+              borderWidth={'1px'}
+              borderColor={'Aqua'}
+              borderRadius={'lg'}
+              shadow={'sm'}
+              width={'fit-content'}
+              px={3}
+              py={2}
+            >
+              <Text>
+                <Box as="span" fontWeight="bold">
+                  # of Questions:
+                </Box>{' '}
+                {questionCount}
+              </Text>
+            </Box>
+          )}
+        </Stack>
+      )}
+
+      {description && (
+        <Box>
+          <Text fontWeight={'bold'} fontSize={'18px'} mt={6}>
+            Instructions:
           </Text>
-        </Box>}
 
-        {questionCount && <Box
-          bg={'white'}
-          borderWidth={'1px'}
-          borderColor={'Aqua'}
-          borderRadius={'lg'}
-          shadow={'sm'}
-          width={'fit-content'}
-          px={3}
-          py={2}
-        >
-          <Text>
-            <Box as="span" fontWeight="bold">
-              # of Questions:
-            </Box>{' '}
-            {questionCount}
-          </Text>
-        </Box>}
-      </Stack>}
-
-      <Text fontWeight={'bold'} fontSize={'18px'} mt={6}>
-        Instructions:
-      </Text>
-
-      <Text mt={2}>{description}</Text>
+          <Text mt={2}>{description}</Text>
+        </Box>
+      )}
     </Box>
   );
 }
