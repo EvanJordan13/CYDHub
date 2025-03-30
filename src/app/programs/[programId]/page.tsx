@@ -15,11 +15,14 @@ import {
 } from '@/src/lib/query/programs';
 import { ModuleMaterial, Assignment, Module as Mod, Announcement, Program, User } from '@prisma/client';
 import { useState, useEffect } from 'react';
+import AssignmentDescription from '@/src/components/AssignmentDescription';
 
 type ModuleWithRelations = Mod & {
   materials: ModuleMaterial[];
   assignments: Assignment[];
 };
+
+type ResourceItem = { type: 'assignment'; data: Assignment } | { type: 'material'; data: ModuleMaterial };
 
 export default function ProgramPage({ params }: { params: { programId: number } }) {
   const programId = Number(params.programId);
@@ -37,6 +40,13 @@ export default function ProgramPage({ params }: { params: { programId: number } 
   const [programAnnouncements, setProgramAnnouncements] = useState<Announcement[]>([]);
   const [program, setProgram] = useState<Program | undefined>();
   const [user, setUser] = useState<User | undefined>();
+
+  const [selectedResource, setSelectedResource] = useState<ResourceItem | null>(null);
+
+  const handleModuleClick = (resource: ResourceItem) => {
+    console.log('Resource clicked', resource);
+    setSelectedResource(resource);
+  };
 
   const testFetchProgramMaterials = async () => {
     setIsLoadingMaterials(true);
@@ -130,6 +140,9 @@ export default function ProgramPage({ params }: { params: { programId: number } 
                   fontWeight: '700',
                   borderBottom: '4px solid #4D80BB',
                 }}
+                onClick={() => {
+                  setSelectedResource(null);
+                }}
               >
                 <Text>Modules</Text>
               </Tabs.Trigger>
@@ -140,7 +153,10 @@ export default function ProgramPage({ params }: { params: { programId: number } 
                   fontWeight: '700',
                   borderBottom: '4px solid #4D80BB',
                 }}
-                onClick={() => fetchProgramAnnouncements()}
+                onClick={() => {
+                  setSelectedResource(null);
+                  fetchProgramAnnouncements();
+                }}
               >
                 <Text>Announcements</Text>
               </Tabs.Trigger>
@@ -158,14 +174,30 @@ export default function ProgramPage({ params }: { params: { programId: number } 
 
             <Tabs.Content value="modules">
               {!isLoadingMaterials && !isLoadingAssignments && !isLoadingModules ? (
-                programModules.map((module, index) => (
-                  <Module
-                    key={index}
-                    title={module.title}
-                    materials={module.materials}
-                    assignments={module.assignments}
-                  />
-                ))
+                selectedResource ? (
+                  selectedResource.type === 'assignment' ? (
+                    <AssignmentDescription
+                      assignmentNumber={0}
+                      assignmentTitle={selectedResource.data.title}
+                      dueDate={selectedResource.data.dueDate?.toDateString() ?? 'No due date'}
+                      numQuestions={0}
+                      description={selectedResource.data.description ?? 'No description provided'}
+                    />
+                  ) : (
+                    // module material page
+                    <></>
+                  )
+                ) : (
+                  programModules.map((module, index) => (
+                    <Module
+                      key={index}
+                      title={module.title}
+                      materials={module.materials}
+                      assignments={module.assignments}
+                      onClick={handleModuleClick}
+                    />
+                  ))
+                )
               ) : (
                 <Text marginTop={10}>Loading...</Text>
               )}

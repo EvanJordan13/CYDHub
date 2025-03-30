@@ -6,17 +6,24 @@ import Resource from './Resource';
 import { ChevronDown, ChevronUp, ClipboardMinus, Video } from 'lucide-react';
 import { ModuleMaterial, Assignment } from '@prisma/client';
 
+type ResourceItem = { type: 'assignment'; data: Assignment } | { type: 'material'; data: ModuleMaterial };
+
 interface ModuleProps {
   title: string;
   materials: ModuleMaterial[];
   assignments: Assignment[];
+  onClick: (resource: ResourceItem) => void;
 }
 
-export default function Module({ title, materials, assignments }: ModuleProps) {
+export default function Module({ title, materials, assignments, onClick }: ModuleProps) {
   const [isOpen, setIsOpen] = useState(true);
 
   const formatDate = (date: Date): string => {
     return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  };
+
+  const handleClick = (resource: ResourceItem) => {
+    onClick(resource);
   };
 
   return (
@@ -55,6 +62,7 @@ export default function Module({ title, materials, assignments }: ModuleProps) {
               dueDate={assignment.dueDate ? formatDate(new Date(assignment.dueDate)) : 'No Due Date'}
               icon={<ClipboardMinus />}
               resourceType={'assignment'}
+              onClick={() => handleClick({ type: 'assignment', data: assignment })}
             />
           ))}
           {materials.map((material, index) => (
@@ -64,6 +72,7 @@ export default function Module({ title, materials, assignments }: ModuleProps) {
               dueDate={'March 1, 2025'}
               icon={<Video />}
               resourceType={'material'}
+              onClick={() => handleClick({ type: 'material', data: material })}
             />
           ))}
           {/* <Resource title={'Syllabus'} dueDate={'March 1st'} icon={<ClipboardMinus />} resourceType={'assignment'} />
