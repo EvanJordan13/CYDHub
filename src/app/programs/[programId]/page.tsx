@@ -1,5 +1,6 @@
 'use client';
 
+import AssignmentDescription from '@/src/components/AssignmentDescription';
 import Module from '@/src/components/Module';
 import SideBar from '@/src/components/SideBar';
 import { ChevronUp, ChevronDown } from 'lucide-react';
@@ -15,7 +16,6 @@ import {
   Stack,
   Skeleton,
   SkeletonText,
-  SkeletonCircle,
 } from '@chakra-ui/react';
 import AnnouncementCard from '@/src/components/AnnouncementCard';
 import {
@@ -34,18 +34,16 @@ type ModuleWithRelations = Mod & {
   assignments: Assignment[];
 };
 
+type ResourceItem = { type: 'assignment'; data: Assignment } | { type: 'material'; data: ModuleMaterial };
+
 const ProgramPageSkeleton = () => (
   <Box marginY={6} marginLeft={250} style={{ flexBasis: '80%' }} paddingX={4}>
     {' '}
-    {/* Added paddingX */}
-    {/* Skeleton for Header */}
     <Flex height={'35px'} justifyContent={'space-between'} alignItems="center" mb={5}>
-      <Skeleton height="35px" width="clamp(200px, 30%, 400px)" /> {/* Responsive width */}
+      <Skeleton height="35px" width="clamp(200px, 30%, 400px)" />
       <Skeleton height="35px" width="80px" />
     </Flex>
-    {/* Skeleton for Tabs */}
     <Skeleton height="40px" width="clamp(250px, 40%, 350px)" mb={6} />
-    {/* Skeleton for Initial Tab Content (mimicking Modules) */}
     <Stack gap={6}>
       {[...Array(3)].map((_, i) => (
         <Box key={i} padding="5" boxShadow="md" bg="white" borderWidth="1px" borderRadius="lg">
@@ -62,19 +60,21 @@ export default function ProgramPage({ params }: { params: { programId: number } 
   const [programMaterials, setProgramMaterials] = useState<(ModuleMaterial & { moduleTitle: string })[]>([]);
   const [programAssignments, setProgramAssignments] = useState<(Assignment & { moduleTitle: string })[]>([]);
   const [programModules, setProgramModules] = useState<ModuleWithRelations[]>([]);
-  const [isLoadingAll, setIsLoadingAll] = useState(false);
   const [isLoadingMaterials, setIsLoadingMaterials] = useState(false);
   const [isLoadingAssignments, setIsLoadingAssignments] = useState(false);
   const [isLoadingModules, setIsLoadingModules] = useState(false);
-  const [showMaterials, setShowMaterials] = useState(true);
-  const [showAssignments, setShowAssignments] = useState(true);
-  const [showModules, setShowModules] = useState(true);
   const [isLoadingAnnouncements, setIsLoadingAnnouncements] = useState(false);
   const [programAnnouncements, setProgramAnnouncements] = useState<Announcement[]>([]);
   const [program, setProgram] = useState<Program | undefined>();
   const [user, setUser] = useState<User | undefined>();
 
   const [isInitialLoading, setIsInitialLoading] = useState(true);
+
+  const [selectedResource, setSelectedResource] = useState<ResourceItem | null>(null);
+
+  const handleModuleClick = (resource: ResourceItem) => {
+    setSelectedResource(resource);
+  };
 
   const fetchMaterials = async () => {
     setIsLoadingMaterials(true);
@@ -84,6 +84,7 @@ export default function ProgramPage({ params }: { params: { programId: number } 
       setProgramMaterials(materials);
     } catch (error) {
       console.error('Error fetching program materials:', error);
+      throw error;
     } finally {
       setIsLoadingMaterials(false);
     }
@@ -93,10 +94,10 @@ export default function ProgramPage({ params }: { params: { programId: number } 
     setIsLoadingAssignments(true);
     try {
       const assignments = await fetchProgramAssignments(programId);
-      console.log('Program assignments', assignments);
       setProgramAssignments(assignments);
     } catch (error) {
       console.error('Error fetching program assignments:', error);
+      throw error;
     } finally {
       setIsLoadingAssignments(false);
     }
@@ -106,10 +107,10 @@ export default function ProgramPage({ params }: { params: { programId: number } 
     setIsLoadingModules(true);
     try {
       const modules = await getProgramModules(programId);
-      console.log('Program modules', modules);
       setProgramModules(modules as ModuleWithRelations[]);
     } catch (error) {
       console.error('Error fetching program modules:', error);
+      throw error;
     } finally {
       setIsLoadingModules(false);
     }
@@ -146,6 +147,8 @@ export default function ProgramPage({ params }: { params: { programId: number } 
   useEffect(() => {
     const loadInitialData = async () => {
       setIsInitialLoading(true); // Start overall loading
+      setSelectedResource(null);
+
       try {
         // Reset previous states if necessary (optional)
         setProgramModules([]);
@@ -174,12 +177,16 @@ export default function ProgramPage({ params }: { params: { programId: number } 
 
   const handleAnnouncementsTabClick = () => {
     // Fetch only if data isn't present and not already loading specifically for the tab
+    setSelectedResource(null);
+
     if (programAnnouncements.length === 0 && !isLoadingAnnouncements) {
-      fetchAnnouncementsAndProgram();
+      fetchAnnouncementsAndProgram(true);
     }
   };
 
-  const isModulesContentLoading = isLoadingMaterials || isLoadingAssignments || isLoadingModules;
+  const handleModulesTabClick = () => {
+    setSelectedResource(null); // Reset selected resource
+  };
 
   return (
     <Box display={'flex'} backgroundColor={'white'} color={'black'}>
@@ -189,13 +196,10 @@ export default function ProgramPage({ params }: { params: { programId: number } 
       ) : (
         <Box marginY={6} marginLeft={250} style={{ flexBasis: '80%' }}>
           <Box display={'flex'} height={'28px'} justifyContent={'space-between'} alignItems="center">
-            {isLoadingAnnouncements || !program ? (
-              <Skeleton height="35px" width="300px" />
-            ) : (
-              <Heading fontSize={35} fontWeight={'bold'} color={'Aqua'}>
-                {program.name}
-              </Heading>
-            )}
+            <Heading fontSize={35} fontWeight={'bold'} color={'Aqua'}>
+              {program?.name || 'Program'}
+            </Heading>
+
             <Box display={'flex'} alignItems={'center'} gap={2}>
               <Image width={'19px'} height={'28px'} src={'/streak-card-icon.svg'} />
               <Text color={'#FFCE29'} fontWeight={'bold'} fontSize={30} marginRight={10}>
@@ -209,6 +213,7 @@ export default function ProgramPage({ params }: { params: { programId: number } 
                 <Tabs.Trigger
                   value="modules"
                   _selected={{ color: 'Aqua', fontWeight: '700', borderBottom: '4px solid #4D80BB' }}
+                  onClick={handleModulesTabClick}
                 >
                   <Text>Modules</Text>
                 </Tabs.Trigger>
@@ -222,30 +227,41 @@ export default function ProgramPage({ params }: { params: { programId: number } 
                 <Tabs.Trigger
                   value="feedback"
                   _selected={{ color: 'Aqua', fontWeight: '700', borderBottom: '4px solid #4D80BB' }}
+                  onClick={() => setSelectedResource(null)}
                 >
                   <Text>Feedback</Text>
                 </Tabs.Trigger>
               </Tabs.List>
 
               <Tabs.Content value="modules">
-                {isModulesContentLoading ? (
-                  <Stack gap={6} marginTop={6}>
-                    {[...Array(3)].map((_, i) => (
-                      <Box key={i} padding="5" boxShadow="md" bg="white" borderWidth="1px" borderRadius="lg">
-                        <Skeleton height="20px" width="45%" mb="4" />
-                        <SkeletonText mt="4" noOfLines={3} gap="4" height="12px" />
-                      </Box>
-                    ))}
-                  </Stack>
-                ) : (
+                {selectedResource ? (
+                  selectedResource.type === 'assignment' ? (
+                    <AssignmentDescription
+                      assignmentNumber={selectedResource.data.id}
+                      assignmentTitle={selectedResource.data.title}
+                      dueDate={selectedResource.data.dueDate}
+                      questionCount={selectedResource.data.questionCount}
+                      description={selectedResource.data.description}
+                    />
+                  ) : (
+                    <Box mt={4} p={4} borderWidth="1px" borderRadius="md">
+                      <Heading size="md">Material Details</Heading>
+                      <Text mt={2}>Title: {selectedResource.data.title}</Text>
+                      {/* Add more material details or component here */}
+                    </Box>
+                  )
+                ) : programModules.length > 0 ? (
                   programModules.map((module, index) => (
                     <Module
                       key={index}
                       title={module.title}
                       materials={module.materials}
                       assignments={module.assignments}
+                      onClick={handleModuleClick} // ADD: Pass click handler
                     />
                   ))
+                ) : (
+                  <Text mt={4}>No modules found.</Text>
                 )}
               </Tabs.Content>
 
