@@ -25,7 +25,7 @@ export default function MoodModal({ onClose }: MoodModalProps) {
   );
 }
 
-const ModalContent = ({ openSadModal, closeModal }: { openSadModal: () => void, closeModal: () => void }) => {
+const ModalContent = ({ openSadModal, closeModal }: { openSadModal: () => void; closeModal: () => void }) => {
   return (
     <Box>
       <Text fontWeight={'semibold'} fontSize={24}>
