@@ -4,12 +4,16 @@ import React, { useState } from 'react';
 import { Box, Text } from '@chakra-ui/react';
 import TextInput from './TextInput';
 import { Calendar } from 'lucide-react';
+import { parse, isValid } from 'date-fns';
 
 interface DatePickerInputProps {
   labelText?: string;
   helperText: string;
   isRequired?: boolean;
   showIcon?: boolean;
+  height?: number;
+  val?: string | null;
+  onChange?: (value: string) => void;
 }
 
 const DatePickerInput: React.FC<DatePickerInputProps> = ({
@@ -17,9 +21,12 @@ const DatePickerInput: React.FC<DatePickerInputProps> = ({
   helperText,
   isRequired = false,
   showIcon = true,
+  height = 12,
+  val,
+  onChange,
   ...rest
 }) => {
-  const [value, setValue] = useState('');
+  const [value, setValue] = useState(val ? val : '');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputEvent = e.nativeEvent as InputEvent;
@@ -43,11 +50,23 @@ const DatePickerInput: React.FC<DatePickerInputProps> = ({
       formattedValue = formattedValue.slice(0, formattedValue.length - 1);
 
       console.log(formattedValue);
-      setValue(formattedValue.slice(0, formattedValue.length));
+      setValue(formattedValue);
+      if (onChange) onChange(formattedValue);
       return;
     }
 
     setValue(formattedValue);
+    if (onChange) onChange(formattedValue);
+  };
+
+  const isValidDate = (dateStr: string): boolean => {
+    const regex = /^(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])\/\d{4}$/;
+    if (!regex.test(dateStr)) {
+      return false;
+    }
+
+    const parsedDate = parse(dateStr, 'MM/dd/yyyy', new Date());
+    return isValid(parsedDate);
   };
 
   return (
@@ -64,7 +83,14 @@ const DatePickerInput: React.FC<DatePickerInputProps> = ({
         </Text>
       )}
 
-      <TextInput label={helperText} icon={showIcon ? <Calendar /> : undefined} onChange={handleChange} value={value} />
+      <TextInput
+        label={helperText}
+        icon={showIcon ? <Calendar /> : undefined}
+        onChange={handleChange}
+        value={value}
+        height={height}
+        invalidFunction={() => !isValidDate(value)}
+      />
     </Box>
   );
 };

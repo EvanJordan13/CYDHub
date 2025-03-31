@@ -1,7 +1,15 @@
+'use client';
+
 import React from 'react';
 import { Box, Text, Link, Stack, Button, Flex } from '@chakra-ui/react';
+import { useRouter } from 'next/navigation';
 
 export default function NavBar() {
+  const router = useRouter();
+  const handleNextClick = () => {
+    router.push('/onboarding');
+  };
+
   return (
     <Box py="5" px="12">
       <Flex direction={'row'} align="center" justify={'space-between'}>
@@ -17,13 +25,6 @@ export default function NavBar() {
           Code Your Dreams
         </Text>
 
-        <Stack direction={'row'} gap={'10'}>
-          <MenuItem to="/">Dashboard</MenuItem>
-          <MenuItem to="/">Classroom</MenuItem>
-          <MenuItem to="/">Pricing</MenuItem>
-          <MenuItem to="/">Learn</MenuItem>
-        </Stack>
-
         <Stack direction={'row'} gap={'5'}>
           <Button
             size={'lg'}
@@ -33,6 +34,7 @@ export default function NavBar() {
             borderWidth={'1px'}
             borderBottomWidth={'3px'}
             borderColor={'#E5E5E5'}
+            onClick={handleNextClick}
           >
             Log in
           </Button>
@@ -44,6 +46,7 @@ export default function NavBar() {
             borderWidth={'1px'}
             borderBottomWidth={'3px'}
             borderColor={'#A01B43'}
+            onClick={handleNextClick}
           >
             Sign up
           </Button>

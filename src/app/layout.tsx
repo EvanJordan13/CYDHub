@@ -1,9 +1,6 @@
 import Provider from './providers';
 import type { Metadata } from 'next';
 import { siteConfig } from '@/src/config/site';
-import Footer from '@/src/components/Footer';
-import NavBar from '@/src/components/NavBar';
-import Fonts from '../lib/themes/Fonts';
 
 export const metadata: Metadata = {
   title: {
@@ -24,8 +21,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body suppressHydrationWarning>
         <Provider>
           <main>{children}</main>
-          <NavBar />
-          <Footer />
         </Provider>
       </body>
     </html>

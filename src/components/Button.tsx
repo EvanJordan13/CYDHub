@@ -42,10 +42,10 @@ export default function Button({ type, pageColor, text, height, width, onClick }
                 type === 'primary'
                   ? pageColor === 'flamingo'
                     ? 'FlamingoHover'
-                    : 'AquaHover' // CHANGE TO AQUA HOVER COLOR
+                    : 'AquaHover'
                   : pageColor === 'flamingo'
                     ? 'SecondaryFlamingoHover'
-                    : 'SecondaryAquaHover', // CHANGE TO SECONDARY AQUA HOVER COLOR
+                    : 'SecondaryAquaHover',
               textDecoration: 'underline',
               textDecorationColor: textColor,
             }
@@ -59,7 +59,7 @@ export default function Button({ type, pageColor, text, height, width, onClick }
       justifyContent={'center'}
       onClick={type === 'disabled' ? undefined : onClick}
     >
-      <Text fontWeight={'700'} color={textColor}>
+      <Text fontWeight={'700'} color={textColor} fontSize={'lg'}>
         {text}
       </Text>
     </Box>
