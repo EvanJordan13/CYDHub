@@ -61,7 +61,6 @@ export default function DevPage() {
     updatedAt: new Date(),
     type: 'IN_PERSON',
     teacherId: 1,
-    subject: 'Date Science',
   };
 
   const testFetchAllPrograms = async () => {
