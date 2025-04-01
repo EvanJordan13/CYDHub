@@ -1,9 +1,10 @@
 import { User, Program, Assignment } from '@prisma/client';
-import { Box, Heading, Flex, Text, Skeleton } from '@chakra-ui/react';
+import { Box, Heading, Flex, Skeleton } from '@chakra-ui/react';
 import StreakCard from '../StreakCard';
 import TodoCard from '@/src/components/dashboard/TodoCard';
 import ProgramCard from '@/src/components/ProgramCard';
 import Link from 'next/link';
+import DreamBuddy from '../dreambuddy/DreamBuddy';
 
 interface HomeSectionProps {
   userInfo: User | null;
@@ -49,6 +50,7 @@ export default function HomeSection({ userInfo, assignments, programs, isLoading
               ))}
         </Flex>
       </Box>
+      {!isLoading && <DreamBuddy calloutType="greeting" userName={userInfo?.name || ''} />}
     </Box>
   );
 }

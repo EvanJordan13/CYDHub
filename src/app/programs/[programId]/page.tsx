@@ -26,6 +26,7 @@ import {
 } from '@/src/lib/query/programs';
 import { ModuleMaterial, Assignment, Module as Mod, Announcement, Program, User } from '@prisma/client';
 import { useState, useEffect } from 'react';
+import DreamBuddy from '@/src/components/dreambuddy/DreamBuddy';
 
 type ModuleWithRelations = Mod & {
   materials: ModuleMaterial[];
@@ -65,6 +66,7 @@ export default function ProgramPage({ params }: { params: { programId: number } 
   const [programAnnouncements, setProgramAnnouncements] = useState<Announcement[]>([]);
   const [program, setProgram] = useState<Program | undefined>();
   const [user, setUser] = useState<User | undefined>();
+  const [isDreamBuddyVisible, setIsDreamBuddyVisible] = useState(false);
 
   const [isInitialLoading, setIsInitialLoading] = useState(true);
 
@@ -72,6 +74,7 @@ export default function ProgramPage({ params }: { params: { programId: number } 
 
   const handleModuleClick = (resource: ResourceItem) => {
     setSelectedResource(resource);
+    setIsDreamBuddyVisible(true);
   };
 
   const fetchMaterials = async () => {
@@ -167,16 +170,40 @@ export default function ProgramPage({ params }: { params: { programId: number } 
   }, [programId]); // Re-run if programId changes
 
   const handleAnnouncementsTabClick = () => {
-    // Fetch only if data isn't present and not already loading specifically for the tab
     setSelectedResource(null);
-
+    setIsDreamBuddyVisible(false);
     if (programAnnouncements.length === 0 && !isLoadingAnnouncements) {
       fetchAnnouncementsAndProgram(true);
     }
   };
 
   const handleModulesTabClick = () => {
-    setSelectedResource(null); // Reset selected resource
+    setSelectedResource(null);
+    setIsDreamBuddyVisible(false);
+  };
+
+  const handleFeedbackTabClick = () => {
+    setSelectedResource(null);
+    setIsDreamBuddyVisible(false);
+  };
+
+  const outlineStyle = {
+    color: 'Aqua',
+    fontWeight: '700',
+    position: 'relative',
+    '&::after': {
+      content: '""',
+      position: 'absolute',
+      bottom: '-1px',
+      left: 0,
+      right: 0,
+      height: '4px',
+      backgroundColor: '#4D80BB',
+      boxShadow: 'none',
+      transform: 'scaleX(1)',
+      transformOrigin: 'left',
+      transition: 'transform 0.3s ease-in-out',
+    },
   };
 
   return (
@@ -201,25 +228,13 @@ export default function ProgramPage({ params }: { params: { programId: number } 
           <Box marginTop={5} width={'96.5%'}>
             <Tabs.Root defaultValue="modules">
               <Tabs.List>
-                <Tabs.Trigger
-                  value="modules"
-                  _selected={{ color: 'Aqua', fontWeight: '700', borderBottom: '4px solid #4D80BB' }}
-                  onClick={handleModulesTabClick}
-                >
+                <Tabs.Trigger value="modules" _selected={outlineStyle} onClick={handleModulesTabClick}>
                   <Text>Modules</Text>
                 </Tabs.Trigger>
-                <Tabs.Trigger
-                  value="announcements"
-                  _selected={{ color: 'Aqua', fontWeight: '700', borderBottom: '4px solid #4D80BB' }}
-                  onClick={handleAnnouncementsTabClick}
-                >
+                <Tabs.Trigger value="announcements" _selected={outlineStyle} onClick={handleAnnouncementsTabClick}>
                   <Text>Announcements</Text>
                 </Tabs.Trigger>
-                <Tabs.Trigger
-                  value="feedback"
-                  _selected={{ color: 'Aqua', fontWeight: '700', borderBottom: '4px solid #4D80BB' }}
-                  onClick={() => setSelectedResource(null)}
-                >
+                <Tabs.Trigger value="feedback" _selected={outlineStyle} onClick={handleFeedbackTabClick}>
                   <Text>Feedback</Text>
                 </Tabs.Trigger>
               </Tabs.List>
@@ -301,6 +316,7 @@ export default function ProgramPage({ params }: { params: { programId: number } 
           </Box>
         </Box>
       )}
+      {!isInitialLoading && <DreamBuddy isVisible={isDreamBuddyVisible} onHide={() => setIsDreamBuddyVisible(false)} />}
     </Box>
   );
 }
