@@ -10,6 +10,7 @@ import { Flex, Box, Heading } from '@chakra-ui/react';
 import HomeSection from '@/src/components/dashboard/HomeSection';
 import SideBar from '@/src/components/dashboard/SideBar';
 import { Tab } from '@/src/components/dashboard/types';
+import MoodModal from '@/src/components/MoodModal';
 
 export default function DashboardPage() {
   const [tab, setTab] = useState<Tab>('home');
@@ -19,6 +20,7 @@ export default function DashboardPage() {
   const [isLoadingUser, setIsLoadingUser] = useState(true);
   const [isLoadingAssignments, setIsLoadingAssignments] = useState(true);
   const [isLoadingPrograms, setIsLoadingPrograms] = useState(true);
+  const [isOpenModal, setIsOpenModal] = useState(false);
 
   const testUserId = 4;
 
@@ -59,6 +61,8 @@ export default function DashboardPage() {
     fetchUserInfo();
     fetchAssignments();
     fetchPrograms();
+
+    setIsOpenModal(true);
   }, []);
 
   const tabs: Record<Tab, React.ReactNode> = {
@@ -115,6 +119,10 @@ export default function DashboardPage() {
     ),
   };
 
+  const closeModal = () => {
+    setIsOpenModal(false);
+  };
+
   return (
     <Flex height="100vh" width="100vw" position="relative">
       <Box position="fixed" height="100vh" left={0} top={0}>
@@ -123,6 +131,14 @@ export default function DashboardPage() {
       <Box flex={1} ml="240px" height="100vh" overflowY="auto">
         {tabs[tab]}
       </Box>
+
+      {isOpenModal && (
+        <Box position="fixed" top={0} left={0} right={0} bottom={0} bg="rgba(0, 0, 0, 0.5)" zIndex={999}>
+          <Box position="fixed" top="50%" left="50%" transform="translate(-50%, -50%)" zIndex={1000}>
+            <MoodModal onClose={closeModal} />
+          </Box>
+        </Box>
+      )}
     </Flex>
   );
 }
