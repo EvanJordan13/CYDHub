@@ -1,3 +1,6 @@
+'use client';
+
+import { useState } from 'react';
 import { User, Program, Assignment } from '@prisma/client';
 import { Box, Heading, Flex, Skeleton } from '@chakra-ui/react';
 import StreakCard from '../StreakCard';
@@ -14,6 +17,8 @@ interface HomeSectionProps {
 }
 
 export default function HomeSection({ userInfo, assignments, programs, isLoading }: HomeSectionProps) {
+  const [isDreamBuddyVisible, setIsDreamBuddyVisible] = useState(true);
+
   return (
     <Box width={'100%'}>
       {isLoading ? (
@@ -50,7 +55,14 @@ export default function HomeSection({ userInfo, assignments, programs, isLoading
               ))}
         </Flex>
       </Box>
-      {!isLoading && <DreamBuddy calloutType="greeting" userName={userInfo?.name || ''} />}
+      {!isLoading && (
+        <DreamBuddy
+          calloutType="greeting"
+          userName={userInfo?.name || ''}
+          isVisible={isDreamBuddyVisible}
+          onHide={() => setIsDreamBuddyVisible(false)}
+        />
+      )}
     </Box>
   );
 }
