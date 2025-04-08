@@ -13,6 +13,8 @@ import SideBar from '@/src/components/dashboard/SideBar';
 import { Tab } from '@/src/components/dashboard/types';
 import MoodModal from '@/src/components/MoodModal';
 
+const MOOD_MODAL_STORAGE_KEY = 'lastMoodModalShownDate';
+
 export default function DashboardPage() {
   const { user: auth0User } = useAuth0User();
 
@@ -70,6 +72,16 @@ export default function DashboardPage() {
         setUserInfo(userInfoData);
         setAssignments(assignmentsData);
         setPrograms(programsData);
+
+        const todayDateString = new Date().toDateString();
+        const lastShownDate = localStorage.getItem(MOOD_MODAL_STORAGE_KEY);
+
+        if (lastShownDate !== todayDateString) {
+          setIsOpenModal(true);
+          localStorage.setItem(MOOD_MODAL_STORAGE_KEY, todayDateString);
+        } else {
+          setIsOpenModal(false);
+        }
       } catch (error) {
         console.error('Error fetching dashboard data:', error);
       } finally {
@@ -78,7 +90,6 @@ export default function DashboardPage() {
     };
 
     fetchData();
-    setIsOpenModal(true); // Consider if modal should only open after successful fetch
   }, [dbUserId]);
 
   const tabs: Record<Tab, React.ReactNode> = {
