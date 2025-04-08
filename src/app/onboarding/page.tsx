@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Box, Image, Flex, Text, Link } from '@chakra-ui/react';
+import { Box, Image, Flex, Text, Link, Toaster } from '@chakra-ui/react';
 import { Checkbox } from '../../components/ui/checkbox';
 import Button from '../../components/Button';
 import TextInput from '../../components/TextInput';
@@ -10,8 +10,12 @@ import DropDownInput from '@/src/components/DropDownInput';
 import { User, LockKeyhole } from 'lucide-react';
 import { parse, isValid } from 'date-fns';
 import { useRouter } from 'next/navigation';
+import { useUser } from '@auth0/nextjs-auth0/client';
+import { useEffect } from 'react';
+import { toaster } from '../../components/ui/toaster';
 
 export default function OnboardingPage() {
+  const { user, isLoading } = useUser();
   const router = useRouter();
 
   const pronouns = ['He/Him', 'She/Her', 'They/Them', 'Prefer not to answer'];
@@ -20,6 +24,73 @@ export default function OnboardingPage() {
   const [selectedPronoun, setSelectedPronoun] = useState('');
   const [date, setDate] = useState('');
   const [checked, setChecked] = useState(false);
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [dbUserId, setDbUserId] = useState<number | null>(null);
+
+  // If user isn't logged in, redirect to login
+  useEffect(() => {
+    if (!isLoading && !user) {
+      router.push('/api/auth/login');
+    }
+  }, [user, isLoading, router]);
+
+  useEffect(() => {
+    if (user) {
+      if (user.name) setDisplayName(user.name);
+      if (user.email) {
+        fetch(`/api/users/lookup?email=${encodeURIComponent(user.email)}`)
+          .then(res => {
+            if (!res.ok) {
+              return res
+                .json()
+                .catch(() => null)
+                .then(body => {
+                  throw new Error(body?.message || `HTTP error! status: ${res.status}`);
+                });
+            }
+            return res.json();
+          })
+          .then(data => {
+            if (data?.id) {
+              setDbUserId(data.id);
+              if (data.signupComplete) {
+                console.log('User already onboarded, redirecting to dashboard.');
+                toaster.info({
+                  title: 'Already Onboarded',
+                  description: 'Redirecting you to the dashboard...',
+                  duration: 2000,
+                  closable: true,
+                });
+                setTimeout(() => router.push('/dashboard'), 1500);
+              }
+            } else {
+              console.warn('User found in Auth0 but not in local DB yet. Awaiting profile completion.');
+            }
+          })
+          .catch(err => {
+            console.error('Error looking up user:', err);
+            toaster.error({
+              title: 'Error Loading Profile',
+              description:
+                err instanceof Error
+                  ? err.message
+                  : 'Could not retrieve your information. Please try refreshing the page.',
+              duration: 5000,
+              closable: true,
+            });
+          });
+      } else {
+        console.error('User object loaded but email is missing.');
+        toaster.error({
+          title: 'Authentication Error',
+          description: 'User email could not be loaded. Please try logging out and back in.',
+          duration: 5000,
+          closable: true,
+        });
+      }
+    }
+  }, [user, isLoading, router]);
 
   const isValidDate = (dateStr: string): boolean => {
     const regex = /^(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])\/\d{4}$/;
@@ -34,9 +105,81 @@ export default function OnboardingPage() {
   const formValid =
     displayName.trim() !== '' && selectedPronoun.trim() !== '' && date.trim() !== '' && isValidDate(date) && checked;
 
-  const handleNextClick = () => {
-    if (formValid) {
-      router.push('/dashboard');
+  const handleNextClick = async () => {
+    if (isSubmitting || !dbUserId || !user) {
+      if (!dbUserId || !user) {
+        toaster.warning({
+          title: 'Loading...',
+          description: 'User data is still loading. Please wait.',
+          duration: 3000,
+          closable: true,
+        });
+      }
+      return;
+    }
+
+    // Validation feedback
+    if (displayName.trim() === '') {
+      toaster.warning({ title: 'Display Name is required.', duration: 3000, closable: true });
+      return;
+    }
+    if (selectedPronoun.trim() === '') {
+      toaster.warning({ title: 'Pronouns are required.', duration: 3000, closable: true });
+      return;
+    }
+    if (date.trim() === '' || !isValidDate(date)) {
+      toaster.warning({ title: 'A valid Date of Birth (MM/DD/YYYY) is required.', duration: 3000, closable: true });
+      return;
+    }
+    if (!checked) {
+      toaster.warning({ title: 'You must accept the Terms of Conditions.', duration: 3000, closable: true });
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch(`/api/users/${dbUserId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: displayName.trim(),
+          pronouns: selectedPronoun,
+          birthdate: date,
+          signupComplete: true,
+        }),
+      });
+
+      if (!response.ok) {
+        let errorDetails = `Request failed with status ${response.status}`;
+        try {
+          const errorData = await response.json();
+          errorDetails = errorData.message || JSON.stringify(errorData) || errorDetails;
+        } catch (parseError) {
+          console.warn('Could not parse error response body:', parseError);
+        }
+        throw new Error(errorDetails);
+      }
+
+      toaster.success({
+        title: 'Profile Complete!',
+        description: 'Your profile has been set up successfully. Redirecting...',
+        duration: 4000,
+        closable: true,
+      });
+
+      setTimeout(() => {
+        router.push('/dashboard');
+      }, 1500);
+    } catch (error) {
+      console.error('Error saving user data:', error);
+      toaster.error({
+        title: 'Error Saving Profile',
+        description: error instanceof Error ? error.message : 'An unknown error occurred. Please try again.',
+        duration: 6000,
+        closable: true,
+      });
+      setIsSubmitting(false);
     }
   };
 
@@ -75,13 +218,7 @@ export default function OnboardingPage() {
                   <Text color="black" fontSize="113%" fontWeight="medium" mb={2}>
                     Email
                   </Text>
-                  <TextInput
-                    label="Email"
-                    icon={<LockKeyhole />}
-                    disabled={true}
-                    value="RandomExample@email.com"
-                    height={20}
-                  />
+                  <TextInput label="Email" icon={<LockKeyhole />} disabled={true} value={user!.email!} height={20} />
                 </Box>
                 <Flex direction="row" gap="16px" width="100%">
                   <Flex direction="column" gap="6px" width="35%" height="100%">

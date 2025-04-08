@@ -3,12 +3,11 @@
 import React from 'react';
 import { Box, Text, Link, Stack, Button, Flex } from '@chakra-ui/react';
 import { useRouter } from 'next/navigation';
+import { useUser } from '@auth0/nextjs-auth0/client';
 
 export default function NavBar() {
   const router = useRouter();
-  const handleNextClick = () => {
-    router.push('/onboarding');
-  };
+  const { user, isLoading } = useUser();
 
   return (
     <Box py="5" px="12">
@@ -26,30 +25,52 @@ export default function NavBar() {
         </Text>
 
         <Stack direction={'row'} gap={'5'}>
-          <Button
-            size={'lg'}
-            px={'7'}
-            rounded={'lg'}
-            variant={'outline'}
-            borderWidth={'1px'}
-            borderBottomWidth={'3px'}
-            borderColor={'#E5E5E5'}
-            onClick={handleNextClick}
-          >
-            Log in
-          </Button>
-          <Button
-            size={'lg'}
-            px={'7'}
-            rounded={'lg'}
-            bg={'#BC3860'}
-            borderWidth={'1px'}
-            borderBottomWidth={'3px'}
-            borderColor={'#A01B43'}
-            onClick={handleNextClick}
-          >
-            Sign up
-          </Button>
+          {!isLoading && !user ? (
+            <>
+              <Link href="//api/auth/login">
+                <Button
+                  size={'lg'}
+                  px={'7'}
+                  rounded={'lg'}
+                  variant={'outline'}
+                  borderWidth={'1px'}
+                  borderBottomWidth={'3px'}
+                  borderColor={'#E5E5E5'}
+                >
+                  Log in
+                </Button>
+              </Link>
+              <Link href="/api/auth/login?screen_hint=signup">
+                <Button
+                  size={'lg'}
+                  px={'7'}
+                  rounded={'lg'}
+                  bg={'#BC3860'}
+                  borderWidth={'1px'}
+                  borderBottomWidth={'3px'}
+                  borderColor={'#A01B43'}
+                >
+                  Sign up
+                </Button>
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link href="/api/auth/logout">
+                <Button
+                  size={'lg'}
+                  px={'7'}
+                  rounded={'lg'}
+                  bg={'#BC3860'}
+                  borderWidth={'1px'}
+                  borderBottomWidth={'3px'}
+                  borderColor={'#A01B43'}
+                >
+                  Log out
+                </Button>
+              </Link>
+            </>
+          )}
         </Stack>
       </Flex>
     </Box>
