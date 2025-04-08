@@ -27,7 +27,7 @@ export default function NavBar() {
         <Stack direction={'row'} gap={'5'}>
           {!isLoading && !user ? (
             <>
-              <Link href="//api/auth/login">
+              <Link href="/api/auth/login">
                 <Button
                   size={'lg'}
                   px={'7'}

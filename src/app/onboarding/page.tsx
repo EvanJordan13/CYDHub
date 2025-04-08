@@ -37,7 +37,6 @@ export default function OnboardingPage() {
 
   useEffect(() => {
     if (user) {
-      if (user.name) setDisplayName(user.name);
       if (user.email) {
         fetch(`/api/users/lookup?email=${encodeURIComponent(user.email)}`)
           .then(res => {

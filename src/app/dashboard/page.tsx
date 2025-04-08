@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 
+import { useUser as useAuth0User } from '@auth0/nextjs-auth0/client';
 import { getUserById } from '@/src/lib/query/users';
 import { User, Assignment, Program, Announcement } from '@prisma/client';
 import { fetchProgramsByUser, fetchProgramAssignmentsByUser } from '@/src/lib/query/programs';
@@ -13,66 +14,76 @@ import { Tab } from '@/src/components/dashboard/types';
 import MoodModal from '@/src/components/MoodModal';
 
 export default function DashboardPage() {
+  const { user: auth0User } = useAuth0User();
+
   const [tab, setTab] = useState<Tab>('home');
   const [userInfo, setUserInfo] = useState<User | null>(null);
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [programs, setPrograms] = useState<Program[]>([]);
-  const [isLoadingUser, setIsLoadingUser] = useState(true);
-  const [isLoadingAssignments, setIsLoadingAssignments] = useState(true);
-  const [isLoadingPrograms, setIsLoadingPrograms] = useState(true);
   const [isOpenModal, setIsOpenModal] = useState(false);
-
-  const testUserId = 4;
+  const [isLoadingPageData, setIsLoadingPageData] = useState(true);
+  const [dbUserId, setDbUserId] = useState<number | null>(null);
 
   useEffect(() => {
-    const fetchUserInfo = async () => {
-      setIsLoadingUser(true);
-      try {
-        const userInfo = await getUserById(testUserId);
-        setUserInfo(userInfo);
-      } catch (error) {
-        console.error('Error fetching user info:', error);
-      } finally {
-        setIsLoadingUser(false);
-      }
-    };
-    const fetchAssignments = async () => {
-      setIsLoadingAssignments(true);
-      try {
-        const assignments = await fetchProgramAssignmentsByUser(testUserId);
-        setAssignments(assignments);
-      } catch (error) {
-        console.error('Error fetching assignments:', error);
-      } finally {
-        setIsLoadingAssignments(false);
-      }
-    };
-    const fetchPrograms = async () => {
-      setIsLoadingPrograms(true);
-      try {
-        const programs = await fetchProgramsByUser(testUserId);
-        setPrograms(programs);
-      } catch (error) {
-        console.error('Error fetching programs:', error);
-      } finally {
-        setIsLoadingPrograms(false);
-      }
-    };
-    fetchUserInfo();
-    fetchAssignments();
-    fetchPrograms();
+    if (auth0User?.email) {
+      setIsLoadingPageData(true);
+      setDbUserId(null);
 
-    setIsOpenModal(true);
-  }, []);
+      fetch(`/api/users/lookup?email=${encodeURIComponent(auth0User.email)}`)
+        .then(res => {
+          if (!res.ok) {
+            throw new Error(`User lookup failed with status: ${res.status}`);
+          }
+          return res.json();
+        })
+        .then(data => {
+          if (data?.id) {
+            setDbUserId(data.id);
+          } else {
+            console.error('DB User lookup failed unexpectedly after AuthWrapper checks.');
+            setIsLoadingPageData(false);
+          }
+        })
+        .catch(error => {
+          console.error('Error fetching database user ID:', error);
+          setIsLoadingPageData(false);
+        });
+    } else if (auth0User) {
+      console.error('Auth0 user is missing email address.');
+      setIsLoadingPageData(false);
+    }
+  }, [auth0User]);
+
+  useEffect(() => {
+    if (!dbUserId) {
+      return;
+    }
+
+    const fetchData = async () => {
+      setIsLoadingPageData(true);
+      try {
+        const [userInfoData, assignmentsData, programsData] = await Promise.all([
+          getUserById(dbUserId),
+          fetchProgramAssignmentsByUser(dbUserId),
+          fetchProgramsByUser(dbUserId),
+        ]);
+        setUserInfo(userInfoData);
+        setAssignments(assignmentsData);
+        setPrograms(programsData);
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+      } finally {
+        setIsLoadingPageData(false);
+      }
+    };
+
+    fetchData();
+    setIsOpenModal(true); // Consider if modal should only open after successful fetch
+  }, [dbUserId]);
 
   const tabs: Record<Tab, React.ReactNode> = {
     home: (
-      <HomeSection
-        userInfo={userInfo}
-        assignments={assignments}
-        programs={programs}
-        isLoading={isLoadingUser || isLoadingAssignments || isLoadingPrograms}
-      />
+      <HomeSection userInfo={userInfo} assignments={assignments} programs={programs} isLoading={isLoadingPageData} />
     ),
     todo: (
       <>

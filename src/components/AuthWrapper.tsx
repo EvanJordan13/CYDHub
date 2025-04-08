@@ -43,7 +43,7 @@ export default function AuthWrapper({ children }: { children: React.ReactNode })
 
             // Redirect if profile is not complete
             if (!data.dbUser.signupComplete) {
-              router.push('/complete-profile');
+              router.push('/onboarding');
             }
           }
           setIsCheckingDb(false);
