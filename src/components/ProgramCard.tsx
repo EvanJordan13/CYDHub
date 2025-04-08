@@ -8,31 +8,33 @@ interface ProgramCardProps {
 
 export default function ProgramCard({ program }: ProgramCardProps) {
   return (
-    <Link href="/" passHref>
-      <Box
-        height={136}
-        width={420}
-        bg={'white'}
-        borderWidth={'2px'}
-        borderColor={'lightgray'}
-        margin={20}
-        borderRadius={'2xl'}
-        borderBottomWidth={'6px'}
-        _hover={{ bg: 'gray.100' }}
-        transition={'linear'}
-      >
-        <Flex direction={'row'} gap={'7px'} alignItems={'center'}>
-          <Image src="program-card-image.svg" marginTop={'12px'} marginLeft={'12px'} />
-          <Flex direction={'column'} gap={'6px'} alignContent={'center'}>
-            <Text marginTop={'22px'} width={'229px'} fontWeight={'bold'} color={'#6C757D'} fontSize={'24px'} truncate>
+    <Box
+      width="fit-content"
+      minWidth={420}
+      maxWidth={450}
+      bg={'white'}
+      borderRadius={'12px'}
+      boxShadow={'0px 0px 4px 0px rgba(0, 0, 0, 0.25)'}
+      _hover={{ bg: 'gray.100', transform: 'translateY(-2px)' }}
+      transition={'all 0.2s ease-in-out'}
+      p={'24px 32px'}
+    >
+      <Flex direction={'row'} gap={'16px'} height="100%">
+        <Box>
+          <Image src="program-card-image.svg" alt="program-card" width={20} draggable={false} />
+          <Box direction={'column'} mt={'8px'}>
+            <Text fontWeight={600} color={'Lavender'} fontSize={'14px'}>
+              {program.subject}
+            </Text>
+            <Text fontWeight={600} color={'Flamingo'} fontSize={'24px'} lineClamp={1}>
               {program.name}
             </Text>
-            <Text width={'249px'} lineClamp="2" fontWeight={'bold'} color={'gray'} fontSize={'16px'}>
+            <Text lineClamp="2" fontWeight={500} color={'Slate'} fontSize={'16px'}>
               {program.description}
             </Text>
-          </Flex>
-        </Flex>
-      </Box>
-    </Link>
+          </Box>
+        </Box>
+      </Flex>
+    </Box>
   );
 }

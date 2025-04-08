@@ -9,7 +9,15 @@ interface TodoCardProps {
 
 export default function TodoCard({ assignments }: TodoCardProps) {
   return (
-    <Flex width={'776px'} fontWeight={600} gap={'24px'} flexDirection={'column'}>
+    <Flex
+      width={'100%'}
+      fontWeight={600}
+      gap={'24px'}
+      flexDirection={'column'}
+      p={'24px 32px'}
+      boxShadow={'0px 0px 4px 0px rgba(0, 0, 0, 0.25)'}
+      borderRadius={'12px'}
+    >
       <Flex gap={4} flexDirection={'column'}>
         <Image src="/assignment.png" alt="Todo Card" width={64} height={64} draggable="false" />
         <Flex flexDirection={'row'} justify="space-between" align="center" fontSize={'16px'}>
@@ -20,7 +28,7 @@ export default function TodoCard({ assignments }: TodoCardProps) {
         </Flex>
       </Flex>
       <Flex flexDirection={'column'} gap={4} fontSize={'14px'}>
-        {assignments.map(assignment => (
+        {assignments.slice(0, 3).map(assignment => (
           <Flex
             key={assignment.id}
             rounded={'6px'}
@@ -33,6 +41,7 @@ export default function TodoCard({ assignments }: TodoCardProps) {
               transform: 'translateY(-2px)',
             }}
             transition="all 0.2s ease-in-out"
+            cursor={'pointer'}
           >
             <SquareArrowOutUpRight width={20} height={20} />
             <Text>{assignment.title}</Text>
