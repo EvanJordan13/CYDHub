@@ -16,7 +16,7 @@ import {
   SkeletonText,
   RatingGroup,
   useRatingGroup,
-  Textarea
+  Textarea,
 } from '@chakra-ui/react';
 import AnnouncementCard from '@/src/components/AnnouncementCard';
 import Button from '@/src/components/Button';
@@ -29,12 +29,8 @@ import {
   getProgramById,
   getUserById,
 } from '@/src/lib/query/programs';
-import {
-  storeSurveyResponse,
-} from '@/src/lib/query/survey';
-import {
-  updateUserPoints,
-} from '@/src/lib/query/users';
+import { storeSurveyResponse } from '@/src/lib/query/survey';
+import { updateUserPoints } from '@/src/lib/query/users';
 import { ModuleMaterial, Assignment, Module as Mod, Announcement, Program, User } from '@prisma/client';
 import { useState, useEffect } from 'react';
 import TextInput from '@/src/components/TextInput';
@@ -193,14 +189,14 @@ export default function ProgramPage({ params }: { params: { programId: number } 
   };
 
   const FeedbackQuestions: [string, string, string[]][] = [
-    ["What did you like about this assignment?", "I liked...", ["like"]],
-    ["What would you do to improve this assignment?", "I would improve...", ["improve"]]
+    ['What did you like about this assignment?', 'I liked...', ['like']],
+    ['What would you do to improve this assignment?', 'I would improve...', ['improve']],
   ];
 
   const router = useRouter();
-  const RatingsValue = useRatingGroup({ count: 5, defaultValue: 0 })
+  const RatingsValue = useRatingGroup({ count: 5, defaultValue: 0 });
   useEffect(() => {
-    console.log("Rating changed to:", RatingsValue.value);
+    console.log('Rating changed to:', RatingsValue.value);
   }, [RatingsValue.value]);
 
   const [feedbackValues, setFeedbackValues] = useState<{ [key: number]: string }>({});
@@ -208,22 +204,22 @@ export default function ProgramPage({ params }: { params: { programId: number } 
     setFeedbackValues(prev => ({ ...prev, [index]: value }));
   };
 
-  const currentUserId = 1;  // Replace with User Id
+  const currentUserId = 1; // Replace with User Id
   const pointsPerQuestion = 30; // Replace with Points for a survey question
 
   const onSubmitFeedback = async () => {
     await Promise.all(
       FeedbackQuestions.map(async ([questionText], index) => {
         const response = feedbackValues[index];
-        if (!response || response.trim() === "") {
+        if (!response || response.trim() === '') {
           return null;
         }
-        await storeSurveyResponse(questionText, currentUserId, response); 
+        await storeSurveyResponse(questionText, currentUserId, response);
         await updateUserPoints(currentUserId, pointsPerQuestion);
-      })
+      }),
     );
     if (RatingsValue.value > 0) {
-      await storeSurveyResponse("Rating?", currentUserId, String(RatingsValue.value));  
+      await storeSurveyResponse('Rating?', currentUserId, String(RatingsValue.value));
       await updateUserPoints(currentUserId, pointsPerQuestion);
     }
     router.push('/');
@@ -343,32 +339,44 @@ export default function ProgramPage({ params }: { params: { programId: number } 
               </Tabs.Content>
 
               <Tabs.Content value="feedback">
-                <Flex direction={"column"}  ml={2} marginTop={7}>
-
-                  <Heading fontSize={"3xl"} fontWeight={"bold"} marginBottom={3}>
+                <Flex direction={'column'} ml={2} marginTop={7}>
+                  <Heading fontSize={'3xl'} fontWeight={'bold'} marginBottom={3}>
                     Feedback Survey
                   </Heading>
 
-                  <Text fontWeight={"medium"} mb={7}>
+                  <Text fontWeight={'medium'} mb={7}>
                     Complete this optional survey to earn points!
                   </Text>
 
-                  <Text fontSize={"lg"} fontWeight={"semibold"} mb={2}>
+                  <Text fontSize={'lg'} fontWeight={'semibold'} mb={2}>
                     Please provide this assignment a star rating.
                   </Text>
 
-                  <RatingGroup.RootProvider value={RatingsValue} size="lg" colorPalette={"yellow"} mb={10}>
+                  <RatingGroup.RootProvider value={RatingsValue} size="lg" colorPalette={'yellow'} mb={10}>
                     <RatingGroup.HiddenInput />
                     <RatingGroup.Control />
                   </RatingGroup.RootProvider>
-                  
+
                   <Flex direction="column" gap={6}>
                     {FeedbackQuestions.map(([question, placeholder, words], index) => (
-                      <FeedbackCard key={index} question={question} words={words} placeholder={placeholder} onFeedbackChange={(value) => handleFeedbackChange(index, value)}/>
+                      <FeedbackCard
+                        key={index}
+                        question={question}
+                        words={words}
+                        placeholder={placeholder}
+                        onFeedbackChange={value => handleFeedbackChange(index, value)}
+                      />
                     ))}
                   </Flex>
-                  <Box mt={20} display={"flex"} justifyContent={"flex-end"} onClick={onSubmitFeedback}>
-                    <Button type='primary' pageColor='aqua' text='Submit' height={14} width={40} onClick={() => console.log(feedbackValues)}/>
+                  <Box mt={20} display={'flex'} justifyContent={'flex-end'} onClick={onSubmitFeedback}>
+                    <Button
+                      type="primary"
+                      pageColor="aqua"
+                      text="Submit"
+                      height={14}
+                      width={40}
+                      onClick={() => console.log(feedbackValues)}
+                    />
                   </Box>
                 </Flex>
               </Tabs.Content>

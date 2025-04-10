@@ -71,7 +71,7 @@ export default function AnnouncementCard({
             <Text>{name}</Text>
             {subject && <Text>({subject})</Text>}
           </Flex>
-          <Text fontSize={"xs"} color="#4B5B63" fontWeight={500}>
+          <Text fontSize={'xs'} color="#4B5B63" fontWeight={500}>
             {formatDate(new Date(createdAt))}
           </Text>
         </Box>
@@ -80,11 +80,11 @@ export default function AnnouncementCard({
       {/* Content section */}
       <Box color={'Slate'}>
         {title && (
-          <Heading as="h2" fontSize={"2xl"} fontWeight={700} mb={5}>
+          <Heading as="h2" fontSize={'2xl'} fontWeight={700} mb={5}>
             {title}
           </Heading>
         )}
-        <Text fontSize={"sm"} lineHeight="relaxed">
+        <Text fontSize={'sm'} lineHeight="relaxed">
           {message}
         </Text>
       </Box>

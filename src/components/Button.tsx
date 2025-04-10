@@ -48,7 +48,7 @@ export default function Button({ type, pageColor, text, height, width, onClick }
                     : 'SecondaryAquaHover',
               textDecoration: 'underline',
               textDecorationColor: textColor,
-              cursor: "pointer"
+              cursor: 'pointer',
             }
       }
       borderWidth={'thin'}

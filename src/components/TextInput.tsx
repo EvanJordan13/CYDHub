@@ -40,50 +40,51 @@ export default function TextInput({
         _hover={{ background: disabled ? '' : '#E0EEFF' }}
         bgColor={disabled ? '#F0EFEF' : ''}
       >
-        {icon ? <Box color="#AAAAAA" ml="4%" transform="scale(1.2)" bgColor={disabled ? '#F0EFEF' : ''}>
-          {icon}
-        </Box> : null}
+        {icon ? (
+          <Box color="#AAAAAA" ml="4%" transform="scale(1.2)" bgColor={disabled ? '#F0EFEF' : ''}>
+            {icon}
+          </Box>
+        ) : null}
 
-        { wrap ?
-
-        <Textarea
-          variant="flushed"
-          ml={icon ? 3 : 5}
-          placeholder={label}
-          _placeholder={{ color: '#AAAAAA' }}
-          aria-label={label}
-          color="black"
-          borderColor="transparent"
-          _focus={{ boxShadow: 'none', borderColor: 'transparent' }}
-          onChange={onChange}
-          value={value}
-          onBlur={() => setHasBeenTouched(true)}
-          fontSize="sm%"
-          fontWeight={500}
-          disabled={disabled}
-          autoresize
-          maxH="5lh"
-          {...props}
-        /> :
-        <Input
-          variant="flushed"
-          ml={icon ? 3 : 5}
-          placeholder={label}
-          _placeholder={{ color: '#AAAAAA' }}
-          aria-label={label}
-          color="black"
-          borderColor="transparent"
-          _focus={{ boxShadow: 'none', borderColor: 'transparent' }}
-          onChange={onChange}
-          value={value}
-          onBlur={() => setHasBeenTouched(true)}
-          fontSize="sm%"
-          fontWeight={500}
-          disabled={disabled}
-          {...props}
-        />
-
-        } 
+        {wrap ? (
+          <Textarea
+            variant="flushed"
+            ml={icon ? 3 : 5}
+            placeholder={label}
+            _placeholder={{ color: '#AAAAAA' }}
+            aria-label={label}
+            color="black"
+            borderColor="transparent"
+            _focus={{ boxShadow: 'none', borderColor: 'transparent' }}
+            onChange={onChange}
+            value={value}
+            onBlur={() => setHasBeenTouched(true)}
+            fontSize="sm%"
+            fontWeight={500}
+            disabled={disabled}
+            autoresize
+            maxH="5lh"
+            {...props}
+          />
+        ) : (
+          <Input
+            variant="flushed"
+            ml={icon ? 3 : 5}
+            placeholder={label}
+            _placeholder={{ color: '#AAAAAA' }}
+            aria-label={label}
+            color="black"
+            borderColor="transparent"
+            _focus={{ boxShadow: 'none', borderColor: 'transparent' }}
+            onChange={onChange}
+            value={value}
+            onBlur={() => setHasBeenTouched(true)}
+            fontSize="sm%"
+            fontWeight={500}
+            disabled={disabled}
+            {...props}
+          />
+        )}
       </Flex>
     </Field.Root>
   );

@@ -1,12 +1,12 @@
 'use server';
 
 import prisma from '../postgres/db';
-import { SurveyQuestion} from '@prisma/client';
+import { SurveyQuestion } from '@prisma/client';
 
 export async function getSurveyQuestionByQuestion(surveyQuestion: string): Promise<SurveyQuestion> {
   const surveyQ = await prisma.surveyQuestion.findFirst({
     where: {
-      questionText: surveyQuestion
+      questionText: surveyQuestion,
     },
   });
   if (!surveyQ) {
@@ -21,8 +21,8 @@ export async function storeSurveyResponse(surveyQuestionText: string, studentId:
     data: {
       surveyQuestionId: question.id,
       studentId: studentId,
-      response: response
-    }
-  })
+      response: response,
+    },
+  });
   return surveyResponse;
 }
