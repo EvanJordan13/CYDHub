@@ -14,8 +14,13 @@ import {
   Stack,
   Skeleton,
   SkeletonText,
+  RatingGroup,
+  useRatingGroup,
+  Textarea
 } from '@chakra-ui/react';
 import AnnouncementCard from '@/src/components/AnnouncementCard';
+import Button from '@/src/components/Button';
+import FeedbackCard from '@/src/components/FeedbackCard';
 import {
   fetchProgramMaterials,
   fetchProgramAssignments,
@@ -24,8 +29,16 @@ import {
   getProgramById,
   getUserById,
 } from '@/src/lib/query/programs';
+import {
+  storeSurveyResponse,
+} from '@/src/lib/query/survey';
+import {
+  updateUserPoints,
+} from '@/src/lib/query/users';
 import { ModuleMaterial, Assignment, Module as Mod, Announcement, Program, User } from '@prisma/client';
 import { useState, useEffect } from 'react';
+import TextInput from '@/src/components/TextInput';
+import { useRouter } from 'next/navigation';
 
 type ModuleWithRelations = Mod & {
   materials: ModuleMaterial[];
@@ -179,9 +192,46 @@ export default function ProgramPage({ params }: { params: { programId: number } 
     setSelectedResource(null); // Reset selected resource
   };
 
+  const FeedbackQuestions: [string, string, string[]][] = [
+    ["What did you like about this assignment?", "I liked...", ["like"]],
+    ["What would you do to improve this assignment?", "I would improve...", ["improve"]]
+  ];
+
+  const router = useRouter();
+  const RatingsValue = useRatingGroup({ count: 5, defaultValue: 0 })
+  useEffect(() => {
+    console.log("Rating changed to:", RatingsValue.value);
+  }, [RatingsValue.value]);
+
+  const [feedbackValues, setFeedbackValues] = useState<{ [key: number]: string }>({});
+  const handleFeedbackChange = (index: number, value: string) => {
+    setFeedbackValues(prev => ({ ...prev, [index]: value }));
+  };
+
+  const currentUserId = 1;  // Replace with User Id
+  const pointsPerQuestion = 30; // Replace with Points for a survey question
+
+  const onSubmitFeedback = async () => {
+    await Promise.all(
+      FeedbackQuestions.map(async ([questionText], index) => {
+        const response = feedbackValues[index];
+        if (!response || response.trim() === "") {
+          return null;
+        }
+        await storeSurveyResponse(questionText, currentUserId, response); 
+        await updateUserPoints(currentUserId, pointsPerQuestion);
+      })
+    );
+    if (RatingsValue.value > 0) {
+      await storeSurveyResponse("Rating?", currentUserId, String(RatingsValue.value));  
+      await updateUserPoints(currentUserId, pointsPerQuestion);
+    }
+    router.push('/');
+  };
+
   return (
     <Box display={'flex'} backgroundColor={'white'} color={'black'}>
-      <SideBar page="Program" />
+      <SideBar page="Home" />
       {isInitialLoading ? (
         <ProgramPageSkeleton />
       ) : (
@@ -255,7 +305,7 @@ export default function ProgramPage({ params }: { params: { programId: number } 
               </Tabs.Content>
 
               <Tabs.Content value="announcements">
-                <Flex direction="column" paddingTop={'16px'} paddingBottom={'16px'} gap={'32px'}>
+                <Flex direction="column" paddingTop={4} paddingBottom={4} gap={8}>
                   {isLoadingAnnouncements ? (
                     // Skeleton specifically for announcements list
                     [...Array(2)].map((_, i) => (
@@ -293,9 +343,34 @@ export default function ProgramPage({ params }: { params: { programId: number } 
               </Tabs.Content>
 
               <Tabs.Content value="feedback">
-                <Heading fontSize="40px" fontWeight={700} p="32px 48px 16px 48px" lineHeight={'48px'}>
-                  Page Under Construction!
-                </Heading>
+                <Flex direction={"column"}  ml={2} marginTop={7}>
+
+                  <Heading fontSize={"3xl"} fontWeight={"bold"} marginBottom={3}>
+                    Feedback Survey
+                  </Heading>
+
+                  <Text fontWeight={"medium"} mb={7}>
+                    Complete this optional survey to earn points!
+                  </Text>
+
+                  <Text fontSize={"lg"} fontWeight={"semibold"} mb={2}>
+                    Please provide this assignment a star rating.
+                  </Text>
+
+                  <RatingGroup.RootProvider value={RatingsValue} size="lg" colorPalette={"yellow"} mb={10}>
+                    <RatingGroup.HiddenInput />
+                    <RatingGroup.Control />
+                  </RatingGroup.RootProvider>
+                  
+                  <Flex direction="column" gap={6}>
+                    {FeedbackQuestions.map(([question, placeholder, words], index) => (
+                      <FeedbackCard key={index} question={question} words={words} placeholder={placeholder} onFeedbackChange={(value) => handleFeedbackChange(index, value)}/>
+                    ))}
+                  </Flex>
+                  <Box mt={20} display={"flex"} justifyContent={"flex-end"} onClick={onSubmitFeedback}>
+                    <Button type='primary' pageColor='aqua' text='Submit' height={14} width={40} onClick={() => console.log(feedbackValues)}/>
+                  </Box>
+                </Flex>
               </Tabs.Content>
             </Tabs.Root>
           </Box>

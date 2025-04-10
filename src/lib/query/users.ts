@@ -20,3 +20,10 @@ export async function getUserById(userId: number): Promise<User> {
 
   return user;
 }
+
+export async function updateUserPoints(userId: number, points: number) {
+  await prisma.user.update({
+    where: { id: userId },
+    data: { points: { increment: points } },
+  });
+}

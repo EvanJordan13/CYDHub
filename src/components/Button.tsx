@@ -4,8 +4,8 @@ interface ButtonProps {
   type: 'primary' | 'secondary' | 'disabled';
   pageColor: 'flamingo' | 'aqua';
   text: string;
-  height: string;
-  width: string;
+  height: string | number;
+  width: string | number;
   onClick?: () => void;
 }
 
@@ -48,12 +48,13 @@ export default function Button({ type, pageColor, text, height, width, onClick }
                     : 'SecondaryAquaHover',
               textDecoration: 'underline',
               textDecorationColor: textColor,
+              cursor: "pointer"
             }
       }
       borderWidth={'thin'}
       borderColor={borderColor}
       borderRadius={'xl'}
-      borderBottomWidth={'4px'}
+      borderBottomWidth={4}
       display="flex"
       alignItems={'center'}
       justifyContent={'center'}

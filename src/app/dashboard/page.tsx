@@ -8,7 +8,8 @@ import { fetchProgramsByUser, fetchProgramAssignmentsByUser } from '@/src/lib/qu
 
 import { Flex, Box, Heading } from '@chakra-ui/react';
 import HomeSection from '@/src/components/dashboard/HomeSection';
-import SideBar from '@/src/components/dashboard/SideBar';
+// import SideBar from '@/src/components/dashboard/SideBar';
+import SideBar from '@/src/components/SideBar';
 import { Tab } from '@/src/components/dashboard/types';
 
 export default function DashboardPage() {
@@ -118,7 +119,8 @@ export default function DashboardPage() {
   return (
     <Flex height="100vh" width="100vw" position="relative">
       <Box position="fixed" height="100vh" left={0} top={0}>
-        <SideBar currentTab={tab} onTabChange={setTab} />
+        <SideBar page='Home'/>
+        {/* <SideBar currentTab='home' onTabChange={setTab}/> */}
       </Box>
       <Box flex={1} ml="240px" height="100vh" overflowY="auto">
         {tabs[tab]}
