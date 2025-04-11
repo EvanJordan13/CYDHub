@@ -7,10 +7,12 @@ import { User, Assignment, Program, Announcement } from '@prisma/client';
 import { fetchProgramsByUser, fetchProgramAssignmentsByUser } from '@/src/lib/query/programs';
 
 import { Flex, Box, Heading } from '@chakra-ui/react';
-import HomeSection from '@/src/components/dashboard/HomeSection';
+import HomeSection from '@/src/components/dashboard/sections/HomeSection';
 import SideBar from '@/src/components/dashboard/SideBar';
 import { Tab } from '@/src/components/dashboard/types';
 import MoodModal from '@/src/components/MoodModal';
+
+import TodoSection from '@/src/components/dashboard/sections/TodoSection';
 
 export default function DashboardPage() {
   const [tab, setTab] = useState<Tab>('home');
@@ -74,14 +76,7 @@ export default function DashboardPage() {
         isLoading={isLoadingUser || isLoadingAssignments || isLoadingPrograms}
       />
     ),
-    todo: (
-      <>
-        {' '}
-        <Heading fontSize="40px" fontWeight={700} p="32px 48px 16px 48px" lineHeight={'48px'}>
-          Page Under Construction!
-        </Heading>
-      </>
-    ),
+    todo: <TodoSection assignments={assignments} points={userInfo?.points || 0} />,
     editor: (
       <>
         <Heading fontSize="40px" fontWeight={700} p="32px 48px 16px 48px" lineHeight={'48px'}>
@@ -128,7 +123,7 @@ export default function DashboardPage() {
       <Box position="fixed" height="100vh" left={0} top={0}>
         <SideBar currentTab={tab} onTabChange={setTab} />
       </Box>
-      <Box flex={1} ml="240px" height="100vh" overflowY="auto">
+      <Box flex={1} ml="210px" height="100vh" overflowX="visible" overflowY="auto">
         {tabs[tab]}
       </Box>
 
