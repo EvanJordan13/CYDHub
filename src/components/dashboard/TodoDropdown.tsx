@@ -72,6 +72,7 @@ export default function TodoDropdown({ title, assignments }: TodoDropdownProps) 
         <Flex flexDirection={'column'} gap={'16px'} width={'100%'}>
           {assignments.map(assignment => (
             <Flex
+              key={assignment.id}
               flexDirection={'row'}
               justifyContent={'space-between'}
               alignItems={'center'}
