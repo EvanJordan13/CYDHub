@@ -17,6 +17,8 @@ import {
   RatingGroup,
   useRatingGroup,
   Textarea,
+  Center,
+  Spinner,
 } from '@chakra-ui/react';
 import AnnouncementCard from '@/src/components/AnnouncementCard';
 import Button from '@/src/components/Button';
@@ -27,10 +29,9 @@ import {
   getProgramModules,
   getProgramAnnouncements,
   getProgramById,
-  getUserById,
 } from '@/src/lib/query/programs';
-import { storeSurveyResponse } from '@/src/lib/query/survey';
-import { updateUserPoints } from '@/src/lib/query/users';
+import { storeSurveyResponse, getSurveyQuestionsBySurveyId } from '@/src/lib/query/survey';
+import { updateUserPoints, getUserById } from '@/src/lib/query/users';
 import { ModuleMaterial, Assignment, Module as Mod, Announcement, Program, User } from '@prisma/client';
 import { useState, useEffect } from 'react';
 import TextInput from '@/src/components/TextInput';
@@ -74,6 +75,7 @@ export default function ProgramPage({ params }: { params: { programId: number } 
   const [programAnnouncements, setProgramAnnouncements] = useState<Announcement[]>([]);
   const [program, setProgram] = useState<Program | undefined>();
   const [user, setUser] = useState<User | undefined>();
+  const [submitted, setSubmitted] = useState(false);
 
   const [isInitialLoading, setIsInitialLoading] = useState(true);
 
@@ -192,6 +194,8 @@ export default function ProgramPage({ params }: { params: { programId: number } 
     ['What did you like about this assignment?', 'I liked...', ['like']],
     ['What would you do to improve this assignment?', 'I would improve...', ['improve']],
   ];
+  // const surveyQuestions = await getSurveyQuestionsBySurveyId(6);
+  // const FeedbackQuestions = surveyQuestions.map(question => question.questionText);
 
   const router = useRouter();
   const RatingsValue = useRatingGroup({ count: 5, defaultValue: 0 });
@@ -205,25 +209,33 @@ export default function ProgramPage({ params }: { params: { programId: number } 
   };
 
   const currentUserId = 1; // Replace with User Id
-  const pointsPerQuestion = 30; // Replace with Points for a survey question
+  const pointsPerQuestion = 52; // Replace with Points for a survey question
 
   const onSubmitFeedback = async () => {
+    setSubmitted(true);
     await Promise.all(
       FeedbackQuestions.map(async ([questionText], index) => {
         const response = feedbackValues[index];
-        if (!response || response.trim() === '') {
+        if (questionText === 'Rating?' || !response || response.trim() === '') {
           return null;
         }
         await storeSurveyResponse(questionText, currentUserId, response);
-        await updateUserPoints(currentUserId, pointsPerQuestion);
       }),
     );
     if (RatingsValue.value > 0) {
       await storeSurveyResponse('Rating?', currentUserId, String(RatingsValue.value));
-      await updateUserPoints(currentUserId, pointsPerQuestion);
     }
-    router.push('/');
+    await updateUserPoints(currentUserId, pointsPerQuestion);
+    router.push('/feedback');
   };
+
+  if (submitted) {
+    return (
+      <Center height="100vh" width="100vw">
+        <Spinner size="xl" />
+      </Center>
+    );
+  }
 
   return (
     <Box display={'flex'} backgroundColor={'white'} color={'black'}>
@@ -368,14 +380,14 @@ export default function ProgramPage({ params }: { params: { programId: number } 
                       />
                     ))}
                   </Flex>
-                  <Box mt={20} display={'flex'} justifyContent={'flex-end'} onClick={onSubmitFeedback}>
+                  <Box mt={20} display={'flex'} justifyContent={'flex-end'}>
                     <Button
                       type="primary"
                       pageColor="aqua"
                       text="Submit"
                       height={14}
                       width={40}
-                      onClick={() => console.log(feedbackValues)}
+                      onClick={onSubmitFeedback}
                     />
                   </Box>
                 </Flex>

@@ -47,6 +47,7 @@ model Program {
   modules       Module[]       @relation("ModuleToProgram")
   teacher       User           @relation("TeacherPrograms", fields: [teacherId], references: [id])
   enrollments   ProgramUser[]
+  Survey        Survey[]
 }
 
 /// Join table for Users and Programs.
@@ -92,18 +93,18 @@ model ModuleMaterial {
 
 /// Assignments which can be pushed to students via a module.
 model Assignment {
-  id               Int                  @id @default(autoincrement())
-  moduleId         Int?
-  title            String
-  description      String?
-  dueDate          DateTime?
-  createdAt        DateTime             @default(now())
-  updatedAt        DateTime             @updatedAt
+  id          Int                  @id @default(autoincrement())
+  moduleId    Int?
   assignmentNumber Int?
-  questionCount    Int?
-  module           Module?              @relation(fields: [moduleId], references: [id])
-  questions        AssignmentQuestion[]
-  submissions      Submission[]
+  title       String
+  description String?
+  dueDate     DateTime?
+  questionCount Int?
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+  module      Module?              @relation(fields: [moduleId], references: [id])
+  questions   AssignmentQuestion[]
+  submissions Submission[]
 }
 
 /// Questions that make up an assignment.

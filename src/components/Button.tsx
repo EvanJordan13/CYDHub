@@ -49,6 +49,7 @@ export default function Button({ type, pageColor, text, height, width, onClick }
               textDecoration: 'underline',
               textDecorationColor: textColor,
               cursor: 'pointer',
+              transform: 'translateY(-2px)',
             }
       }
       borderWidth={'thin'}
@@ -59,6 +60,7 @@ export default function Button({ type, pageColor, text, height, width, onClick }
       alignItems={'center'}
       justifyContent={'center'}
       onClick={type === 'disabled' ? undefined : onClick}
+      transition={'all 0.2s ease-in-out'}
     >
       <Text fontWeight={'700'} color={textColor} fontSize={'lg'}>
         {text}
