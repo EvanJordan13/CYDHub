@@ -20,6 +20,9 @@ model User {
   points             Int               @default(0)
   createdAt          DateTime          @default(now())
   updatedAt          DateTime          @updatedAt
+  auth0Id            String?           @unique
+  birthdate          String?
+  pronouns           String?
   Invitation         Invitation[]
   notifications      Notification[]
   createdPrograms    Program[]         @relation("TeacherPrograms")
@@ -82,29 +85,30 @@ model ModuleMaterial {
   id           Int          @id @default(autoincrement())
   moduleId     Int
   title        String
-  content      String?
+  overview     String?
   materialType MaterialType
   fileUrl      String?
   order        Int?
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
+  fileName     String?
   module       Module       @relation(fields: [moduleId], references: [id])
 }
 
 /// Assignments which can be pushed to students via a module.
 model Assignment {
-  id          Int                  @id @default(autoincrement())
-  moduleId    Int?
+  id               Int                  @id @default(autoincrement())
+  moduleId         Int?
+  title            String
+  description      String?
+  dueDate          DateTime?
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
   assignmentNumber Int?
-  title       String
-  description String?
-  dueDate     DateTime?
-  questionCount Int?
-  createdAt   DateTime             @default(now())
-  updatedAt   DateTime             @updatedAt
-  module      Module?              @relation(fields: [moduleId], references: [id])
-  questions   AssignmentQuestion[]
-  submissions Submission[]
+  questionCount    Int?
+  module           Module?              @relation(fields: [moduleId], references: [id])
+  questions        AssignmentQuestion[]
+  submissions      Submission[]
 }
 
 /// Questions that make up an assignment.
