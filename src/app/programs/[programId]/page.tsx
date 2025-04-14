@@ -1,6 +1,7 @@
 'use client';
 
-import AssignmentDescription from '@/src/components/AssignmentDescription';
+import AssignmentDetail from '@/src/components/AssignmentDetail';
+import MaterialDetail from '@/src/components/MaterialDetail';
 import Module from '@/src/components/Module';
 import SideBar from '@/src/components/SideBar';
 import {
@@ -242,17 +243,21 @@ export default function ProgramPage({ params }: { params: { programId: number } 
               <Tabs.Content value="modules">
                 {selectedResource ? (
                   selectedResource.type === 'assignment' ? (
-                    <AssignmentDescription
-                      assignmentNumber={selectedResource.data.id}
+                    <AssignmentDetail
+                      assignmentNumber={selectedResource.data.assignmentNumber}
                       assignmentTitle={selectedResource.data.title}
                       dueDate={selectedResource.data.dueDate}
                       questionCount={selectedResource.data.questionCount}
                       description={selectedResource.data.description}
                     />
                   ) : (
-                    <Heading fontSize="40px" fontWeight={700} p="32px 48px 16px 48px" lineHeight={'48px'}>
-                      Page Under Construction!
-                    </Heading>
+                    <MaterialDetail
+                      title={selectedResource.data.title}
+                      overview={selectedResource.data.overview}
+                      materialType={selectedResource.data.materialType}
+                      fileUrl={selectedResource.data.fileUrl}
+                      fileName={selectedResource.data.fileName}
+                    />
                   )
                 ) : programModules.length > 0 ? (
                   programModules.map((module, index) => (
