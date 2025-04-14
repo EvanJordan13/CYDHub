@@ -316,7 +316,9 @@ export default function ProgramPage({ params }: { params: { programId: number } 
           </Box>
         </Box>
       )}
-      {!isInitialLoading && <DreamBuddy isVisible={isDreamBuddyVisible} onHide={() => setIsDreamBuddyVisible(false)} />}
+      {!isInitialLoading && isDreamBuddyVisible && (
+        <DreamBuddy isVisible={isDreamBuddyVisible} onHide={() => setIsDreamBuddyVisible(false)} />
+      )}
     </Box>
   );
 }

@@ -92,7 +92,7 @@ export default function DreamBuddy({
   calloutType,
   numPointsGained = 0,
   userName,
-  isVisible = true,
+  isVisible = false,
   onHide,
 }: DreamBuddyProps) {
   const handleClick = () => {
