@@ -26,7 +26,7 @@ import {
   getUserById,
 } from '@/src/lib/query/programs';
 import { ModuleMaterial, Assignment, Module as Mod, Announcement, Program, User } from '@prisma/client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import DreamBuddy from '@/src/components/dreambuddy/DreamBuddy';
 
 type ModuleWithRelations = Mod & {
@@ -67,7 +67,9 @@ export default function ProgramPage({ params }: { params: { programId: number } 
   const [programAnnouncements, setProgramAnnouncements] = useState<Announcement[]>([]);
   const [program, setProgram] = useState<Program | undefined>();
   const [user, setUser] = useState<User | undefined>();
+
   const [isDreamBuddyVisible, setIsDreamBuddyVisible] = useState(false);
+  const [hasDreamBuddyShown, setHasDreamBuddyShown] = useState(false);
 
   const [isInitialLoading, setIsInitialLoading] = useState(true);
 
@@ -76,6 +78,7 @@ export default function ProgramPage({ params }: { params: { programId: number } 
   const handleModuleClick = (resource: ResourceItem) => {
     setSelectedResource(resource);
     setIsDreamBuddyVisible(true);
+    if (!hasDreamBuddyShown) setHasDreamBuddyShown(true);
   };
 
   const fetchMaterials = async () => {
@@ -321,7 +324,7 @@ export default function ProgramPage({ params }: { params: { programId: number } 
           </Box>
         </Box>
       )}
-      {!isInitialLoading && isDreamBuddyVisible && (
+      {!isInitialLoading && hasDreamBuddyShown && (
         <DreamBuddy isVisible={isDreamBuddyVisible} onHide={() => setIsDreamBuddyVisible(false)} />
       )}
     </Box>
