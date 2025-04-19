@@ -132,7 +132,7 @@ export default function CodeEditor() {
 
   return (
     <Box borderColor={'Aqua'} style={{ borderWidth: 5, borderRadius: 7.5 }}>
-      <div ref={blocklyDiv} style={{ height: 480, width: '100%' }} />
+      <div ref={blocklyDiv} style={{ height: '30rem', width: '100%' }} />
 
       <Button
         onClick={generateCode}
