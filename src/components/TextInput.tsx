@@ -9,7 +9,7 @@ interface TextInputProps {
   value?: string;
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   disabled?: boolean;
-  height?: number;
+  height?: string;
   invalidFunction?: () => boolean;
 }
 
@@ -19,7 +19,7 @@ export default function TextInput({
   value,
   onChange,
   disabled = false,
-  height = 12,
+  height = '12px',
   invalidFunction = () => !value || value.trim() === '',
 }: TextInputProps) {
   const [hasBeenTouched, setHasBeenTouched] = useState(false);
@@ -53,7 +53,7 @@ export default function TextInput({
           onChange={onChange}
           value={value}
           onBlur={() => setHasBeenTouched(true)}
-          fontSize="120%"
+          fontSize="1.1vw"
           fontWeight={500}
           disabled={disabled}
         />

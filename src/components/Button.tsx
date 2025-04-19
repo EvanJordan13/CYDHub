@@ -59,7 +59,7 @@ export default function Button({ type, pageColor, text, height, width, onClick }
       justifyContent={'center'}
       onClick={type === 'disabled' ? undefined : onClick}
     >
-      <Text fontWeight={'700'} color={textColor} fontSize={'lg'}>
+      <Text fontWeight={'700'} color={textColor} fontSize="clamp(12px, 1.11vw, 42px)">
         {text}
       </Text>
     </Box>

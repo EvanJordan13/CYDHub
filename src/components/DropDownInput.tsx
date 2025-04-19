@@ -10,7 +10,7 @@ interface DropDownInputProps {
   options: string[];
   showIcon?: boolean;
   isRequired?: boolean;
-  height?: number;
+  height?: string;
   value?: string | null;
   onChange?: (value: string) => void;
 }
@@ -43,9 +43,9 @@ const DropDownInput: React.FC<DropDownInputProps> = ({
 
   return (
     <Field.Root required>
-      <Box width="100%" height={'100%'} {...rest}>
+      <Box width="100%" height={height} {...rest}>
         {labelText && (
-          <Text mb={2} fontSize="110%" fontWeight={'medium'} color={'black'}>
+          <Text mb={2} fontSize=".97vw" fontWeight={'medium'} color={'black'}>
             {labelText}
             {isRequired && (
               <Text as="span" color="red.500">
@@ -77,7 +77,7 @@ const DropDownInput: React.FC<DropDownInputProps> = ({
               aria-label={selectedOption ? `Selected option is ${selectedOption}` : 'Select an option'}
             >
               <Flex justify="space-between" align="center" width="100%">
-                <Text truncate color={selectedOption ? 'black' : '#AAAAAA'} fontWeight={500} fontSize={'130%'}>
+                <Text color={selectedOption ? 'black' : '#AAAAAA'} fontWeight={500} fontSize={'clamp(16px,.97vw,40px)'}>
                   {selectedOption || helperText}
                 </Text>
                 {showIcon && <ChevronDown color="#AAAAAA" />}
