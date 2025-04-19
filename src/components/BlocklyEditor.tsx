@@ -6,7 +6,7 @@ import * as Blockly from 'blockly';
 import 'blockly/blocks';
 import { javascriptGenerator } from 'blockly/javascript';
 
-export default function CodeEditor() {
+export default function BlocklyEditor() {
   const BlocklyXml = Blockly.Xml as typeof import('blockly').Xml;
 
   const blocklyDiv = useRef<HTMLDivElement | null>(null);

@@ -1,7 +1,7 @@
 'use client';
 
 import TextInput from '../../components/TextInput';
-import CodeEditor from '../../components/CodeEditor';
+import BlocklyEditor from '../../components/BlocklyEditor';
 import ProgramCard from '../../components/ProgramCard';
 import { Box, Center, Heading, Stack, Text, VStack } from '@chakra-ui/react';
 import { Program, Announcement } from '@prisma/client';
@@ -156,7 +156,7 @@ export default function DevPage() {
     <Box p={8} bg={'white'} color={'black'}>
       <Heading mb={6}>Development Page</Heading>
 
-      <CodeEditor />
+      <BlocklyEditor />
 
       <br />
       <br />
