@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import Head from 'next/head';
 import { Box, Button } from '@chakra-ui/react';
 import * as Blockly from 'blockly';
 import 'blockly/blocks';
@@ -86,10 +87,48 @@ export default function BlocklyEditor() {
     ],
   };
 
+  const theme = Blockly.Theme.defineTheme('customTheme', {
+    name: 'customTheme',
+    base: Blockly.Themes.Classic,
+    blockStyles: {
+      logic_blocks: {
+        colourPrimary: '#4D80BB',
+        colourSecondary: '#98C1E9',
+      },
+      variable_blocks: {
+        colourPrimary: '#BC3860',
+        colourSecondary: '#DE7E9B',
+      },
+      loop_blocks: {
+        colourPrimary: '#BC5340',
+        colourSecondary: '#E18574',
+      },
+      function_blocks: {
+        colourPrimary: '#8D608C',
+        colourSecondary: '#C49BC3',
+      },
+      list_blocks: {
+        colourPrimary: '#BC3838',
+        colourSecondary: '#DC7777',
+      },
+      math_blocks: {
+        colourPrimary: '#2F8C5A',
+        colourSecondary: '#6DBF5D',
+      },
+      text_blocks: {
+        colourPrimary: '#D97700',
+        colourSecondary: '#E79531',
+      },
+    },
+    fontStyle: { family: 'Poppins, serif' },
+    startHats: true,
+  });
+
   useEffect(() => {
     if (blocklyDiv.current) {
       workspaceRef.current = Blockly.inject(blocklyDiv.current, {
         toolbox: toolboxXml,
+        theme: theme,
       });
     }
 
@@ -132,6 +171,12 @@ export default function BlocklyEditor() {
 
   return (
     <Box borderColor={'Aqua'} style={{ borderWidth: 5, borderRadius: 7.5 }}>
+      <Head>
+        <link
+          href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+          rel="stylesheet"
+        />
+      </Head>
       <div ref={blocklyDiv} style={{ height: '30rem', width: '100%' }} />
 
       <Button
