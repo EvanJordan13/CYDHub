@@ -1,7 +1,7 @@
 import { Box, Text, Stack } from '@chakra-ui/react';
 import Button from './Button';
 
-interface AssignmentDescriptionProps {
+interface AssignmentDetailProps {
   assignmentNumber: number | null;
   assignmentTitle: string;
   dueDate: Date | null;
@@ -32,13 +32,13 @@ const formatDate = (date: Date) => {
   return `${month} ${day}${suffix}, ${time}`;
 };
 
-export default function AssignmentDescription({
+export default function AssignmentDetail({
   assignmentNumber,
   assignmentTitle,
   dueDate,
   questionCount,
   description,
-}: AssignmentDescriptionProps) {
+}: AssignmentDetailProps) {
   return (
     <Box position={'relative'} mt={6}>
       <Box position={'absolute'} top={0} right={0}>
