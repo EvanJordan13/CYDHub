@@ -89,7 +89,7 @@ export default function LandingPage() {
             />
           </HStack>
 
-          <HStack gap={60} height="40%">
+          <HStack gap={60} height="40%" mb="-3%">
             <Image src="/class-path.png" width="46vw" height="auto" alt="class-path" />
             <VStack width="24.5vw" height="full" alignItems="left">
               <Text fontSize="clamp(24px, 3.3vw, 100px)" color="Flamingo" fontFamily="Poppins" fontWeight={700}>
