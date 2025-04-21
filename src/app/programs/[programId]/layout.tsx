@@ -114,13 +114,15 @@ export default function ProgramLayout({
   const handleAnnouncementsTabClick = () => {
     // Fetch only if data isn't present and not already loading specifically for the tab
 
+    router.push(`/programs/${programId}`);
+
     if (programAnnouncements.length === 0 && !isLoadingAnnouncements) {
       fetchAnnouncementsAndProgram(true);
     }
   };
 
   const handleModulesTabClick = () => {
-    router.replace(`/programs/${programId}`);
+    router.push(`/programs/${programId}`);
   };
 
   return (
@@ -162,7 +164,9 @@ export default function ProgramLayout({
                 <Tabs.Trigger
                   value="feedback"
                   _selected={{ color: 'Aqua', fontWeight: '700', borderBottom: '4px solid #4D80BB' }}
-                  onClick={() => {}}
+                  onClick={() => {
+                    router.push(`/programs/${programId}`);
+                  }}
                 >
                   <Text>Feedback</Text>
                 </Tabs.Trigger>
