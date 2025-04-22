@@ -224,3 +224,19 @@ export async function getProgramAnnouncements(programId: number): Promise<Announ
     return [];
   }
 }
+
+export async function getArchivedProgramsByUserId(userId: number): Promise<Program[]> {
+  try {
+    const programs = await fetchProgramsByUser(userId);
+    const archived = programs.filter(p => p.archived);
+
+    if (!archived) {
+      console.log(`No archived programs`);
+      return [];
+    }
+    return archived;
+  } catch (error) {
+    console.log(`[GET_ARCHIVED_PROGRAMS_ERROR]`, error);
+    return [];
+  }
+}

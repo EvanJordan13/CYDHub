@@ -4,7 +4,11 @@ import { useState, useEffect } from 'react';
 
 import { getUserById } from '@/src/lib/query/users';
 import { User, Assignment, Program, Announcement } from '@prisma/client';
-import { fetchProgramsByUser, fetchProgramAssignmentsByUser } from '@/src/lib/query/programs';
+import {
+  fetchProgramsByUser,
+  fetchProgramAssignmentsByUser,
+  getArchivedProgramsByUserId,
+} from '@/src/lib/query/programs';
 
 import { Flex, Box, Heading } from '@chakra-ui/react';
 import HomeSection from '@/src/components/dashboard/sections/HomeSection';
@@ -13,18 +17,34 @@ import { Tab } from '@/src/components/dashboard/types';
 import MoodModal from '@/src/components/MoodModal';
 
 import TodoSection from '@/src/components/dashboard/sections/TodoSection';
+import ArchivedPage from '@/src/components/dashboard/sections/Archived';
+import { useSearchParams, useRouter } from 'next/navigation';
 
 export default function DashboardPage() {
-  const [tab, setTab] = useState<Tab>('home');
   const [userInfo, setUserInfo] = useState<User | null>(null);
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [programs, setPrograms] = useState<Program[]>([]);
+  const [archivedPrograms, setArchivedPrograms] = useState<Program[]>([]);
   const [isLoadingUser, setIsLoadingUser] = useState(true);
   const [isLoadingAssignments, setIsLoadingAssignments] = useState(true);
   const [isLoadingPrograms, setIsLoadingPrograms] = useState(true);
+  const [isLoadingArchivedPrograms, setIsLoadingArchivedPrograms] = useState(true);
   const [isOpenModal, setIsOpenModal] = useState(false);
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const [tab, setTab] = useState<Tab | null>(null);
 
   const testUserId = 4;
+
+  useEffect(() => {
+    const q = searchParams.get('tab') as Tab | null;
+    setTab(q ? q : 'home');
+  }, [searchParams]);
+
+  const handleTabChange = (next: Tab) => {
+    setTab(next);
+    router.replace(`/dashboard?tab=${next}`);
+  };
 
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -60,13 +80,25 @@ export default function DashboardPage() {
         setIsLoadingPrograms(false);
       }
     };
+    const fetchArchivedPrograms = async () => {
+      setIsLoadingArchivedPrograms(true);
+      try {
+        const archivedProgs = await getArchivedProgramsByUserId(testUserId);
+        setArchivedPrograms(archivedProgs);
+      } catch (error) {
+        console.error('Error fetching archived programs:', error);
+      } finally {
+        setIsLoadingArchivedPrograms(false);
+      }
+    };
     fetchUserInfo();
     fetchAssignments();
     fetchPrograms();
+    fetchArchivedPrograms();
 
     setIsOpenModal(true);
   }, []);
-
+  if (tab === null) return null;
   const tabs: Record<Tab, React.ReactNode> = {
     home: (
       <HomeSection
@@ -99,11 +131,7 @@ export default function DashboardPage() {
       </>
     ),
     archived: (
-      <>
-        <Heading fontSize="40px" fontWeight={700} p="32px 48px 16px 48px" lineHeight={'48px'}>
-          Page Under Construction!
-        </Heading>
-      </>
+      <ArchivedPage userInfo={userInfo} archivedPrograms={archivedPrograms} isLoading={isLoadingArchivedPrograms} />
     ),
     settings: (
       <>
@@ -121,7 +149,7 @@ export default function DashboardPage() {
   return (
     <Flex height="100vh" width="100vw" position="relative">
       <Box position="fixed" height="100vh" left={0} top={0}>
-        <SideBar currentTab={tab} onTabChange={setTab} />
+        <SideBar currentTab={tab} onTabChange={handleTabChange} />
       </Box>
       <Box flex={1} ml="210px" height="100vh" overflowX="visible" overflowY="auto">
         {tabs[tab]}

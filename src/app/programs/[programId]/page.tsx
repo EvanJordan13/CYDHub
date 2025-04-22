@@ -3,7 +3,7 @@
 import AssignmentDetail from '@/src/components/AssignmentDetail';
 import MaterialDetail from '@/src/components/MaterialDetail';
 import Module from '@/src/components/Module';
-import SideBar from '@/src/components/SideBar';
+// import SideBar from '@/src/components/SideBar';
 import {
   Text,
   Heading,
@@ -27,6 +27,10 @@ import {
 } from '@/src/lib/query/programs';
 import { ModuleMaterial, Assignment, Module as Mod, Announcement, Program, User } from '@prisma/client';
 import { useState, useEffect } from 'react';
+
+import { useRouter } from 'next/navigation';
+import SideBar from '@/src/components/dashboard/SideBar';
+import { Tab } from '@/src/components/dashboard/types';
 
 type ModuleWithRelations = Mod & {
   materials: ModuleMaterial[];
@@ -55,6 +59,12 @@ const ProgramPageSkeleton = () => (
 );
 
 export default function ProgramPage({ params }: { params: { programId: number } }) {
+  const router = useRouter();
+  const handleTabChange = (next: Tab) => {
+    router.push(`/dashboard?tab=${next}`);
+    return;
+  };
+
   const programId = Number(params.programId);
   const [programMaterials, setProgramMaterials] = useState<(ModuleMaterial & { moduleTitle: string })[]>([]);
   const [programAssignments, setProgramAssignments] = useState<(Assignment & { moduleTitle: string })[]>([]);
@@ -182,7 +192,7 @@ export default function ProgramPage({ params }: { params: { programId: number } 
 
   return (
     <Box display={'flex'} backgroundColor={'white'} color={'black'}>
-      <SideBar page="Program" />
+      <SideBar currentTab={'home'} onTabChange={handleTabChange} />
       {isInitialLoading ? (
         <ProgramPageSkeleton />
       ) : (

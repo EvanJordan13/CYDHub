@@ -10,8 +10,8 @@ export default function ProgramCard({ program }: ProgramCardProps) {
   return (
     <Box
       width="fit-content"
-      minWidth={420}
-      maxWidth={450}
+      minWidth={350}
+      maxWidth={364}
       bg={'white'}
       borderRadius={'12px'}
       boxShadow={'0px 0px 4px 0px rgba(0, 0, 0, 0.25)'}
