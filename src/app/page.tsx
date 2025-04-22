@@ -3,7 +3,6 @@
 import { Box } from '@chakra-ui/react';
 import LandingPage from './landing/page';
 import { useUser } from '@auth0/nextjs-auth0/client';
-import AuthRedirect from '../components/AuthRedirect';
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 

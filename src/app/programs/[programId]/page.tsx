@@ -79,7 +79,6 @@ export default function ProgramPage({ params }: { params: { programId: number } 
     setIsLoadingMaterials(true);
     try {
       const materials = await fetchProgramMaterials(programId);
-      console.log('Program materials', materials);
       setProgramMaterials(materials);
     } catch (error) {
       console.error('Error fetching program materials:', error);
@@ -116,11 +115,10 @@ export default function ProgramPage({ params }: { params: { programId: number } 
   };
 
   const fetchAnnouncementsAndProgram = async (setLoading = true) => {
-    if (setLoading) setIsLoadingAnnouncements(true); // Controls skeleton within announcement tab
+    if (setLoading) setIsLoadingAnnouncements(true);
     try {
-      // Fetch program, announcements, and user data concurrently where possible
       const programData = await getProgramById(programId);
-      setProgram(programData); // Set program data early for title potentially
+      setProgram(programData);
 
       if (!programData) throw new Error('Program not found');
 

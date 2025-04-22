@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Box, Image, Flex, Text, Link, Toaster } from '@chakra-ui/react';
+import { Box, Image, Flex, Text, Link, Center, Spinner } from '@chakra-ui/react';
 import { Checkbox } from '../../components/ui/checkbox';
 import Button from '../../components/Button';
 import TextInput from '../../components/TextInput';
@@ -10,12 +10,12 @@ import DropDownInput from '@/src/components/DropDownInput';
 import { User, LockKeyhole } from 'lucide-react';
 import { parse, isValid } from 'date-fns';
 import { useRouter } from 'next/navigation';
-import { useUser } from '@auth0/nextjs-auth0/client';
 import { useEffect } from 'react';
 import { toaster } from '../../components/ui/toaster';
+import { useDbSession } from '@/src/hooks/useDbSession';
 
 export default function OnboardingPage() {
-  const { user, isLoading } = useUser();
+  const { dbUser, auth0User, isLoading, error, refetch } = useDbSession();
   const router = useRouter();
 
   const pronouns = ['He/Him', 'She/Her', 'They/Them', 'Prefer not to answer'];
@@ -28,69 +28,38 @@ export default function OnboardingPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [dbUserId, setDbUserId] = useState<number | null>(null);
 
-  // If user isn't logged in, redirect to login
   useEffect(() => {
-    if (!isLoading && !user) {
+    if (dbUser && !dbUser.name && auth0User?.name) {
+      setDisplayName(auth0User.name);
+    } else if (dbUser?.name) {
+      setDisplayName(dbUser.name);
+    }
+    if (dbUser?.pronouns) setSelectedPronoun(dbUser.pronouns);
+    if (dbUser?.birthdate) setDate(dbUser.birthdate);
+  }, [dbUser, auth0User]);
+
+  useEffect(() => {
+    if (!isLoading && !auth0User?.user && !error) {
       router.push('/api/auth/login');
+    } else if (!isLoading && dbUser?.signupComplete) {
+      toaster.info({
+        title: 'Already Onboarded',
+        description: 'Redirecting you to the dashboard...',
+        duration: 2000,
+        closable: true,
+      });
+      setTimeout(() => router.push('/dashboard'), 1500);
+    } else if (!isLoading && error) {
+      console.error('Onboarding: Error loading session:', error);
+      toaster.error({
+        title: 'Error Loading Profile',
+        description: error.message || 'Could not load user data. Please try logging in again.',
+        duration: 5000,
+        closable: true,
+      });
+      setTimeout(() => router.push('/api/auth/login'), 5000);
     }
-  }, [user, isLoading, router]);
-
-  useEffect(() => {
-    if (user) {
-      if (user.email) {
-        fetch(`/api/users/lookup?email=${encodeURIComponent(user.email)}`)
-          .then(res => {
-            if (!res.ok) {
-              return res
-                .json()
-                .catch(() => null)
-                .then(body => {
-                  throw new Error(body?.message || `HTTP error! status: ${res.status}`);
-                });
-            }
-            return res.json();
-          })
-          .then(data => {
-            if (data?.id) {
-              setDbUserId(data.id);
-              if (data.signupComplete) {
-                console.log('User already onboarded, redirecting to dashboard.');
-                toaster.info({
-                  title: 'Already Onboarded',
-                  description: 'Redirecting you to the dashboard...',
-                  duration: 2000,
-                  closable: true,
-                });
-                setTimeout(() => router.push('/dashboard'), 1500);
-              }
-            } else {
-              console.warn('User found in Auth0 but not in local DB yet. Awaiting profile completion.');
-            }
-          })
-          .catch(err => {
-            console.error('Error looking up user:', err);
-            toaster.error({
-              title: 'Error Loading Profile',
-              description:
-                err instanceof Error
-                  ? err.message
-                  : 'Could not retrieve your information. Please try refreshing the page.',
-              duration: 5000,
-              closable: true,
-            });
-          });
-      } else {
-        console.error('User object loaded but email is missing.');
-        toaster.error({
-          title: 'Authentication Error',
-          description: 'User email could not be loaded. Please try logging out and back in.',
-          duration: 5000,
-          closable: true,
-        });
-      }
-    }
-  }, [user, isLoading, router]);
-
+  }, [dbUser, auth0User, isLoading, error, router]);
   const isValidDate = (dateStr: string): boolean => {
     const regex = /^(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])\/\d{4}$/;
     if (!regex.test(dateStr)) {
@@ -102,11 +71,16 @@ export default function OnboardingPage() {
   };
 
   const formValid =
-    displayName.trim() !== '' && selectedPronoun.trim() !== '' && date.trim() !== '' && isValidDate(date) && checked;
+    displayName.trim() !== '' &&
+    selectedPronoun.trim() !== '' &&
+    pronouns.includes(selectedPronoun) &&
+    date.trim() !== '' &&
+    isValidDate(date) &&
+    checked;
 
   const handleNextClick = async () => {
-    if (isSubmitting || !dbUserId || !user) {
-      if (!dbUserId || !user) {
+    if (isSubmitting || !dbUser || isLoading) {
+      if (!dbUser || isLoading) {
         toaster.warning({
           title: 'Loading...',
           description: 'User data is still loading. Please wait.',
@@ -136,6 +110,7 @@ export default function OnboardingPage() {
     }
 
     setIsSubmitting(true);
+    toaster.loading({ title: 'Saving Profile...', id: 'onboarding-save' });
 
     try {
       const response = await fetch(`/api/users/${dbUserId}`, {
@@ -160,11 +135,14 @@ export default function OnboardingPage() {
         throw new Error(errorDetails);
       }
 
+      refetch();
+
       toaster.success({
         title: 'Profile Complete!',
         description: 'Your profile has been set up successfully. Redirecting...',
         duration: 4000,
         closable: true,
+        id: 'onboarding-save',
       });
 
       setTimeout(() => {
@@ -177,12 +155,38 @@ export default function OnboardingPage() {
         description: error instanceof Error ? error.message : 'An unknown error occurred. Please try again.',
         duration: 6000,
         closable: true,
+        id: 'onboarding-save',
       });
-      setIsSubmitting(false);
     }
   };
 
-  return (
+  if (isLoading) {
+    return (
+      <Center h="100vh">
+        <Spinner size="xl" color="Aqua" />
+      </Center>
+    );
+  }
+
+  if (error) {
+    return (
+      <Center h="100vh">
+        <Text color="red.500">Error: {error.message}</Text>
+      </Center>
+    );
+  }
+
+  // Avoid rendering the form until we know the user needs onboarding
+  if (!auth0User?.user || dbUser?.signupComplete) {
+    // Show spinner while potentially redirecting
+    return (
+      <Center h="100vh">
+        <Spinner size="xl" color="Aqua" />
+      </Center>
+    );
+  }
+
+  return dbUser && auth0User?.user ? (
     <Box bg="white" height="100vh" width="100vw">
       <Flex direction="row" justify="space-between" height="100%">
         <Box marginTop="2%" marginLeft="2%" padding="1%" width="50%">
@@ -217,7 +221,13 @@ export default function OnboardingPage() {
                   <Text color="black" fontSize="113%" fontWeight="medium" mb={2}>
                     Email
                   </Text>
-                  <TextInput label="Email" icon={<LockKeyhole />} disabled={true} value={user!.email!} height={20} />
+                  <TextInput
+                    label="Email"
+                    icon={<LockKeyhole />}
+                    disabled={true}
+                    value={auth0User.email!}
+                    height={20}
+                  />
                 </Box>
                 <Flex direction="row" gap="16px" width="100%">
                   <Flex direction="column" gap="6px" width="35%" height="100%">
@@ -246,6 +256,7 @@ export default function OnboardingPage() {
                         height={20}
                         val={date}
                         onChange={value => setDate(value)}
+                        isRequired={true}
                       />
                     </Box>
                   </Flex>
@@ -253,6 +264,7 @@ export default function OnboardingPage() {
               </Flex>
               <Flex direction="row" marginBottom={10}>
                 <Checkbox
+                  id="terms-checkbox"
                   size="lg"
                   borderColor="gray.400"
                   borderStartEndRadius={'full'}
@@ -299,5 +311,9 @@ export default function OnboardingPage() {
         </Box>
       </Flex>
     </Box>
+  ) : (
+    <Center h="100vh">
+      <Spinner size="xl" color="Aqua" />
+    </Center>
   );
 }

@@ -1,7 +1,8 @@
 'use client';
 
 import React from 'react';
-import { Box, Text, Link, Stack, Button, Flex } from '@chakra-ui/react';
+import Link from 'next/link';
+import { Box, Text, Stack, Button, Flex } from '@chakra-ui/react';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@auth0/nextjs-auth0/client';
 
@@ -85,7 +86,7 @@ interface MenuItemProps {
 
 const MenuItem: React.FC<MenuItemProps> = ({ children, isLast, to = '/', ...rest }) => {
   return (
-    <Link href={to} _focus={{ outline: 'none' }} _hover={{ textDecoration: 'none' }}>
+    <Link href={to}>
       <Text display="block" fontWeight="bold" {...rest}>
         {children}
       </Text>

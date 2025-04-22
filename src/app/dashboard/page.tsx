@@ -1,10 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-
-import { useUser as useAuth0User } from '@auth0/nextjs-auth0/client';
-import { getUserById } from '@/src/lib/query/users';
-import { User, Assignment, Program, Announcement } from '@prisma/client';
+import { useDbSession } from '@/src/hooks/useDbSession';
+import { User as DbUser, Assignment, Program } from '@prisma/client';
 import { fetchProgramsByUser, fetchProgramAssignmentsByUser } from '@/src/lib/query/programs';
 
 import { Flex, Box, Heading } from '@chakra-ui/react';
@@ -17,63 +15,38 @@ const MOOD_MODAL_STORAGE_KEY = 'lastMoodModalShownDate';
 import TodoSection from '@/src/components/dashboard/sections/TodoSection';
 
 export default function DashboardPage() {
-  const { user: auth0User } = useAuth0User();
+  const { dbUser, isLoading: isSessionLoading, error: sessionError } = useDbSession();
 
   const [tab, setTab] = useState<Tab>('home');
-  const [userInfo, setUserInfo] = useState<User | null>(null);
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [programs, setPrograms] = useState<Program[]>([]);
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [isLoadingPageData, setIsLoadingPageData] = useState(true);
-  const [dbUserId, setDbUserId] = useState<number | null>(null);
 
   useEffect(() => {
-    if (auth0User?.email) {
+    // Ensure session is loaded and we have a dbUser before fetching page data
+    if (isSessionLoading || !dbUser) {
       setIsLoadingPageData(true);
-      setDbUserId(null);
-
-      fetch(`/api/users/lookup?email=${encodeURIComponent(auth0User.email)}`)
-        .then(res => {
-          if (!res.ok) {
-            throw new Error(`User lookup failed with status: ${res.status}`);
-          }
-          return res.json();
-        })
-        .then(data => {
-          if (data?.id) {
-            setDbUserId(data.id);
-          } else {
-            console.error('DB User lookup failed unexpectedly after AuthWrapper checks.');
-            setIsLoadingPageData(false);
-          }
-        })
-        .catch(error => {
-          console.error('Error fetching database user ID:', error);
-          setIsLoadingPageData(false);
-        });
-    } else if (auth0User) {
-      console.error('Auth0 user is missing email address.');
-      setIsLoadingPageData(false);
+      return;
     }
-  }, [auth0User]);
 
-  useEffect(() => {
-    if (!dbUserId) {
+    // Check if page data is already loaded to prevent redundant fetches
+    if (assignments.length > 0 || programs.length > 0) {
+      setIsLoadingPageData(false);
       return;
     }
 
     const fetchData = async () => {
       setIsLoadingPageData(true);
       try {
-        const [userInfoData, assignmentsData, programsData] = await Promise.all([
-          getUserById(dbUserId),
-          fetchProgramAssignmentsByUser(dbUserId),
-          fetchProgramsByUser(dbUserId),
+        const [assignmentsData, programsData] = await Promise.all([
+          fetchProgramAssignmentsByUser(dbUser.id),
+          fetchProgramsByUser(dbUser.id),
         ]);
-        setUserInfo(userInfoData);
         setAssignments(assignmentsData);
         setPrograms(programsData);
 
+        //Mood Modal
         const todayDateString = new Date().toDateString();
         const lastShownDate = localStorage.getItem(MOOD_MODAL_STORAGE_KEY);
 
@@ -91,13 +64,11 @@ export default function DashboardPage() {
     };
 
     fetchData();
-  }, [dbUserId]);
+  }, [dbUser, isSessionLoading, assignments, programs]);
 
   const tabs: Record<Tab, React.ReactNode> = {
-    home: (
-      <HomeSection userInfo={userInfo} assignments={assignments} programs={programs} isLoading={isLoadingPageData} />
-    ),
-    todo: <TodoSection assignments={assignments} points={userInfo?.points || 0} />,
+    home: <HomeSection userInfo={dbUser} assignments={assignments} programs={programs} isLoading={isLoadingPageData} />,
+    todo: <TodoSection assignments={assignments} points={dbUser?.points || 0} />,
     editor: (
       <>
         <Heading fontSize="40px" fontWeight={700} p="32px 48px 16px 48px" lineHeight={'48px'}>
