@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 
 import { getUserById } from '@/src/lib/query/users';
 import { User, Assignment, Program, Announcement } from '@prisma/client';
@@ -21,6 +21,14 @@ import ArchivedPage from '@/src/components/dashboard/sections/Archived';
 import { useSearchParams, useRouter } from 'next/navigation';
 
 export default function DashboardPage() {
+  return (
+    <Suspense fallback={<div>Loading…</div>}>
+      <DashboardClient />
+    </Suspense>
+  );
+}
+
+export function DashboardClient() {
   const [userInfo, setUserInfo] = useState<User | null>(null);
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [programs, setPrograms] = useState<Program[]>([]);

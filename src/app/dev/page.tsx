@@ -61,7 +61,7 @@ export default function DevPage() {
     updatedAt: new Date(),
     type: 'IN_PERSON',
     teacherId: 1,
-    archived: null
+    archived: null,
   };
 
   const testFetchAllPrograms = async () => {
