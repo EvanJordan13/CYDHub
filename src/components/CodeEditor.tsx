@@ -13,6 +13,11 @@ import { EditorView } from '@codemirror/view';
 interface CodeEditorProps {}
 
 export default function CodeEditor({}: CodeEditorProps) {
+  const [currentCode, setCurrentCode] = useState('');
+  const [savedCode, setSavedCode] = useState('');
+  const [language, setLanguage] = useState('javascript');
+  const [output, setOutput] = useState<string | null>(null);
+
   const languages = createListCollection({
     items: [
       { label: 'JavaScript', value: 'javascript' },
@@ -42,10 +47,6 @@ export default function CodeEditor({}: CodeEditorProps) {
     },
   });
 
-  const [currentCode, setCurrentCode] = useState('');
-  const [savedCode, setSavedCode] = useState('');
-  const [language, setLanguage] = useState('javascript');
-
   const getLanguageExtension = (lang: string) => {
     switch (lang) {
       case 'javascript':
@@ -61,9 +62,34 @@ export default function CodeEditor({}: CodeEditorProps) {
     }
   };
 
+  const executeCode = () => {
+    if (language !== 'javascript') {
+      setOutput('Code execution is only supported for JavaScript.');
+      return;
+    }
+
+    try {
+      const logs: string[] = [];
+      const originalConsoleLog = console.log;
+
+      console.log = (...args: any[]) => {
+        logs.push(args.map(arg => String(arg)).join(' '));
+      };
+
+      const result = new Function(currentCode)();
+
+      console.log = originalConsoleLog;
+
+      const logOutput = logs.join('\n');
+      setOutput(logOutput || (result !== undefined ? String(result) : 'Code executed successfully with no output.'));
+    } catch (error) {
+      setOutput(`Error occurred`);
+    }
+  };
+
   return (
     <Box>
-      <Box marginBottom={4}>
+      <Box display="flex" justifyContent="space-between" marginBottom={4}>
         <Select.Root
           collection={languages}
           size="md"
@@ -118,6 +144,14 @@ export default function CodeEditor({}: CodeEditorProps) {
             </Select.Positioner>
           </Portal>
         </Select.Root>
+        <Button
+          onClick={() => executeCode()}
+          type="secondary"
+          pageColor="aqua"
+          text="Run Code"
+          height="3rem"
+          width="7rem"
+        />
       </Box>
       <Box marginBottom={4} borderRadius="lg" borderWidth={3} borderColor="LightGray" overflow="hidden">
         <CodeMirror
@@ -129,23 +163,41 @@ export default function CodeEditor({}: CodeEditorProps) {
           onChange={value => setCurrentCode(value)}
         />
       </Box>
-      <Box display="flex" gap={4}>
-        <Button
-          onClick={() => setSavedCode(currentCode)}
-          type="primary"
-          pageColor="aqua"
-          text="Save Code"
-          height="3rem"
-          width="7rem"
-        />
-        <Button
-          onClick={() => setCurrentCode(savedCode)}
-          type="secondary"
-          pageColor="aqua"
-          text="Load Previous Code"
-          height="3rem"
-          width="11rem"
-        />
+      <Box display="flex" justifyContent="space-between" alignItems="center" gap={4}>
+        <Box>
+          <Text
+            color="Flamingo"
+            fontWeight="bold"
+            fontSize={18}
+            textDecoration="underline"
+            textUnderlineOffset="0.5rem"
+          >
+            OUTPUT
+          </Text>
+        </Box>
+        <Box display="flex" gap={4}>
+          <Button
+            onClick={() => setSavedCode(currentCode)}
+            type="primary"
+            pageColor="aqua"
+            text="Save Code"
+            height="3rem"
+            width="7rem"
+          />
+          <Button
+            onClick={() => setCurrentCode(savedCode)}
+            type="secondary"
+            pageColor="aqua"
+            text="Load Previous Code"
+            height="3rem"
+            width="11rem"
+          />
+        </Box>
+      </Box>
+      <Box marginTop={4} padding={4} borderRadius="md" borderWidth={2} borderColor="gray.300" bg="gray.50">
+        <Box as="pre" whiteSpace="pre-wrap" fontFamily="monospace">
+          {output != null ? output : "Your code's output will display here!"}
+        </Box>
       </Box>
     </Box>
   );
