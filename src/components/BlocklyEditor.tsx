@@ -2,10 +2,11 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Head from 'next/head';
-import { Box, Button } from '@chakra-ui/react';
+import { Text, Box, Button as ChakraButton } from '@chakra-ui/react';
 import * as Blockly from 'blockly';
 import 'blockly/blocks';
 import { javascriptGenerator } from 'blockly/javascript';
+import Button from './Button';
 
 export default function BlocklyEditor() {
   const BlocklyXml = Blockly.Xml as typeof import('blockly').Xml;
@@ -139,13 +140,36 @@ export default function BlocklyEditor() {
     };
   }, []);
 
-  const generateCode = () => {
+  const runCode = () => {
     if (!workspaceRef.current) return;
 
     const jsGenerator = javascriptGenerator;
     if (jsGenerator?.workspaceToCode) {
       const code = jsGenerator.workspaceToCode(workspaceRef.current);
-      setSavedCode(code);
+
+      try {
+        const logs: string[] = [];
+        const originalConsoleLog = console.log;
+
+        console.log = (...args: any[]) => {
+          logs.push(args.map(arg => String(arg)).join(' '));
+        };
+
+        const modifiedCode = code.replace(/window\.alert/g, 'console.log');
+
+        const result = new Function(modifiedCode)();
+
+        console.log = originalConsoleLog;
+
+        const logOutput = logs.join('\n');
+        setSavedCode(
+          logOutput || (result !== undefined ? String(result) : 'Code executed successfully with no output.'),
+        );
+      } catch (error) {
+        setSavedCode(`Error occurred`);
+      }
+
+      // setSavedCode(code);
       console.log('Generated code:\n', code);
     } else {
       console.error('Blockly.JavaScript is undefined. Generator not loaded.');
@@ -170,16 +194,63 @@ export default function BlocklyEditor() {
   };
 
   return (
-    <Box borderColor={'Aqua'} style={{ borderWidth: 5, borderRadius: 7.5 }}>
-      <Head>
-        <link
-          href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
-          rel="stylesheet"
+    <Box>
+      <Box marginBottom={4} display="flex" justifyContent="flex-end">
+        <Button
+          onClick={() => runCode()}
+          type="secondary"
+          pageColor="aqua"
+          text="Run Code"
+          height="3rem"
+          width="7rem"
         />
-      </Head>
-      <div ref={blocklyDiv} style={{ height: '30rem', width: '100%' }} />
-
-      <Button
+      </Box>
+      <Box marginBottom={4} borderRadius="lg" borderWidth={3} borderColor="LightGray" overflow="hidden">
+        <Head>
+          <link
+            href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+            rel="stylesheet"
+          />
+        </Head>
+        <div ref={blocklyDiv} style={{ height: '30rem', width: '100%' }} />
+      </Box>
+      <Box display="flex" justifyContent="space-between" alignItems="center" gap={4}>
+        <Box>
+          <Text
+            color="Flamingo"
+            fontWeight="bold"
+            fontSize={18}
+            textDecoration="underline"
+            textUnderlineOffset="0.5rem"
+          >
+            OUTPUT
+          </Text>
+        </Box>
+        <Box display="flex" gap={4}>
+          <Button
+            onClick={() => saveXml()}
+            type="primary"
+            pageColor="aqua"
+            text="Save Blocks"
+            height="3rem"
+            width="8rem"
+          />
+          <Button
+            onClick={() => loadXml()}
+            type="secondary"
+            pageColor="aqua"
+            text="Load Previous Blocks"
+            height="3rem"
+            width="14rem"
+          />
+        </Box>
+      </Box>
+      <Box marginTop={4} padding={4} borderRadius="md" borderWidth={2} borderColor="gray.300" bg="gray.50">
+        <Box as="pre" whiteSpace="pre-wrap" fontFamily="monospace">
+          {savedCode != null ? savedCode : "Your code's output will display here!"}
+        </Box>
+      </Box>
+      {/* <ChakraButton
         onClick={generateCode}
         backgroundColor="white"
         color="black"
@@ -189,8 +260,8 @@ export default function BlocklyEditor() {
         alignSelf="flex-start"
       >
         Save Code
-      </Button>
-      <Button
+      </ChakraButton>
+      <ChakraButton
         onClick={saveXml}
         backgroundColor="white"
         color="black"
@@ -199,8 +270,8 @@ export default function BlocklyEditor() {
         cursor="pointer"
       >
         Save Blocks
-      </Button>
-      <Button
+      </ChakraButton>
+      <ChakraButton
         onClick={loadXml}
         backgroundColor="white"
         color="black"
@@ -211,7 +282,7 @@ export default function BlocklyEditor() {
         opacity={savedXml ? 1 : 0.5}
       >
         Load Previous Blocks
-      </Button>
+      </ChakraButton> */}
     </Box>
   );
 }
