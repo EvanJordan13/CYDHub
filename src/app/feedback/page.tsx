@@ -53,7 +53,7 @@ export default function SubmissionSuccessPage() {
           height={16}
           width={40}
           onClick={() => {
-            router.push('/dashboard');
+            router.push('/programs/');
           }}
         />
       </VStack>

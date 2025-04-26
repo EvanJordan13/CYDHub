@@ -199,9 +199,6 @@ export default function ProgramPage({ params }: { params: { programId: number } 
 
   const router = useRouter();
   const RatingsValue = useRatingGroup({ count: 5, defaultValue: 0 });
-  useEffect(() => {
-    console.log('Rating changed to:', RatingsValue.value);
-  }, [RatingsValue.value]);
 
   const [feedbackValues, setFeedbackValues] = useState<{ [key: number]: string }>({});
   const handleFeedbackChange = (index: number, value: string) => {
