@@ -10,13 +10,17 @@ import { html } from '@codemirror/lang-html';
 import { css } from '@codemirror/lang-css';
 import { EditorView } from '@codemirror/view';
 
-interface CodeEditorProps {}
+type PyodideInterface = any;
 
-export default function CodeEditor({}: CodeEditorProps) {
+interface CodeEditorProps { }
+
+export default function CodeEditor({ }: CodeEditorProps) {
   const [currentCode, setCurrentCode] = useState('');
   const [savedCode, setSavedCode] = useState('');
   const [language, setLanguage] = useState('javascript');
   const [output, setOutput] = useState<string | null>(null);
+  const [pyodide, setPyodide] = useState<PyodideInterface | null>(null);
+  const [pyodideLoading, setPyodideLoading] = useState(false);
 
   const languages = createListCollection({
     items: [
@@ -62,29 +66,83 @@ export default function CodeEditor({}: CodeEditorProps) {
     }
   };
 
-  const executeCode = () => {
-    if (language !== 'javascript') {
-      setOutput('Code execution is only supported for JavaScript.');
-      return;
+  useEffect(() => {
+    const initPyodide = async () => {
+      setPyodideLoading(true);
+      try {
+        if (!(window as any).loadPyodide) {
+          const script = document.createElement('script');
+          script.src = 'https://cdn.jsdelivr.net/pyodide/v0.25.1/full/pyodide.js';
+          script.onload = async () => {
+            const py = await (window as any).loadPyodide();
+            setPyodide(py);
+            setPyodideLoading(false);
+          };
+          document.body.appendChild(script);
+        } else {
+          const py = await (window as any).loadPyodide();
+          setPyodide(py);
+          setPyodideLoading(false);
+        }
+      } catch (error) {
+        console.error('Failed to load Pyodide:', error);
+        setOutput('Failed to load Python runtime.');
+        setPyodideLoading(false);
+      }
+    };
+
+    if (language === 'python' && !pyodide) {
+      initPyodide();
+    }
+  }, [language]);
+
+  const executeCode = async () => {
+    if (language === 'javascript') {
+      try {
+        const logs: string[] = [];
+        const originalConsoleLog = console.log;
+
+        console.log = (...args: any[]) => {
+          logs.push(args.map(arg => String(arg)).join(' '));
+        };
+
+        const result = new Function(currentCode)();
+
+        console.log = originalConsoleLog;
+
+        const logOutput = logs.join('\n');
+        setOutput(
+          logOutput || (result !== undefined ? String(result) : 'Code executed successfully with no output.')
+        );
+      } catch (error) {
+        setOutput(`Error occurred`);
+      }
+    } else if (language === 'python') {
+      if (!pyodide) {
+        setOutput('Loading Python runtime...');
+        return;
+      }
+      try {
+        let outputBuffer = '';
+        pyodide.setStdout({
+          batched: (text: string) => {
+            outputBuffer += text;
+          }
+        });
+
+        const result = await pyodide.runPythonAsync(currentCode);
+
+        pyodide.setStdout({ batched: () => { } });
+
+        const combinedOutput = outputBuffer + (result !== undefined ? String(result) : '');
+        setOutput(combinedOutput || 'Python code executed with no output.');
+      } catch (err) {
+        setOutput(`Python Error: ${(err as Error).message}`);
+      }
+    } else {
+      setOutput('Code execution is only supported for JavaScript and Python.');
     }
 
-    try {
-      const logs: string[] = [];
-      const originalConsoleLog = console.log;
-
-      console.log = (...args: any[]) => {
-        logs.push(args.map(arg => String(arg)).join(' '));
-      };
-
-      const result = new Function(currentCode)();
-
-      console.log = originalConsoleLog;
-
-      const logOutput = logs.join('\n');
-      setOutput(logOutput || (result !== undefined ? String(result) : 'Code executed successfully with no output.'));
-    } catch (error) {
-      setOutput(`Error occurred`);
-    }
   };
 
   return (
@@ -113,26 +171,26 @@ export default function CodeEditor({}: CodeEditorProps) {
                   (language: {
                     value: Key | null | undefined;
                     label:
+                    | string
+                    | number
+                    | bigint
+                    | boolean
+                    | ReactElement<unknown, string | JSXElementConstructor<any>>
+                    | Iterable<ReactNode>
+                    | ReactPortal
+                    | Promise<
                       | string
                       | number
                       | bigint
                       | boolean
+                      | ReactPortal
                       | ReactElement<unknown, string | JSXElementConstructor<any>>
                       | Iterable<ReactNode>
-                      | ReactPortal
-                      | Promise<
-                          | string
-                          | number
-                          | bigint
-                          | boolean
-                          | ReactPortal
-                          | ReactElement<unknown, string | JSXElementConstructor<any>>
-                          | Iterable<ReactNode>
-                          | null
-                          | undefined
-                        >
                       | null
-                      | undefined;
+                      | undefined
+                    >
+                    | null
+                    | undefined;
                   }) => (
                     <Select.Item item={language} key={language.value}>
                       {language.label}
