@@ -1,4 +1,3 @@
-// src/app/api/users/[id]/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/src/lib/postgres/db';
 import { getSession } from '@auth0/nextjs-auth0';
