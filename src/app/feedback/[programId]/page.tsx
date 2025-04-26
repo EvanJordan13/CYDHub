@@ -6,7 +6,7 @@ import Button from '@/src/components/Button';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-export default function SubmissionSuccessPage() {
+export default function SubmissionSuccessPage({ params }: { params: { programId: number } }) {
   const userId = 1; // Needs to be changed for a particular user
   const [userName, setUserName] = useState('');
   const [loading, setLoading] = useState(true);
@@ -53,7 +53,7 @@ export default function SubmissionSuccessPage() {
           height={16}
           width={40}
           onClick={() => {
-            router.push('/programs/');
+            router.push('/programs/' + String(Number(params.programId)));
           }}
         />
       </VStack>

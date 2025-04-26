@@ -23,6 +23,7 @@ import {
 import AnnouncementCard from '@/src/components/AnnouncementCard';
 import Button from '@/src/components/Button';
 import FeedbackCard from '@/src/components/FeedbackCard';
+import FeedbackForm from '@/src/components/FeedbackForm';
 import {
   fetchProgramMaterials,
   fetchProgramAssignments,
@@ -194,8 +195,6 @@ export default function ProgramPage({ params }: { params: { programId: number } 
     ['What did you like about this assignment?', 'I liked...', ['like']],
     ['What would you do to improve this assignment?', 'I would improve...', ['improve']],
   ];
-  // const surveyQuestions = await getSurveyQuestionsBySurveyId(6);
-  // const FeedbackQuestions = surveyQuestions.map(question => question.questionText);
 
   const router = useRouter();
   const RatingsValue = useRatingGroup({ count: 5, defaultValue: 0 });
@@ -223,7 +222,7 @@ export default function ProgramPage({ params }: { params: { programId: number } 
       await storeSurveyResponse('Rating?', currentUserId, String(RatingsValue.value));
     }
     await updateUserPoints(currentUserId, pointsPerQuestion);
-    router.push('/feedback');
+    router.push('/feedback/' + String(programId));
   };
 
   if (submitted) {
@@ -348,46 +347,12 @@ export default function ProgramPage({ params }: { params: { programId: number } 
               </Tabs.Content>
 
               <Tabs.Content value="feedback">
-                <Flex direction={'column'} ml={2} marginTop={7}>
-                  <Heading fontSize={'3xl'} fontWeight={'bold'} marginBottom={3}>
-                    Feedback Survey
-                  </Heading>
-
-                  <Text fontWeight={'medium'} mb={7}>
-                    Complete this optional survey to earn points!
-                  </Text>
-
-                  <Text fontSize={'lg'} fontWeight={'semibold'} mb={2}>
-                    Please provide this assignment a star rating.
-                  </Text>
-
-                  <RatingGroup.RootProvider value={RatingsValue} size="lg" colorPalette={'yellow'} mb={10}>
-                    <RatingGroup.HiddenInput />
-                    <RatingGroup.Control />
-                  </RatingGroup.RootProvider>
-
-                  <Flex direction="column" gap={6}>
-                    {FeedbackQuestions.map(([question, placeholder, words], index) => (
-                      <FeedbackCard
-                        key={index}
-                        question={question}
-                        words={words}
-                        placeholder={placeholder}
-                        onFeedbackChange={value => handleFeedbackChange(index, value)}
-                      />
-                    ))}
-                  </Flex>
-                  <Box mt={20} display={'flex'} justifyContent={'flex-end'}>
-                    <Button
-                      type="primary"
-                      pageColor="aqua"
-                      text="Submit"
-                      height={14}
-                      width={40}
-                      onClick={onSubmitFeedback}
-                    />
-                  </Box>
-                </Flex>
+                <FeedbackForm
+                  RatingsValue={RatingsValue}
+                  FeedbackQuestions={FeedbackQuestions}
+                  handleFeedbackChange={handleFeedbackChange}
+                  onSubmitFeedback={onSubmitFeedback}
+                />
               </Tabs.Content>
             </Tabs.Root>
           </Box>

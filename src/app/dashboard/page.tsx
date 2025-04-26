@@ -126,7 +126,7 @@ export default function DashboardPage() {
   return (
     <Flex height="100vh" width="100vw" position="relative">
       <Box position="fixed" height="100vh" left={0} top={0}>
-        <SideBar currentTab='home' onTabChange={setTab}/>
+        <SideBar currentTab="home" onTabChange={setTab} />
       </Box>
       <Box flex={1} ml="240px" height="100vh" overflowY="auto">
         {tabs[tab]}
