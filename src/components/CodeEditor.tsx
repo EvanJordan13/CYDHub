@@ -12,9 +12,9 @@ import { EditorView } from '@codemirror/view';
 
 type PyodideInterface = any;
 
-interface CodeEditorProps { }
+interface CodeEditorProps {}
 
-export default function CodeEditor({ }: CodeEditorProps) {
+export default function CodeEditor({}: CodeEditorProps) {
   const [currentCode, setCurrentCode] = useState('');
   const [savedCode, setSavedCode] = useState('');
   const [language, setLanguage] = useState('javascript');
@@ -111,9 +111,7 @@ export default function CodeEditor({ }: CodeEditorProps) {
         console.log = originalConsoleLog;
 
         const logOutput = logs.join('\n');
-        setOutput(
-          logOutput || (result !== undefined ? String(result) : 'Code executed successfully with no output.')
-        );
+        setOutput(logOutput || (result !== undefined ? String(result) : 'Code executed successfully with no output.'));
       } catch (error) {
         setOutput(`Error occurred`);
       }
@@ -127,12 +125,12 @@ export default function CodeEditor({ }: CodeEditorProps) {
         pyodide.setStdout({
           batched: (text: string) => {
             outputBuffer += text;
-          }
+          },
         });
 
         const result = await pyodide.runPythonAsync(currentCode);
 
-        pyodide.setStdout({ batched: () => { } });
+        pyodide.setStdout({ batched: () => {} });
 
         const combinedOutput = outputBuffer + (result !== undefined ? String(result) : '');
         setOutput(combinedOutput || 'Python code executed with no output.');
@@ -142,7 +140,6 @@ export default function CodeEditor({ }: CodeEditorProps) {
     } else {
       setOutput('Code execution is only supported for JavaScript and Python.');
     }
-
   };
 
   return (
@@ -171,26 +168,26 @@ export default function CodeEditor({ }: CodeEditorProps) {
                   (language: {
                     value: Key | null | undefined;
                     label:
-                    | string
-                    | number
-                    | bigint
-                    | boolean
-                    | ReactElement<unknown, string | JSXElementConstructor<any>>
-                    | Iterable<ReactNode>
-                    | ReactPortal
-                    | Promise<
                       | string
                       | number
                       | bigint
                       | boolean
-                      | ReactPortal
                       | ReactElement<unknown, string | JSXElementConstructor<any>>
                       | Iterable<ReactNode>
+                      | ReactPortal
+                      | Promise<
+                          | string
+                          | number
+                          | bigint
+                          | boolean
+                          | ReactPortal
+                          | ReactElement<unknown, string | JSXElementConstructor<any>>
+                          | Iterable<ReactNode>
+                          | null
+                          | undefined
+                        >
                       | null
-                      | undefined
-                    >
-                    | null
-                    | undefined;
+                      | undefined;
                   }) => (
                     <Select.Item item={language} key={language.value}>
                       {language.label}
