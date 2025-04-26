@@ -64,7 +64,7 @@ export default function DashboardPage() {
     };
 
     fetchData();
-  }, [dbUser, isSessionLoading, assignments, programs]);
+  }, [dbUser, isSessionLoading]);
 
   const tabs: Record<Tab, React.ReactNode> = {
     home: <HomeSection userInfo={dbUser} assignments={assignments} programs={programs} isLoading={isLoadingPageData} />,
