@@ -56,7 +56,7 @@ export default function ArchivedPage({ userInfo, archivedPrograms, isLoading }: 
             <Text fontSize={'2xl'} fontWeight={'bold'}>
               Previous Programs
             </Text>
-            <Wrap gap={5} justify="flex-start">
+            <Wrap gap={4} justify="flex-start">
               {isLoading
                 ? [...Array(3)].map((_, i) => (
                     <WrapItem key={i}>

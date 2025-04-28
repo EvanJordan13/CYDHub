@@ -39,7 +39,7 @@ export async function getUserById(userId: number): Promise<User> {
   return user;
 }
 
-export async function getProgramsByUser(userId: number): Promise<Program[]> {
+export async function getProgramsByUser(userId: number, archived: boolean = false): Promise<Program[]> {
   const programs = await prisma.user.findUnique({
     where: {
       id: userId,
@@ -55,8 +55,15 @@ export async function getProgramsByUser(userId: number): Promise<Program[]> {
   if (!programs) {
     throw new Error(`No user found with ID ${userId}`);
   }
-
-  return programs.programEnrollments.map(enrollment => enrollment.program);
+  if (archived) {
+    return programs.programEnrollments
+      .filter(enrollment => enrollment.program.archived)
+      .map(enrollment => enrollment.program);
+  } else {
+    return programs.programEnrollments
+      .filter(enrollment => !enrollment.program.archived)
+      .map(enrollment => enrollment.program);
+  }
 }
 
 export async function fetchAllPrograms(): Promise<Program[]> {
@@ -68,9 +75,9 @@ export async function fetchAllPrograms(): Promise<Program[]> {
   }
 }
 
-export async function fetchProgramsByUser(userId: number): Promise<Program[]> {
+export async function fetchProgramsByUser(userId: number, archived: boolean = false): Promise<Program[]> {
   try {
-    return await getProgramsByUser(userId);
+    return await getProgramsByUser(userId, archived);
   } catch (error) {
     console.error('[FETCH_PROGRAMS_BY_USER]', error);
     return [];
