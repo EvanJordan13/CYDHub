@@ -17,6 +17,14 @@ import ArchivedPage from '@/src/components/dashboard/sections/Archived';
 import { useSearchParams, useRouter } from 'next/navigation';
 
 export default function DashboardPage() {
+  return (
+    <Suspense fallback={<div>Loading…</div>}>
+      <DashboardClient />
+    </Suspense>
+  );
+}
+
+export function DashboardClient() {
   const [userInfo, setUserInfo] = useState<User | null>(null);
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [programs, setPrograms] = useState<Program[]>([]);
