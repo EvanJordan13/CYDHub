@@ -1,6 +1,6 @@
 'use client';
 
-import SideBar from '@/src/components/SideBar';
+import SideBar from '@/src/components/dashboard/SideBar';
 import {
   Text,
   Heading,
@@ -19,6 +19,7 @@ import { ModuleMaterial, Assignment, Module as Mod, Announcement, Program, User 
 import { useState, useEffect } from 'react';
 import { MoveDiagonal } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { Tab } from '@/src/components/dashboard/types';
 
 const ProgramPageSkeleton = () => (
   <Box marginY={6} marginLeft={250} style={{ flexBasis: '80%' }} paddingX={4}>
@@ -125,9 +126,14 @@ export default function ProgramLayout({
     router.push(`/programs/${programId}`);
   };
 
+  const handleTabChange = (next: Tab) => {
+    router.push(`/dashboard?tab=${next}`);
+    return;
+  };
+
   return (
     <Box display={'flex'} backgroundColor={'white'} color={'black'}>
-      <SideBar page="Program" />
+      <SideBar currentTab="home" onTabChange={handleTabChange} />
       {isInitialLoading ? (
         <ProgramPageSkeleton />
       ) : (

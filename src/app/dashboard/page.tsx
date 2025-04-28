@@ -14,6 +14,7 @@ import MoodModal from '@/src/components/MoodModal';
 
 import TodoSection from '@/src/components/dashboard/sections/TodoSection';
 import ArchivedPage from '@/src/components/dashboard/sections/Archived';
+import { useSearchParams, useRouter } from 'next/navigation';
 
 export default function DashboardPage() {
   const [userInfo, setUserInfo] = useState<User | null>(null);
@@ -26,8 +27,20 @@ export default function DashboardPage() {
   const [isLoadingArchivedPrograms, setIsLoadingArchivedPrograms] = useState(true);
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [tab, setTab] = useState<Tab>('home');
+  const searchParams = useSearchParams();
 
   const testUserId = 1;
+  const router = useRouter();
+
+  useEffect(() => {
+    const q = searchParams.get('tab') as Tab | null;
+    setTab(q ? q : 'home');
+  }, [searchParams]);
+
+  const handleTabChange = (next: Tab) => {
+    setTab(next);
+    router.replace(`/dashboard?tab=${next}`);
+  };
 
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -78,10 +91,17 @@ export default function DashboardPage() {
     fetchAssignments();
     fetchPrograms();
     fetchArchivedPrograms();
-
-    setIsOpenModal(true);
   }, []);
 
+  useEffect(() => {
+    const key = 'dashboardModalShown';
+    if (!sessionStorage.getItem(key)) {
+      setIsOpenModal(true);
+      sessionStorage.setItem(key, 'true');
+    }
+  }, []);
+
+  if (tab === null) return null;
   const tabs: Record<Tab, React.ReactNode> = {
     home: (
       <HomeSection
@@ -132,7 +152,7 @@ export default function DashboardPage() {
   return (
     <Flex height="100vh" width="100vw" position="relative">
       <Box position="fixed" height="100vh" left={0} top={0}>
-        <SideBar currentTab={tab} onTabChange={setTab} />
+        <SideBar currentTab={tab} onTabChange={handleTabChange} />
       </Box>
       <Box flex={1} ml="210px" height="100vh" overflowX="visible" overflowY="auto">
         {tabs[tab]}
