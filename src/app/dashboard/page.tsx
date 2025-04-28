@@ -24,7 +24,7 @@ export default function DashboardPage() {
   );
 }
 
-export function DashboardClient() {
+function DashboardClient() {
   const [userInfo, setUserInfo] = useState<User | null>(null);
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [programs, setPrograms] = useState<Program[]>([]);
