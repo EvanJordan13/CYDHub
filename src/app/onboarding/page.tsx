@@ -91,7 +91,6 @@ export default function OnboardingPage() {
       return;
     }
 
-    // Validation feedback
     if (displayName.trim() === '') {
       toaster.warning({ title: 'Display Name is required.', duration: 3000, closable: true });
       return;
@@ -176,9 +175,7 @@ export default function OnboardingPage() {
     );
   }
 
-  // Avoid rendering the form until we know the user needs onboarding
   if (!auth0User?.user || dbUser?.signupComplete) {
-    // Show spinner while potentially redirecting
     return (
       <Center h="100vh">
         <Spinner size="xl" color="Aqua" />

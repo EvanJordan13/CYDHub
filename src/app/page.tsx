@@ -12,7 +12,6 @@ export default function Home() {
 
   useEffect(() => {
     if (!isLoading && user) {
-      // Check if the user has completed onboarding
       fetch(`/api/users/lookup?email=${encodeURIComponent(user.email!)}`)
         .then(res => res.json())
         .then(data => {
@@ -24,7 +23,6 @@ export default function Home() {
         })
         .catch(err => {
           console.error('Error checking user status:', err);
-          // Default to onboarding if there's an error
           router.push('/onboarding');
         });
     }

@@ -24,13 +24,11 @@ export default function DashboardPage() {
   const [isLoadingPageData, setIsLoadingPageData] = useState(true);
 
   useEffect(() => {
-    // Ensure session is loaded and we have a dbUser before fetching page data
     if (isSessionLoading || !dbUser) {
       setIsLoadingPageData(true);
       return;
     }
 
-    // Check if page data is already loaded to prevent redundant fetches
     if (assignments.length > 0 || programs.length > 0) {
       setIsLoadingPageData(false);
       return;

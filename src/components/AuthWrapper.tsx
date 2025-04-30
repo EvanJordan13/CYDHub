@@ -10,7 +10,6 @@ export default function AuthWrapper({ children }: { children: React.ReactNode })
   const currentPath = typeof window !== 'undefined' ? window.location.pathname : '';
 
   useEffect(() => {
-    // Only run checks if not already redirecting and window is available
     if (isRedirecting || typeof window === 'undefined') {
       return;
     }
@@ -24,10 +23,9 @@ export default function AuthWrapper({ children }: { children: React.ReactNode })
         setIsRedirecting(true);
         window.location.assign('/api/auth/login');
       } else if (!dbUser) {
-        // This state might occur briefly if db lookup fails after auth0 login
         console.warn('AuthWrapper: Auth0 user exists, but DB user not found/linked. Redirecting to login for safety.');
         setIsRedirecting(true);
-        window.location.assign('/api/auth/login'); // Or redirect to an error/support page
+        window.location.assign('/api/auth/login');
       } else if (!dbUser.signupComplete && currentPath !== '/onboarding') {
         setIsRedirecting(true);
         window.location.assign('/onboarding');
@@ -37,7 +35,5 @@ export default function AuthWrapper({ children }: { children: React.ReactNode })
     }
   }, [dbUser, auth0User, isLoading, error, currentPath, isRedirecting]);
 
-  // If loading is done, no errors, user is authenticated & onboarded (or on onboarding page)
-  // and we are not in a redirect state -> Render the protected content
   return <>{children}</>;
 }

@@ -36,7 +36,6 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 
   const userId = parseInt(params.id);
 
-  // Check if this is the user's own record
   const user = await prisma.user.findUnique({
     where: { id: userId },
   });
@@ -48,7 +47,6 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   try {
     const userData = await req.json();
 
-    // Update the user record
     const updatedUser = await prisma.user.update({
       where: { id: userId },
       data: userData,
