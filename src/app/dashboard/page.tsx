@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 
 import { getUserById } from '@/src/lib/query/users';
 import { User, Assignment, Program, Announcement } from '@prisma/client';
@@ -13,18 +13,21 @@ import { Tab } from '@/src/components/dashboard/types';
 import MoodModal from '@/src/components/MoodModal';
 
 import TodoSection from '@/src/components/dashboard/sections/TodoSection';
+import ArchivedPage from '@/src/components/dashboard/sections/Archived';
 
 export default function DashboardPage() {
-  const [tab, setTab] = useState<Tab>('home');
   const [userInfo, setUserInfo] = useState<User | null>(null);
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [programs, setPrograms] = useState<Program[]>([]);
+  const [archivedPrograms, setArchivedPrograms] = useState<Program[]>([]);
   const [isLoadingUser, setIsLoadingUser] = useState(true);
   const [isLoadingAssignments, setIsLoadingAssignments] = useState(true);
   const [isLoadingPrograms, setIsLoadingPrograms] = useState(true);
+  const [isLoadingArchivedPrograms, setIsLoadingArchivedPrograms] = useState(true);
   const [isOpenModal, setIsOpenModal] = useState(false);
+  const [tab, setTab] = useState<Tab>('home');
 
-  const testUserId = 4;
+  const testUserId = 1;
 
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -60,9 +63,21 @@ export default function DashboardPage() {
         setIsLoadingPrograms(false);
       }
     };
+    const fetchArchivedPrograms = async () => {
+      setIsLoadingArchivedPrograms(true);
+      try {
+        const archivedProgs = await fetchProgramsByUser(testUserId, true);
+        setArchivedPrograms(archivedProgs);
+      } catch (error) {
+        console.error('Error fetching archived programs:', error);
+      } finally {
+        setIsLoadingArchivedPrograms(false);
+      }
+    };
     fetchUserInfo();
     fetchAssignments();
     fetchPrograms();
+    fetchArchivedPrograms();
 
     setIsOpenModal(true);
   }, []);
@@ -99,11 +114,7 @@ export default function DashboardPage() {
       </>
     ),
     archived: (
-      <>
-        <Heading fontSize="40px" fontWeight={700} p="32px 48px 16px 48px" lineHeight={'48px'}>
-          Page Under Construction!
-        </Heading>
-      </>
+      <ArchivedPage userInfo={userInfo} archivedPrograms={archivedPrograms} isLoading={isLoadingArchivedPrograms} />
     ),
     settings: (
       <>
