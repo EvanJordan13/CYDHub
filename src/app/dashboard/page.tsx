@@ -2,9 +2,9 @@
 
 import { useState, useEffect, Suspense, useMemo } from 'react';
 import { useDbSession } from '@/src/hooks/useDbSession';
-import { User, Assignment, Program } from '@prisma/client';
+import { Assignment, Program } from '@prisma/client';
 import { fetchProgramsByUser, fetchProgramAssignmentsByUser } from '@/src/lib/query/programs';
-import { Flex, Box, Heading, Center, Spinner, Text, Link as ChakraLink } from '@chakra-ui/react';
+import { Flex, Box, Heading, Center, Spinner, Text, Skeleton } from '@chakra-ui/react';
 import HomeSection from '@/src/components/dashboard/sections/HomeSection';
 import SideBar from '@/src/components/dashboard/SideBar';
 import { Tab } from '@/src/components/dashboard/types';
@@ -12,7 +12,6 @@ import MoodModal from '@/src/components/MoodModal';
 import TodoSection from '@/src/components/dashboard/sections/TodoSection';
 import ArchivedPage from '@/src/components/dashboard/sections/Archived';
 import { useSearchParams, useRouter } from 'next/navigation';
-import Link from 'next/link';
 
 function DashboardLoadingSkeleton({ message }: { message?: string }) {
   return (
@@ -34,47 +33,17 @@ function DashboardClient() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const tabs = useMemo(
-    () => ({
-      home: (
-        <HomeSection userInfo={dbUser} assignments={assignments} programs={programs} isLoading={isLoadingPageData} />
-      ),
-      todo: <TodoSection assignments={assignments} points={dbUser?.points || 0} />,
-      editor: (
-        <Heading fontSize="40px" fontWeight={700} p="32px 48px 16px 48px" lineHeight={'48px'}>
-          Editor Under Construction!
-        </Heading>
-      ),
-      calendar: (
-        <Heading fontSize="40px" fontWeight={700} p="32px 48px 16px 48px" lineHeight={'48px'}>
-          Calendar Under Construction!
-        </Heading>
-      ),
-      shop: (
-        <Heading fontSize="40px" fontWeight={700} p="32px 48px 16px 48px" lineHeight={'48px'}>
-          Shop Under Construction!
-        </Heading>
-      ),
-      archived: <ArchivedPage userInfo={dbUser} archivedPrograms={archivedPrograms} isLoading={isLoadingPageData} />,
-      settings: (
-        <Heading fontSize="40px" fontWeight={700} p="32px 48px 16px 48px" lineHeight={'48px'}>
-          Settings Under Construction!
-        </Heading>
-      ),
-    }),
-    [dbUser, assignments, programs, archivedPrograms, isLoadingPageData],
-  );
-
   useEffect(() => {
     const q = searchParams.get('tab') as Tab | null;
-    const validTabs = Object.keys(tabs);
+    const validTabs = ['home', 'todo', 'editor', 'calendar', 'shop', 'archived', 'settings'];
     if (q && validTabs.includes(q)) {
       if (tab !== q) setTab(q);
-    } else if (q && !validTabs.includes(q)) {
-      if (tab !== 'home') setTab('home');
-      router.replace(`/dashboard?tab=home`, { scroll: false });
+    } else if (!q || (q && !validTabs.includes(q))) {
+      if (tab !== 'home') {
+        setTab('home');
+      }
     }
-  }, [searchParams, tab, tabs, router]);
+  }, [searchParams, tab, router]);
 
   const handleTabChange = (next: Tab) => {
     setTab(next);
@@ -83,11 +52,7 @@ function DashboardClient() {
 
   useEffect(() => {
     if (!dbUser?.id) {
-      console.warn('DashboardClient: dbUser.id not available for data fetching.');
-      setIsLoadingPageData(false);
-      setAssignments([]);
-      setPrograms([]);
-      setArchivedPrograms([]);
+      setIsLoadingPageData(true);
       return;
     }
 
@@ -137,6 +102,35 @@ function DashboardClient() {
     }
   }, []);
 
+  const tabs = useMemo(
+    () => ({
+      home: <HomeSection userInfo={dbUser} assignments={assignments} programs={programs} />,
+      todo: <TodoSection assignments={assignments} points={dbUser?.points || 0} />,
+      editor: (
+        <Heading fontSize="40px" fontWeight={700} p="32px 48px 16px 48px" lineHeight={'48px'}>
+          Editor Under Construction!
+        </Heading>
+      ),
+      calendar: (
+        <Heading fontSize="40px" fontWeight={700} p="32px 48px 16px 48px" lineHeight={'48px'}>
+          Calendar Under Construction!
+        </Heading>
+      ),
+      shop: (
+        <Heading fontSize="40px" fontWeight={700} p="32px 48px 16px 48px" lineHeight={'48px'}>
+          Shop Under Construction!
+        </Heading>
+      ),
+      archived: <ArchivedPage userInfo={dbUser} archivedPrograms={archivedPrograms} isLoading={isLoadingPageData} />,
+      settings: (
+        <Heading fontSize="40px" fontWeight={700} p="32px 48px 16px 48px" lineHeight={'48px'}>
+          Settings Under Construction!
+        </Heading>
+      ),
+    }),
+    [dbUser, assignments, programs, archivedPrograms, isLoadingPageData],
+  );
+
   const closeModal = () => {
     setIsOpenModal(false);
   };
@@ -148,7 +142,9 @@ function DashboardClient() {
       </Box>
       <Box flex={1} ml="210px" height="100vh" overflowX="hidden" overflowY="auto" bg="gray.50">
         {isLoadingPageData ? (
-          <DashboardLoadingSkeleton message="Loading dashboard content..." />
+          <Center h="calc(100vh - 100px)">
+            <Spinner size="xl" color="Aqua" />
+          </Center>
         ) : (
           (tabs[tab] ?? <Heading p={8}>Invalid Tab</Heading>)
         )}
