@@ -46,23 +46,5 @@ export default function AuthWrapper({ children }: { children: React.ReactNode })
     }
   }, [dbUser, auth0User, isLoading, error, currentPath, router]);
 
-  if (isLoading) {
-    return (
-      <Center h="100vh">
-        <Spinner size="xl" color="Aqua" />
-        <Text ml={4}>Loading Session...</Text>
-      </Center>
-    );
-  }
-
-  if (!auth0User || (!dbUser && currentPath !== '/onboarding')) {
-    return (
-      <Center h="100vh">
-        <Spinner size="xl" color="Aqua" />
-        <Text ml={4}>Verifying Session...</Text>
-      </Center>
-    );
-  }
-
   return <>{children}</>;
 }

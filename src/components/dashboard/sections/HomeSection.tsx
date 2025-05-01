@@ -5,21 +5,17 @@ import TodoCard from '@/src/components/dashboard/TodoCard';
 import ProgramCard from '@/src/components/ProgramCard';
 import Link from 'next/link';
 import Image from 'next/image';
-
 interface HomeSectionProps {
   userInfo: User | null;
   assignments: Assignment[];
   programs: Program[];
+  isLoading: boolean;
 }
 
-export default function HomeSection({ userInfo, assignments, programs }: HomeSectionProps) {
-  const isHeaderLoading = !userInfo;
-  const isOverviewLoading = !userInfo || !assignments;
-  const areProgramsLoading = !programs;
-
+export default function HomeSection({ userInfo, assignments, programs, isLoading }: HomeSectionProps) {
   return (
     <Box width={'100%'}>
-      {isHeaderLoading ? (
+      {isLoading ? (
         <Skeleton width="calc(100% - 96px)" height="60px" m="32px 48px 16px 48px" />
       ) : (
         <Flex flexDirection={'row'} justifyContent={'space-between'} p="32px 48px 16px 48px">
@@ -39,34 +35,24 @@ export default function HomeSection({ userInfo, assignments, programs }: HomeSec
           Overview
         </Heading>
         <Flex flexDirection={'row'} gap={4}>
-          {isOverviewLoading ? (
-            <Skeleton width="343px" height="250px" borderRadius="md" />
+          {isLoading ? (
+            <Skeleton width="323px" height="343px" />
           ) : (
             <StreakCard currentPoints={userInfo?.points || 0} nextRewardPoints={200} />
           )}
-          {isOverviewLoading ? (
-            <Skeleton flex={1} height="250px" borderRadius="12px" />
-          ) : (
-            <TodoCard assignments={assignments} />
-          )}
+          {isLoading ? <Skeleton flex={1} height="343px" /> : <TodoCard assignments={assignments} />}
         </Flex>
       </Flex>
       <Box p="20px 48px">
         <Heading mb={'16px'}>Programs</Heading>
         <Flex flexDirection={'row'} gap={4} flexWrap="wrap">
-          {areProgramsLoading ? (
-            [...Array(2)].map((_, index) => (
-              <Skeleton key={index} minWidth="340px" maxWidth="345px" height="136px" borderRadius="12px" />
-            ))
-          ) : programs && programs.length > 0 ? (
-            programs.map(program => (
-              <Link key={program.id} href={`/programs/${program.id}`} passHref style={{ textDecoration: 'none' }}>
-                <ProgramCard program={program} />
-              </Link>
-            ))
-          ) : (
-            <Text>No programs found.</Text>
-          )}
+          {isLoading
+            ? [...Array(2)].map((_, index) => <Skeleton key={index} width="420px" height="136px" />)
+            : programs.map(program => (
+                <Link key={program.id} href={`/programs/${program.id}`} passHref style={{ textDecoration: 'none' }}>
+                  <ProgramCard program={program} />
+                </Link>
+              ))}
         </Flex>
       </Box>
     </Box>

@@ -13,15 +13,6 @@ import TodoSection from '@/src/components/dashboard/sections/TodoSection';
 import ArchivedPage from '@/src/components/dashboard/sections/Archived';
 import { useSearchParams, useRouter } from 'next/navigation';
 
-function DashboardLoadingSkeleton({ message }: { message?: string }) {
-  return (
-    <Center h="100vh" flexDirection="column">
-      <Spinner size="xl" color="Aqua" />
-      {message && <Text mt={4}>{message}</Text>}
-    </Center>
-  );
-}
-
 function DashboardClient() {
   const { dbUser } = useDbSession();
   const [assignments, setAssignments] = useState<Assignment[]>([]);
@@ -35,19 +26,12 @@ function DashboardClient() {
 
   useEffect(() => {
     const q = searchParams.get('tab') as Tab | null;
-    const validTabs = ['home', 'todo', 'editor', 'calendar', 'shop', 'archived', 'settings'];
-    if (q && validTabs.includes(q)) {
-      if (tab !== q) setTab(q);
-    } else if (!q || (q && !validTabs.includes(q))) {
-      if (tab !== 'home') {
-        setTab('home');
-      }
-    }
-  }, [searchParams, tab, router]);
+    setTab(q ? q : 'home');
+  }, [searchParams]);
 
   const handleTabChange = (next: Tab) => {
     setTab(next);
-    router.replace(`/dashboard?tab=${next}`, { scroll: false });
+    router.replace(`/dashboard?tab=${next}`);
   };
 
   useEffect(() => {
@@ -104,7 +88,9 @@ function DashboardClient() {
 
   const tabs = useMemo(
     () => ({
-      home: <HomeSection userInfo={dbUser} assignments={assignments} programs={programs} />,
+      home: (
+        <HomeSection userInfo={dbUser} assignments={assignments} programs={programs} isLoading={isLoadingPageData} />
+      ),
       todo: <TodoSection assignments={assignments} points={dbUser?.points || 0} />,
       editor: (
         <Heading fontSize="40px" fontWeight={700} p="32px 48px 16px 48px" lineHeight={'48px'}>
@@ -140,14 +126,8 @@ function DashboardClient() {
       <Box position="fixed" height="100vh" left={0} top={0} zIndex={10}>
         <SideBar currentTab={tab} onTabChange={handleTabChange} />
       </Box>
-      <Box flex={1} ml="210px" height="100vh" overflowX="hidden" overflowY="auto" bg="gray.50">
-        {isLoadingPageData ? (
-          <Center h="calc(100vh - 100px)">
-            <Spinner size="xl" color="Aqua" />
-          </Center>
-        ) : (
-          (tabs[tab] ?? <Heading p={8}>Invalid Tab</Heading>)
-        )}
+      <Box flex={1} ml="210px" height="100vh" overflowX="visible" overflowY="auto">
+        {tabs[tab]}
       </Box>
 
       {isOpenModal && (
@@ -163,7 +143,7 @@ function DashboardClient() {
 
 export default function DashboardPage() {
   return (
-    <Suspense fallback={<DashboardLoadingSkeleton message="Loading dashboard..." />}>
+    <Suspense>
       <DashboardClient />
     </Suspense>
   );
