@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -29,10 +30,10 @@ const ProgramPageSkeleton = () => (
 );
 
 export default function ProgramLayout({
-  children,
+  modules,
   params,
 }: {
-  children: React.ReactNode;
+  modules: React.ReactNode;
   params: { programId: string };
 }) {
   const programId = Number(params.programId);
@@ -153,7 +154,7 @@ export default function ProgramLayout({
                   </Tabs.Trigger>
                 </Tabs.List>
 
-                <Box pt={4}>{children}</Box>
+                <Box pt={4}>{modules}</Box>
               </Tabs.Root>
             </Box>
           </Box>
