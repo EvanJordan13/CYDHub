@@ -23,14 +23,13 @@ export async function GET(req: NextRequest) {
     });
 
     if (!user) {
-      // If user doesn't exist in your database yet, create them
       const newUser = await prisma.user.create({
         data: {
           email,
           name: session.user.name || null,
           role: 'STUDENT',
           signupComplete: false,
-          auth0Id: session.user.sub, // If you have this field
+          auth0Id: session.user.sub,
           avatarUrl: session.user.picture || null,
         },
       });

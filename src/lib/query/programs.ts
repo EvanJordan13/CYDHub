@@ -39,7 +39,7 @@ export async function getUserById(userId: number): Promise<User> {
   return user;
 }
 
-export async function getProgramsByUser(userId: number): Promise<Program[]> {
+export async function getProgramsByUser(userId: number, archived: boolean = false): Promise<Program[]> {
   const programs = await prisma.user.findUnique({
     where: {
       id: userId,
@@ -55,8 +55,15 @@ export async function getProgramsByUser(userId: number): Promise<Program[]> {
   if (!programs) {
     throw new Error(`No user found with ID ${userId}`);
   }
-
-  return programs.programEnrollments.map(enrollment => enrollment.program);
+  if (archived) {
+    return programs.programEnrollments
+      .filter(enrollment => enrollment.program.archived)
+      .map(enrollment => enrollment.program);
+  } else {
+    return programs.programEnrollments
+      .filter(enrollment => !enrollment.program.archived)
+      .map(enrollment => enrollment.program);
+  }
 }
 
 export async function fetchAllPrograms(): Promise<Program[]> {
@@ -68,9 +75,9 @@ export async function fetchAllPrograms(): Promise<Program[]> {
   }
 }
 
-export async function fetchProgramsByUser(userId: number): Promise<Program[]> {
+export async function fetchProgramsByUser(userId: number, archived: boolean = false): Promise<Program[]> {
   try {
-    return await getProgramsByUser(userId);
+    return await getProgramsByUser(userId, archived);
   } catch (error) {
     console.error('[FETCH_PROGRAMS_BY_USER]', error);
     return [];
@@ -93,7 +100,6 @@ export async function getProgramMaterials(programId: number): Promise<(ModuleMat
     });
 
     if (!materials) {
-      console.log(`No program found with ID ${programId}`);
       return [];
     }
 
@@ -135,7 +141,6 @@ export async function getProgramAssignments(programId: number): Promise<(Assignm
     });
 
     if (!assignments) {
-      console.log(`No program found with ID ${programId}`);
       return [];
     }
 
@@ -191,7 +196,6 @@ export async function getProgramModules(programId: number): Promise<Module[]> {
     });
 
     if (!program) {
-      console.log(`No program found with ID ${programId}`);
       return [];
     }
 
@@ -214,13 +218,27 @@ export async function getProgramAnnouncements(programId: number): Promise<Announ
     });
 
     if (!program) {
-      console.log(`No program found with ID ${programId}`);
       return [];
     }
 
     return program.announcements;
   } catch (error) {
-    console.log(`[GET_PROGRAM_ANNOUNCEMENTS_ERROR]`, error);
+    return [];
+  }
+}
+
+export async function getArchivedProgramsByUserId(userId: number): Promise<Program[]> {
+  try {
+    const programs = await fetchProgramsByUser(userId);
+    const archived = programs.filter(p => p.archived);
+
+    if (!archived) {
+      console.log(`No archived programs`);
+      return [];
+    }
+    return archived;
+  } catch (error) {
+    console.log(`[GET_ARCHIVED_PROGRAMS_ERROR]`, error);
     return [];
   }
 }

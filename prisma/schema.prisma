@@ -51,6 +51,7 @@ model Program {
   teacher       User           @relation("TeacherPrograms", fields: [teacherId], references: [id])
   enrollments   ProgramUser[]
   Survey        Survey[]
+  archived      Boolean?        @default(false)
 }
 
 /// Join table for Users and Programs.
@@ -132,6 +133,7 @@ model Submission {
   fileUrl         String?
   grade           Float?
   teacherFeedback String?
+  @@unique([studentId, assignmentId], name: "studentId_assignmentId")
   submittedAt     DateTime   @default(now())
   updatedAt       DateTime   @updatedAt
   assignment      Assignment @relation(fields: [assignmentId], references: [id])
