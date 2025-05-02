@@ -13,6 +13,7 @@ import { Tab } from '@/src/components/dashboard/types';
 import MoodModal from '@/src/components/MoodModal';
 
 import TodoSection from '@/src/components/dashboard/sections/TodoSection';
+import SettingsSection from '@/src/components/dashboard/sections/SettingsSection';
 
 export default function DashboardPage() {
   const [tab, setTab] = useState<Tab>('home');
@@ -107,9 +108,7 @@ export default function DashboardPage() {
     ),
     settings: (
       <>
-        <Heading fontSize="40px" fontWeight={700} p="32px 48px 16px 48px" lineHeight={'48px'}>
-          Page Under Construction!
-        </Heading>
+        <SettingsSection userInfo={userInfo} />
       </>
     ),
   };

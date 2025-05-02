@@ -10,6 +10,7 @@ interface DropDownInputProps {
   options: string[];
   showIcon?: boolean;
   isRequired?: boolean;
+  disabled?: boolean;
   height?: number;
   value?: string | null;
   onChange?: (value: string) => void;
@@ -21,6 +22,7 @@ const DropDownInput: React.FC<DropDownInputProps> = ({
   showIcon = true,
   options,
   isRequired = false,
+  disabled = false,
   height = 12,
   value,
   onChange,
