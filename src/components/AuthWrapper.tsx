@@ -17,19 +17,19 @@ export default function AuthWrapper({ children }: { children: React.ReactNode })
 
     if (error) {
       console.error('AuthWrapper: Session error, redirecting to login.', error);
-      router.push('/api/auth/login');
+      window.location.href = '/api/auth/login';
       return;
     }
 
     if (!auth0User) {
       console.warn('AuthWrapper: No Auth0 user found after loading, redirecting to login.');
-      router.push('/api/auth/login');
+      window.location.href = '/api/auth/login';
       return;
     }
 
     if (!dbUser) {
       console.error('AuthWrapper: DB user not found after loading, redirecting to login.');
-      router.push('/api/auth/login');
+      window.location.href = '/api/auth/login';
       return;
     }
 

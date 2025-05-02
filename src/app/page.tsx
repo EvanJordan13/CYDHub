@@ -23,7 +23,7 @@ export default function Home() {
         })
         .catch(err => {
           console.error('Error checking user status:', err);
-          router.push('/onboarding');
+          window.location.href = '/api/auth/login';
         });
     }
   }, [user, isLoading, router]);
