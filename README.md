@@ -1,6 +1,6 @@
 # Code Your Dreams
 
-**Table of Contents**
+**Table of Contents** 
 
 - [Getting Started](#️-getting-started)
 - [Contributing](#️-contributing)
