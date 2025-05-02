@@ -7,7 +7,7 @@
 - [Development Guidelines](#️-development-guidelines)
 - [Quick Tips](#️-quick-tips)
 
-## Getting Started
+## Getting Started 
 
 ### Prerequisites
 
