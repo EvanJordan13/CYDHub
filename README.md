@@ -13,7 +13,7 @@
 
 1. Install **Node.js** and **npm**: [Download here](https://nodejs.org/en/download).
 
-### Local setup
+### Local setup 
 
 1. Clone the repository:
    ```bash
