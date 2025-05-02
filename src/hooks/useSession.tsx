@@ -11,15 +11,12 @@ export function useSession(options = { required: false }) {
   const router = useRouter();
 
   useEffect(() => {
-    // If authentication is required and user isn't logged in,
-    // redirect to login page
     if (options.required && !isLoading && !user) {
-      router.push('/api/auth/login');
+      window.location.href = '/api/auth/login';
       return;
     }
 
     if (user) {
-      // Fetch additional user data from database
       fetch(`/api/users/${user.sub}`)
         .then(res => res.json())
         .then(data => {

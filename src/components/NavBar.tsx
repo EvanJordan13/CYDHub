@@ -28,48 +28,45 @@ export default function NavBar() {
         <Stack direction={'row'} gap={'5'}>
           {!isLoading && !user ? (
             <>
-              <Link href="/api/auth/login">
-                <Button
-                  size={'lg'}
-                  px={'7'}
-                  rounded={'lg'}
-                  variant={'outline'}
-                  borderWidth={'1px'}
-                  borderBottomWidth={'3px'}
-                  borderColor={'#E5E5E5'}
-                >
-                  Log in
-                </Button>
-              </Link>
-              <Link href="/api/auth/login?screen_hint=signup">
-                <Button
-                  size={'lg'}
-                  px={'7'}
-                  rounded={'lg'}
-                  bg={'#BC3860'}
-                  borderWidth={'1px'}
-                  borderBottomWidth={'3px'}
-                  borderColor={'#A01B43'}
-                >
-                  Sign up
-                </Button>
-              </Link>
+              <Button
+                size={'lg'}
+                px={'7'}
+                rounded={'lg'}
+                variant={'outline'}
+                borderWidth={'1px'}
+                borderBottomWidth={'3px'}
+                borderColor={'#E5E5E5'}
+                onClick={() => (window.location.href = '/api/auth/login')}
+              >
+                Log in
+              </Button>
+              <Button
+                size={'lg'}
+                px={'7'}
+                rounded={'lg'}
+                bg={'#BC3860'}
+                borderWidth={'1px'}
+                borderBottomWidth={'3px'}
+                borderColor={'#A01B43'}
+                onClick={() => (window.location.href = '/api/auth/login?screen_hint=signup')}
+              >
+                Sign up
+              </Button>
             </>
           ) : (
             <>
-              <Link href="/api/auth/logout">
-                <Button
-                  size={'lg'}
-                  px={'7'}
-                  rounded={'lg'}
-                  bg={'#BC3860'}
-                  borderWidth={'1px'}
-                  borderBottomWidth={'3px'}
-                  borderColor={'#A01B43'}
-                >
-                  Log out
-                </Button>
-              </Link>
+              <Button
+                size={'lg'}
+                px={'7'}
+                rounded={'lg'}
+                bg={'#BC3860'}
+                borderWidth={'1px'}
+                borderBottomWidth={'3px'}
+                borderColor={'#A01B43'}
+                onClick={() => (window.location.href = '/api/auth/logout')}
+              >
+                Log out
+              </Button>
             </>
           )}
         </Stack>

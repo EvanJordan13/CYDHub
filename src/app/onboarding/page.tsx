@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Box, Image, Flex, Text, Link, Center, Spinner } from '@chakra-ui/react';
 import { Checkbox } from '../../components/ui/checkbox';
 import Button from '../../components/Button';
@@ -10,23 +10,19 @@ import DropDownInput from '@/src/components/DropDownInput';
 import { User, LockKeyhole } from 'lucide-react';
 import { parse, isValid } from 'date-fns';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
 import { toaster } from '../../components/ui/toaster';
 import { useDbSession } from '@/src/hooks/useDbSession';
 
 export default function OnboardingPage() {
   const { dbUser, auth0User, isLoading, error, refetch } = useDbSession();
   const router = useRouter();
-
   const pronouns = ['He/Him', 'She/Her', 'They/Them', 'Prefer not to answer'];
 
   const [displayName, setDisplayName] = useState('');
   const [selectedPronoun, setSelectedPronoun] = useState('');
   const [date, setDate] = useState('');
   const [checked, setChecked] = useState(false);
-
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [dbUserId, setDbUserId] = useState<number | null>(null);
 
   useEffect(() => {
     if (dbUser && !dbUser.name && auth0User?.name) {
@@ -39,125 +35,11 @@ export default function OnboardingPage() {
   }, [dbUser, auth0User]);
 
   useEffect(() => {
-    if (!isLoading && !auth0User?.user && !error) {
-      router.push('/api/auth/login');
-    } else if (!isLoading && dbUser?.signupComplete) {
-      toaster.info({
-        title: 'Already Onboarded',
-        description: 'Redirecting you to the dashboard...',
-        duration: 2000,
-        closable: true,
-      });
-      setTimeout(() => router.push('/dashboard'), 1500);
-    } else if (!isLoading && error) {
-      console.error('Onboarding: Error loading session:', error);
-      toaster.error({
-        title: 'Error Loading Profile',
-        description: error.message || 'Could not load user data. Please try logging in again.',
-        duration: 5000,
-        closable: true,
-      });
-      setTimeout(() => router.push('/api/auth/login'), 5000);
+    const shouldRedirect = !isLoading && !auth0User && !dbUser && !error;
+    if (shouldRedirect) {
+      window.location.href = '/api/auth/login';
     }
-  }, [dbUser, auth0User, isLoading, error, router]);
-  const isValidDate = (dateStr: string): boolean => {
-    const regex = /^(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])\/\d{4}$/;
-    if (!regex.test(dateStr)) {
-      return false;
-    }
-
-    const parsedDate = parse(dateStr, 'MM/dd/yyyy', new Date());
-    return isValid(parsedDate);
-  };
-
-  const formValid =
-    displayName.trim() !== '' &&
-    selectedPronoun.trim() !== '' &&
-    pronouns.includes(selectedPronoun) &&
-    date.trim() !== '' &&
-    isValidDate(date) &&
-    checked;
-
-  const handleNextClick = async () => {
-    if (isSubmitting || !dbUser || isLoading) {
-      if (!dbUser || isLoading) {
-        toaster.warning({
-          title: 'Loading...',
-          description: 'User data is still loading. Please wait.',
-          duration: 3000,
-          closable: true,
-        });
-      }
-      return;
-    }
-
-    if (displayName.trim() === '') {
-      toaster.warning({ title: 'Display Name is required.', duration: 3000, closable: true });
-      return;
-    }
-    if (selectedPronoun.trim() === '') {
-      toaster.warning({ title: 'Pronouns are required.', duration: 3000, closable: true });
-      return;
-    }
-    if (date.trim() === '' || !isValidDate(date)) {
-      toaster.warning({ title: 'A valid Date of Birth (MM/DD/YYYY) is required.', duration: 3000, closable: true });
-      return;
-    }
-    if (!checked) {
-      toaster.warning({ title: 'You must accept the Terms of Conditions.', duration: 3000, closable: true });
-      return;
-    }
-
-    setIsSubmitting(true);
-    toaster.loading({ title: 'Saving Profile...', id: 'onboarding-save' });
-
-    try {
-      const response = await fetch(`/api/users/${dbUserId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: displayName.trim(),
-          pronouns: selectedPronoun,
-          birthdate: date,
-          signupComplete: true,
-        }),
-      });
-
-      if (!response.ok) {
-        let errorDetails = `Request failed with status ${response.status}`;
-        try {
-          const errorData = await response.json();
-          errorDetails = errorData.message || JSON.stringify(errorData) || errorDetails;
-        } catch (parseError) {
-          console.warn('Could not parse error response body:', parseError);
-        }
-        throw new Error(errorDetails);
-      }
-
-      refetch();
-
-      toaster.success({
-        title: 'Profile Complete!',
-        description: 'Your profile has been set up successfully. Redirecting...',
-        duration: 4000,
-        closable: true,
-        id: 'onboarding-save',
-      });
-
-      setTimeout(() => {
-        router.push('/dashboard');
-      }, 1500);
-    } catch (error) {
-      console.error('Error saving user data:', error);
-      toaster.error({
-        title: 'Error Saving Profile',
-        description: error instanceof Error ? error.message : 'An unknown error occurred. Please try again.',
-        duration: 6000,
-        closable: true,
-        id: 'onboarding-save',
-      });
-    }
-  };
+  }, [auth0User, dbUser, isLoading, error]);
 
   if (isLoading) {
     return (
@@ -175,15 +57,94 @@ export default function OnboardingPage() {
     );
   }
 
-  if (!auth0User?.user || dbUser?.signupComplete) {
+  if (!auth0User || !dbUser) {
     return (
       <Center h="100vh">
-        <Spinner size="xl" color="Aqua" />
+        <Text>Loading user session...</Text>
       </Center>
     );
   }
 
-  return dbUser && auth0User?.user ? (
+  if (dbUser.signupComplete) {
+    window.location.href = '/dashboard';
+    return null;
+  }
+
+  const isValidDate = (dateStr: string): boolean => {
+    const regex = /^(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])\/\d{4}$/;
+    if (!regex.test(dateStr)) return false;
+    const parsedDate = parse(dateStr, 'MM/dd/yyyy', new Date());
+    return isValid(parsedDate);
+  };
+
+  const formValid =
+    displayName.trim() !== '' &&
+    selectedPronoun.trim() !== '' &&
+    pronouns.includes(selectedPronoun) &&
+    date.trim() !== '' &&
+    isValidDate(date) &&
+    checked;
+
+  const handleNextClick = async () => {
+    if (isSubmitting || !dbUser || isLoading) return;
+
+    if (!formValid) {
+      toaster.warning({
+        title: 'Please fill out all required fields correctly.',
+        duration: 3000,
+        closable: true,
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+    toaster.loading({ title: 'Saving Profile...', id: 'onboarding-save' });
+
+    try {
+      const response = await fetch(`/api/users/${dbUser.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: displayName.trim(),
+          pronouns: selectedPronoun,
+          birthdate: date,
+          signupComplete: true,
+        }),
+      });
+
+      if (!response.ok) {
+        let errorDetails = `Request failed with status ${response.status}`;
+        try {
+          const errorData = await response.json();
+          errorDetails = errorData.message || JSON.stringify(errorData) || errorDetails;
+        } catch {}
+        throw new Error(errorDetails);
+      }
+
+      refetch();
+      toaster.success({
+        title: 'Profile Complete!',
+        description: 'Redirecting to dashboard...',
+        duration: 4000,
+        closable: true,
+        id: 'onboarding-save',
+      });
+
+      setTimeout(() => {
+        router.push('/dashboard');
+      }, 1500);
+    } catch (error) {
+      toaster.error({
+        title: 'Error Saving Profile',
+        description: error instanceof Error ? error.message : 'Unknown error occurred.',
+        duration: 6000,
+        closable: true,
+        id: 'onboarding-save',
+      });
+    }
+  };
+
+  return (
     <Box bg="white" height="100vh" width="100vw">
       <Flex direction="row" justify="space-between" height="100%">
         <Box marginTop="2%" marginLeft="2%" padding="1%" width="50%">
@@ -264,7 +225,6 @@ export default function OnboardingPage() {
                   id="terms-checkbox"
                   size="lg"
                   borderColor="gray.400"
-                  borderStartEndRadius={'full'}
                   variant="outline"
                   colorPalette="white"
                   _checked={{ bg: 'white', borderColor: 'gray.400' }}
@@ -273,7 +233,7 @@ export default function OnboardingPage() {
                 >
                   <Flex direction="row">
                     <Text color="black" fontSize="xl" fontWeight="medium">
-                      I certify that I have read the{'\u00A0'}
+                      I certify that I have read the{' '}
                     </Text>
                     <Link color="#4D80BB" href="/" fontSize="xl" textDecoration="underline">
                       Terms of Conditions
@@ -281,7 +241,6 @@ export default function OnboardingPage() {
                   </Flex>
                 </Checkbox>
               </Flex>
-
               <Button
                 type={!formValid ? 'disabled' : 'primary'}
                 pageColor="flamingo"
@@ -308,9 +267,5 @@ export default function OnboardingPage() {
         </Box>
       </Flex>
     </Box>
-  ) : (
-    <Center h="100vh">
-      <Spinner size="xl" color="Aqua" />
-    </Center>
   );
 }

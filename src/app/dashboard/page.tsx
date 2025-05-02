@@ -35,21 +35,17 @@ function DashboardClient() {
   };
 
   useEffect(() => {
-    if (!dbUser?.id) {
-      setIsLoadingPageData(true);
-      return;
-    }
+    if (!dbUser?.id) return;
 
-    const userId = dbUser.id;
     let isMounted = true;
+    setIsLoadingPageData(true);
 
     const fetchAllData = async () => {
-      setIsLoadingPageData(true);
       try {
         const [assignmentsData, programsData, archivedProgramsData] = await Promise.all([
-          fetchProgramAssignmentsByUser(userId),
-          fetchProgramsByUser(userId),
-          fetchProgramsByUser(userId, true),
+          fetchProgramAssignmentsByUser(dbUser.id),
+          fetchProgramsByUser(dbUser.id),
+          fetchProgramsByUser(dbUser.id, true),
         ]);
 
         if (isMounted) {
