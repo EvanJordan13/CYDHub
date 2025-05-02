@@ -15,7 +15,7 @@
 
 ### Local setup 
 
-1. Clone the repository:
+1. Clone the repository: 
    ```bash
    git clone https://github.com/hack4impact-uiuc/code-your-dreams.git
    cd code-your-dreams
