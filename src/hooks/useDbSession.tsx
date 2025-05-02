@@ -1,99 +1,72 @@
 'use client';
-import { useState, useEffect, createContext, useContext, ReactNode, useCallback } from 'react';
-import { User as DbUser } from '@prisma/client';
-import { UserProfile, useUser as useAuth0User } from '@auth0/nextjs-auth0/client';
 
-export interface AppSession {
-  auth0User: UserProfile | null;
-  dbUser: DbUser | null;
-  isLoading: boolean;
-  error: any;
-  refetch: () => void;
-}
+import { useState, useEffect, useCallback } from 'react';
+import { User } from '@prisma/client';
 
-const SessionContext = createContext<AppSession | undefined>(undefined);
+type Auth0User = {
+  email: string;
+  name: string;
+  sub: string;
+};
 
-export function SessionProvider({ children }: { children: ReactNode }) {
-  const { user: auth0User, isLoading: isAuth0Loading, error: auth0Error } = useAuth0User();
-  const [dbUser, setDbUser] = useState<DbUser | null>(null);
-  const [isDbFetchLoading, setIsDbFetchLoading] = useState(true);
-  const [error, setError] = useState<any>(null);
-  const [fetchTrigger, setFetchTrigger] = useState(0);
+export function useDbSession() {
+  const [dbUser, setDbUser] = useState<User | null>(null);
+  const [auth0User, setAuth0User] = useState<Auth0User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
 
-  const fetchSessionData = useCallback(async () => {
-    if (!auth0User) {
-      setDbUser(null);
-      setIsDbFetchLoading(false);
-      setError(null);
-      return;
-    }
-
-    setIsDbFetchLoading(true);
-    setError(null);
-    setDbUser(null);
-
+  const fetchSession = useCallback(async () => {
     try {
       const res = await fetch('/api/auth/session');
       const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || data.message || `Session fetch failed: ${res.statusText}`);
-      }
-      if (data.error) {
-        throw new Error(data.error);
-      }
-
       setDbUser(data.dbUser);
-      setError(null);
-    } catch (err: any) {
-      console.error('Error fetching app session:', err);
-      setError(err);
-      setDbUser(null);
-    } finally {
-      setIsDbFetchLoading(false);
+      setAuth0User(data.session?.user || null);
+      setIsLoading(false);
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error('Unknown error'));
+      setIsLoading(false);
     }
-  }, [auth0User]);
+  }, []);
 
   useEffect(() => {
-    if (!isAuth0Loading) {
-      if (auth0User) {
-        fetchSessionData();
-      } else {
-        setDbUser(null);
-        setIsDbFetchLoading(false);
-        setError(auth0Error);
+    let retries = 0;
+    let interval: NodeJS.Timeout;
+
+    const tryFetchSession = async () => {
+      try {
+        const res = await fetch('/api/auth/session');
+        const data = await res.json();
+
+        if (data.dbUser) {
+          setDbUser(data.dbUser);
+          setAuth0User(data.session?.user || null);
+          setIsLoading(false);
+          clearInterval(interval);
+        } else {
+          retries++;
+          if (retries >= 10) {
+            setIsLoading(false);
+            clearInterval(interval);
+          }
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err : new Error('Unknown error'));
+        setIsLoading(false);
+        clearInterval(interval);
       }
-    } else {
-      setIsDbFetchLoading(true);
-      setDbUser(null);
-      setError(null);
-    }
-  }, [auth0User, isAuth0Loading, auth0Error, fetchTrigger, fetchSessionData]);
+    };
 
-  const refetch = () => {
-    setIsDbFetchLoading(true);
-    setError(null);
-    setDbUser(null);
-    setFetchTrigger(prev => prev + 1);
-  };
+    tryFetchSession();
+    interval = setInterval(tryFetchSession, 500);
 
-  const isLoading = isAuth0Loading || isDbFetchLoading;
+    return () => clearInterval(interval);
+  }, []);
 
-  const value: AppSession = {
-    auth0User: auth0User || null,
+  return {
     dbUser,
+    auth0User,
     isLoading,
     error,
-    refetch,
+    refetch: fetchSession,
   };
-
-  return <SessionContext.Provider value={value}>{children}</SessionContext.Provider>;
-}
-
-export function useDbSession(): AppSession {
-  const context = useContext(SessionContext);
-  if (context === undefined) {
-    throw new Error('useDbSession must be used within a SessionProvider');
-  }
-  return context;
 }
