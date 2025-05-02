@@ -13,7 +13,7 @@ export default function RootLayout(props: { children: React.ReactNode }) {
       <SessionProvider>
         <ChakraProvider value={defaultTheme}>
           <Fonts />
-          <ThemeProvider attribute="class" disableTransitionOnChange>
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
             {props.children}
           </ThemeProvider>
         </ChakraProvider>

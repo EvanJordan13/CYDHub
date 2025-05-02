@@ -1,39 +1,50 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { Spinner, Box, Center, Text } from '@chakra-ui/react';
+import { useEffect } from 'react';
+import { Spinner, Center, Text, Box } from '@chakra-ui/react';
 import { useDbSession } from '@/src/hooks/useDbSession';
+import { useRouter } from 'next/navigation';
 
 export default function AuthWrapper({ children }: { children: React.ReactNode }) {
   const { dbUser, auth0User, isLoading, error } = useDbSession();
-  const [isRedirecting, setIsRedirecting] = useState(false);
+  const router = useRouter();
   const currentPath = typeof window !== 'undefined' ? window.location.pathname : '';
 
   useEffect(() => {
-    if (isRedirecting || typeof window === 'undefined') {
+    if (isLoading || typeof window === 'undefined') {
       return;
     }
 
-    if (!isLoading) {
-      if (error) {
-        console.error('AuthWrapper: Error loading session, redirecting to login.', error);
-        setIsRedirecting(true);
-        window.location.assign('/api/auth/login');
-      } else if (!auth0User) {
-        setIsRedirecting(true);
-        window.location.assign('/api/auth/login');
-      } else if (!dbUser) {
-        console.warn('AuthWrapper: Auth0 user exists, but DB user not found/linked. Redirecting to login for safety.');
-        setIsRedirecting(true);
-        window.location.assign('/api/auth/login');
-      } else if (!dbUser.signupComplete && currentPath !== '/onboarding') {
-        setIsRedirecting(true);
-        window.location.assign('/onboarding');
-      } else {
-        if (isRedirecting) setIsRedirecting(false);
-      }
+    if (error) {
+      console.error('AuthWrapper: Session error, redirecting to login.', error);
+      router.push('/api/auth/login');
+      return;
     }
-  }, [dbUser, auth0User, isLoading, error, currentPath, isRedirecting]);
+
+    if (!auth0User) {
+      console.warn('AuthWrapper: No Auth0 user found after loading, redirecting to login.');
+      router.push('/api/auth/login');
+      return;
+    }
+
+    if (!dbUser) {
+      console.error('AuthWrapper: DB user not found after loading, redirecting to login.');
+      router.push('/api/auth/login');
+      return;
+    }
+
+    if (!dbUser.signupComplete && currentPath !== '/onboarding') {
+      console.log('AuthWrapper: User onboarding incomplete, redirecting to /onboarding.');
+      router.push('/onboarding');
+      return;
+    }
+
+    if (dbUser.signupComplete && currentPath === '/onboarding') {
+      console.log('AuthWrapper: User onboarding complete, redirecting to /dashboard.');
+      router.push('/dashboard');
+      return;
+    }
+  }, [dbUser, auth0User, isLoading, error, currentPath, router]);
 
   return <>{children}</>;
 }
