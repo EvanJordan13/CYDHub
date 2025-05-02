@@ -1,9 +1,6 @@
 'use client';
 
-import AssignmentDetail from '@/src/components/AssignmentDetail';
-import MaterialDetail from '@/src/components/MaterialDetail';
-import Module from '@/src/components/Module';
-import SideBar from '@/src/components/SideBar';
+import SideBar from '@/src/components/dashboard/SideBar';
 import {
   Text,
   Heading,
@@ -17,24 +14,12 @@ import {
   SkeletonText,
 } from '@chakra-ui/react';
 import AnnouncementCard from '@/src/components/AnnouncementCard';
-import {
-  fetchProgramMaterials,
-  fetchProgramAssignments,
-  getProgramModules,
-  getProgramAnnouncements,
-  getProgramById,
-  getUserById,
-} from '@/src/lib/query/programs';
+import { getProgramAnnouncements, getProgramById, getUserById } from '@/src/lib/query/programs';
 import { ModuleMaterial, Assignment, Module as Mod, Announcement, Program, User } from '@prisma/client';
-import { useState, useEffect, useRef } from 'react';
-import DreamBuddy from '@/src/components/dreambuddy/DreamBuddy';
-
-type ModuleWithRelations = Mod & {
-  materials: ModuleMaterial[];
-  assignments: Assignment[];
-};
-
-type ResourceItem = { type: 'assignment'; data: Assignment } | { type: 'material'; data: ModuleMaterial };
+import { useState, useEffect } from 'react';
+import { MoveDiagonal } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { Tab } from '@/src/components/dashboard/types';
 
 const ProgramPageSkeleton = () => (
   <Box marginY={6} marginLeft={250} style={{ flexBasis: '80%' }} paddingX={4}>
@@ -55,11 +40,16 @@ const ProgramPageSkeleton = () => (
   </Box>
 );
 
-export default function ProgramPage({ params }: { params: { programId: number } }) {
+export default function ProgramLayout({
+  modules,
+  params,
+}: {
+  modules: React.ReactNode;
+  params: { programId: number };
+}) {
   const programId = Number(params.programId);
   const [programMaterials, setProgramMaterials] = useState<(ModuleMaterial & { moduleTitle: string })[]>([]);
   const [programAssignments, setProgramAssignments] = useState<(Assignment & { moduleTitle: string })[]>([]);
-  const [programModules, setProgramModules] = useState<ModuleWithRelations[]>([]);
   const [isLoadingMaterials, setIsLoadingMaterials] = useState(false);
   const [isLoadingAssignments, setIsLoadingAssignments] = useState(false);
   const [isLoadingModules, setIsLoadingModules] = useState(false);
@@ -68,58 +58,9 @@ export default function ProgramPage({ params }: { params: { programId: number } 
   const [program, setProgram] = useState<Program | undefined>();
   const [user, setUser] = useState<User | undefined>();
 
-  const [isDreamBuddyVisible, setIsDreamBuddyVisible] = useState(false);
-  const [hasDreamBuddyShown, setHasDreamBuddyShown] = useState(false);
-
   const [isInitialLoading, setIsInitialLoading] = useState(true);
 
-  const [selectedResource, setSelectedResource] = useState<ResourceItem | null>(null);
-
-  const handleModuleClick = (resource: ResourceItem) => {
-    setSelectedResource(resource);
-    setIsDreamBuddyVisible(true);
-    if (!hasDreamBuddyShown) setHasDreamBuddyShown(true);
-  };
-
-  const fetchMaterials = async () => {
-    setIsLoadingMaterials(true);
-    try {
-      const materials = await fetchProgramMaterials(programId);
-      console.log('Program materials', materials);
-      setProgramMaterials(materials);
-    } catch (error) {
-      console.error('Error fetching program materials:', error);
-      throw error;
-    } finally {
-      setIsLoadingMaterials(false);
-    }
-  };
-
-  const fetchAssignments = async () => {
-    setIsLoadingAssignments(true);
-    try {
-      const assignments = await fetchProgramAssignments(programId);
-      setProgramAssignments(assignments);
-    } catch (error) {
-      console.error('Error fetching program assignments:', error);
-      throw error;
-    } finally {
-      setIsLoadingAssignments(false);
-    }
-  };
-
-  const fetchModules = async () => {
-    setIsLoadingModules(true);
-    try {
-      const modules = await getProgramModules(programId);
-      setProgramModules(modules as ModuleWithRelations[]);
-    } catch (error) {
-      console.error('Error fetching program modules:', error);
-      throw error;
-    } finally {
-      setIsLoadingModules(false);
-    }
-  };
+  const router = useRouter();
 
   const fetchAnnouncementsAndProgram = async (setLoading = true) => {
     if (setLoading) setIsLoadingAnnouncements(true); // Controls skeleton within announcement tab
@@ -152,17 +93,15 @@ export default function ProgramPage({ params }: { params: { programId: number } 
   useEffect(() => {
     const loadInitialData = async () => {
       setIsInitialLoading(true); // Start overall loading
-      setSelectedResource(null);
 
       try {
         // Reset previous states
-        setProgramModules([]);
         setProgramAnnouncements([]);
         setProgram(undefined);
         setUser(undefined);
 
         // Wait for all essential initial fetches to complete
-        await Promise.all([fetchMaterials(), fetchAssignments(), fetchModules(), fetchAnnouncementsAndProgram(false)]);
+        await fetchAnnouncementsAndProgram(false);
       } catch (error) {
         console.error('Error fetching initial program data:', error);
       } finally {
@@ -174,45 +113,27 @@ export default function ProgramPage({ params }: { params: { programId: number } 
   }, [programId]); // Re-run if programId changes
 
   const handleAnnouncementsTabClick = () => {
-    setSelectedResource(null);
-    setIsDreamBuddyVisible(false);
+    // Fetch only if data isn't present and not already loading specifically for the tab
+
+    router.push(`/programs/${programId}`);
+
     if (programAnnouncements.length === 0 && !isLoadingAnnouncements) {
       fetchAnnouncementsAndProgram(true);
     }
   };
 
   const handleModulesTabClick = () => {
-    setSelectedResource(null);
-    setIsDreamBuddyVisible(false);
+    router.push(`/programs/${programId}`);
   };
 
-  const handleFeedbackTabClick = () => {
-    setSelectedResource(null);
-    setIsDreamBuddyVisible(false);
-  };
-
-  const outlineStyle = {
-    color: 'Aqua',
-    fontWeight: '700',
-    position: 'relative',
-    '&::after': {
-      content: '""',
-      position: 'absolute',
-      bottom: '-1px',
-      left: 0,
-      right: 0,
-      height: '4px',
-      backgroundColor: '#4D80BB',
-      boxShadow: 'none',
-      transform: 'scaleX(1)',
-      transformOrigin: 'left',
-      transition: 'transform 0.3s ease-in-out',
-    },
+  const handleTabChange = (next: Tab) => {
+    router.push(`/dashboard?tab=${next}`);
+    return;
   };
 
   return (
     <Box display={'flex'} backgroundColor={'white'} color={'black'}>
-      <SideBar page="Program" />
+      <SideBar currentTab="home" onTabChange={handleTabChange} />
       {isInitialLoading ? (
         <ProgramPageSkeleton />
       ) : (
@@ -232,50 +153,32 @@ export default function ProgramPage({ params }: { params: { programId: number } 
           <Box marginTop={5} width={'96.5%'}>
             <Tabs.Root defaultValue="modules">
               <Tabs.List>
-                <Tabs.Trigger value="modules" _selected={outlineStyle} onClick={handleModulesTabClick}>
+                <Tabs.Trigger
+                  value="modules"
+                  _selected={{ color: 'Aqua', fontWeight: '700', borderBottom: '4px solid #4D80BB' }}
+                  onClick={handleModulesTabClick}
+                >
                   <Text>Modules</Text>
                 </Tabs.Trigger>
-                <Tabs.Trigger value="announcements" _selected={outlineStyle} onClick={handleAnnouncementsTabClick}>
+                <Tabs.Trigger
+                  value="announcements"
+                  _selected={{ color: 'Aqua', fontWeight: '700', borderBottom: '4px solid #4D80BB' }}
+                  onClick={handleAnnouncementsTabClick}
+                >
                   <Text>Announcements</Text>
                 </Tabs.Trigger>
-                <Tabs.Trigger value="feedback" _selected={outlineStyle} onClick={handleFeedbackTabClick}>
+                <Tabs.Trigger
+                  value="feedback"
+                  _selected={{ color: 'Aqua', fontWeight: '700', borderBottom: '4px solid #4D80BB' }}
+                  onClick={() => {
+                    router.push(`/programs/${programId}`);
+                  }}
+                >
                   <Text>Feedback</Text>
                 </Tabs.Trigger>
               </Tabs.List>
 
-              <Tabs.Content value="modules">
-                {selectedResource ? (
-                  selectedResource.type === 'assignment' ? (
-                    <AssignmentDetail
-                      assignmentNumber={selectedResource.data.assignmentNumber}
-                      assignmentTitle={selectedResource.data.title}
-                      dueDate={selectedResource.data.dueDate}
-                      questionCount={selectedResource.data.questionCount}
-                      description={selectedResource.data.description}
-                    />
-                  ) : (
-                    <MaterialDetail
-                      title={selectedResource.data.title}
-                      overview={selectedResource.data.overview}
-                      materialType={selectedResource.data.materialType}
-                      fileUrl={selectedResource.data.fileUrl}
-                      fileName={selectedResource.data.fileName}
-                    />
-                  )
-                ) : programModules.length > 0 ? (
-                  programModules.map((module, index) => (
-                    <Module
-                      key={index}
-                      title={module.title}
-                      materials={module.materials}
-                      assignments={module.assignments}
-                      onClick={handleModuleClick}
-                    />
-                  ))
-                ) : (
-                  <Text mt={4}>No modules found.</Text>
-                )}
-              </Tabs.Content>
+              <Tabs.Content value="modules">{modules}</Tabs.Content>
 
               <Tabs.Content value="announcements">
                 <Flex direction="column" paddingTop={'16px'} paddingBottom={'16px'} gap={'32px'}>
@@ -324,8 +227,6 @@ export default function ProgramPage({ params }: { params: { programId: number } 
           </Box>
         </Box>
       )}
-      {!isInitialLoading && hasDreamBuddyShown && (
-        <DreamBuddy isVisible={isDreamBuddyVisible} onHide={() => setIsDreamBuddyVisible(false)} />
-      )}
     </Box>
   );
+}
