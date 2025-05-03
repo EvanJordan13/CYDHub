@@ -2,6 +2,7 @@
 
 import TextInput from '../../components/TextInput';
 import ProgramCard from '../../components/ProgramCard';
+import CodeEditor from '../../components/CodeEditor';
 import { Box, Center, Heading, Stack, Text, VStack } from '@chakra-ui/react';
 import { Program, Announcement } from '@prisma/client';
 import { User, Calendar, Award } from 'lucide-react';
@@ -155,6 +156,11 @@ export default function DevPage() {
   return (
     <Box p={8} bg={'white'} color={'black'}>
       <Heading mb={6}>Development Page</Heading>
+
+      <CodeEditor />
+
+      <br />
+      <br />
 
       <Box mb={6}>
         <ChakraButton onClick={testFetchAllPrograms} mr={2} loading={isLoadingAll}>
