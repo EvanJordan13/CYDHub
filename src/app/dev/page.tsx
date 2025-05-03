@@ -70,7 +70,6 @@ export default function DevPage() {
     setIsLoadingAll(true);
     try {
       const programs = await fetchAllPrograms();
-      console.log('All programs', programs);
       setAllPrograms(programs);
     } catch (error) {
       console.error('Error fetching all programs:', error);
@@ -83,7 +82,6 @@ export default function DevPage() {
     setIsLoadingUser(true);
     try {
       const programs = await fetchProgramsByUser(1);
-      console.log('Programs by user', programs);
       setUserPrograms(programs);
     } catch (error) {
       console.error('Error fetching user programs:', error);
@@ -96,7 +94,6 @@ export default function DevPage() {
     setIsLoadingMaterials(true);
     try {
       const materials = await fetchProgramMaterials(1);
-      console.log('Program materials', materials);
       setProgramMaterials(materials);
     } catch (error) {
       console.error('Error fetching program materials:', error);
@@ -109,7 +106,6 @@ export default function DevPage() {
     setIsLoadingAssignments(true);
     try {
       const assignments = await fetchProgramAssignments(1);
-      console.log('Program assignments', assignments);
       setProgramAssignments(assignments);
     } catch (error) {
       console.error('Error fetching program assignments:', error);
@@ -143,7 +139,6 @@ export default function DevPage() {
     setIsLoadingAnnouncements(true);
     try {
       const announcements = await getProgramAnnouncements(1);
-      console.log('Program Announcements', announcements);
       setProgramAnnouncements(announcements);
     } catch (error) {
       console.error('Error fetching program announcements:', error);

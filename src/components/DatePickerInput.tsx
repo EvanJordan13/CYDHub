@@ -49,7 +49,6 @@ const DatePickerInput: React.FC<DatePickerInputProps> = ({
     if (isBackspace && lastIsSlash) {
       formattedValue = formattedValue.slice(0, formattedValue.length - 1);
 
-      console.log(formattedValue);
       setValue(formattedValue);
       if (onChange) onChange(formattedValue);
       return;
