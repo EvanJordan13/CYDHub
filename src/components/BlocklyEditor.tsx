@@ -250,39 +250,6 @@ export default function BlocklyEditor() {
           {savedCode != null ? savedCode : "Your code's output will display here!"}
         </Box>
       </Box>
-      {/* <ChakraButton
-        onClick={generateCode}
-        backgroundColor="white"
-        color="black"
-        padding="10px 20px"
-        fontSize="16px"
-        cursor="pointer"
-        alignSelf="flex-start"
-      >
-        Save Code
-      </ChakraButton>
-      <ChakraButton
-        onClick={saveXml}
-        backgroundColor="white"
-        color="black"
-        padding="10px 20px"
-        fontSize="16px"
-        cursor="pointer"
-      >
-        Save Blocks
-      </ChakraButton>
-      <ChakraButton
-        onClick={loadXml}
-        backgroundColor="white"
-        color="black"
-        disabled={!savedXml}
-        padding="10px 20px"
-        fontSize="16px"
-        cursor={savedXml ? 'pointer' : 'not-allowed'}
-        opacity={savedXml ? 1 : 0.5}
-      >
-        Load Previous Blocks
-      </ChakraButton> */}
     </Box>
   );
 }
