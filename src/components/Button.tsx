@@ -1,15 +1,27 @@
-import { Box, Text } from '@chakra-ui/react';
+import { Box, Flex, Text } from '@chakra-ui/react';
+import { ReactNode } from 'react';
 
 interface ButtonProps {
   type: 'primary' | 'secondary' | 'disabled';
   pageColor: 'flamingo' | 'aqua';
   text: string;
+  icon?: ReactNode;
+  disableHover?: boolean;
   height: string | number;
   width: string | number;
   onClick?: () => void;
 }
 
-export default function Button({ type, pageColor, text, height, width, onClick }: ButtonProps) {
+export default function Button({
+  type,
+  pageColor,
+  text,
+  icon,
+  disableHover = false,
+  height,
+  width,
+  onClick,
+}: ButtonProps) {
   const primaryColor =
     type === 'disabled' ? 'Gray' : type === 'primary' ? (pageColor === 'flamingo' ? 'Flamingo' : 'Aqua') : 'white';
   const textColor =
@@ -35,8 +47,8 @@ export default function Button({ type, pageColor, text, height, width, onClick }
       width={width}
       bg={primaryColor}
       _hover={
-        type === 'disabled'
-          ? { bg: 'Gray' }
+        type === 'disabled' || disableHover
+          ? { bg: primaryColor }
           : {
               bg:
                 type === 'primary'
@@ -62,9 +74,16 @@ export default function Button({ type, pageColor, text, height, width, onClick }
       onClick={type === 'disabled' ? undefined : onClick}
       transition={'all 0.2s ease-in-out'}
     >
-      <Text fontWeight={'700'} color={textColor} fontSize={'lg'}>
-        {text}
-      </Text>
+      <Flex gap={2} justify={'center'}>
+        <Text fontWeight="700" color={textColor} fontSize="lg">
+          {text}
+        </Text>
+        {icon && (
+          <Box color={textColor} width={6} bg={'1px solid black'} pt={0.25}>
+            {icon}
+          </Box>
+        )}
+      </Flex>
     </Box>
   );
 }

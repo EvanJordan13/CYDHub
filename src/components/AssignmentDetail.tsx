@@ -1,12 +1,14 @@
-import { Box, Text, Stack } from '@chakra-ui/react';
+import { Box, Text, Stack, IconButton } from '@chakra-ui/react';
+import { ArrowLeft } from 'lucide-react';
 import Button from './Button';
 
-interface AssignmentDescriptionProps {
+interface AssignmentDetailProps {
   assignmentNumber: number | null;
   assignmentTitle: string;
   dueDate: Date | null;
   questionCount: number | null;
   description: string | null;
+  onBackClick: () => void;
 }
 
 const formatDate = (date: Date) => {
@@ -32,22 +34,29 @@ const formatDate = (date: Date) => {
   return `${month} ${day}${suffix}, ${time}`;
 };
 
-export default function AssignmentDescription({
+export default function AssignmentDetail({
   assignmentNumber,
   assignmentTitle,
   dueDate,
   questionCount,
   description,
-}: AssignmentDescriptionProps) {
+  onBackClick,
+}: AssignmentDetailProps) {
   return (
     <Box position={'relative'} mt={6}>
       <Box position={'absolute'} top={0} right={0}>
         <Button type={'secondary'} pageColor={'aqua'} text={'Start Assignment'} height={'12'} width={'44'} />
       </Box>
 
-      <Text fontWeight={'bold'} fontSize={'24px'}>
-        {assignmentNumber && <Box as="span">Assignment {assignmentNumber}:</Box>} {assignmentTitle}
-      </Text>
+      <Stack direction={'row'}>
+        <IconButton variant={'ghost'} mt={-1} size={'md'} onClick={onBackClick}>
+          <ArrowLeft strokeWidth={'3px'}></ArrowLeft>
+        </IconButton>
+
+        <Text fontWeight={'bold'} fontSize={'24px'}>
+          {assignmentNumber && <Box as="span">Assignment {assignmentNumber}:</Box>} {assignmentTitle}
+        </Text>
+      </Stack>
 
       {(dueDate || questionCount) && (
         <Stack direction={'row'} spaceX={2} mt={6}>
