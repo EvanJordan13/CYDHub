@@ -157,7 +157,7 @@ export default function DevPage() {
   return (
     <Box p={8} bg={'white'} color={'black'}>
       <Heading mb={6}>Development Page</Heading>
-      
+
       <BlocklyEditor />
       <CodeEditor />
 
