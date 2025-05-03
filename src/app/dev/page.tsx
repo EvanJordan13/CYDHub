@@ -1,6 +1,7 @@
 'use client';
 
 import TextInput from '../../components/TextInput';
+import BlocklyEditor from '../../components/BlocklyEditor';
 import ProgramCard from '../../components/ProgramCard';
 import CodeEditor from '../../components/CodeEditor';
 import { Box, Center, Heading, Stack, Text, VStack } from '@chakra-ui/react';
@@ -157,6 +158,7 @@ export default function DevPage() {
     <Box p={8} bg={'white'} color={'black'}>
       <Heading mb={6}>Development Page</Heading>
 
+      <BlocklyEditor />
       <CodeEditor />
 
       <br />
