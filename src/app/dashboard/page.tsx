@@ -1,118 +1,117 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-
-import { getUserById } from '@/src/lib/query/users';
-import { User, Assignment, Program, Announcement } from '@prisma/client';
+import { useState, useEffect, Suspense, useMemo } from 'react';
+import { useDbSession } from '@/src/hooks/useDbSession';
+import { Assignment, Program } from '@prisma/client';
 import { fetchProgramsByUser, fetchProgramAssignmentsByUser } from '@/src/lib/query/programs';
-
-import { Flex, Box, Heading } from '@chakra-ui/react';
+import { Flex, Box, Heading, Center, Spinner, Text, Skeleton } from '@chakra-ui/react';
 import HomeSection from '@/src/components/dashboard/sections/HomeSection';
 import SideBar from '@/src/components/dashboard/SideBar';
 import { Tab } from '@/src/components/dashboard/types';
 import MoodModal from '@/src/components/MoodModal';
-
 import TodoSection from '@/src/components/dashboard/sections/TodoSection';
+import ArchivedPage from '@/src/components/dashboard/sections/Archived';
+import { useSearchParams, useRouter } from 'next/navigation';
 
-export default function DashboardPage() {
-  const [tab, setTab] = useState<Tab>('home');
-  const [userInfo, setUserInfo] = useState<User | null>(null);
+function DashboardClient() {
+  const { dbUser } = useDbSession();
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [programs, setPrograms] = useState<Program[]>([]);
-  const [isLoadingUser, setIsLoadingUser] = useState(true);
-  const [isLoadingAssignments, setIsLoadingAssignments] = useState(true);
-  const [isLoadingPrograms, setIsLoadingPrograms] = useState(true);
+  const [archivedPrograms, setArchivedPrograms] = useState<Program[]>([]);
+  const [isLoadingPageData, setIsLoadingPageData] = useState(true);
   const [isOpenModal, setIsOpenModal] = useState(false);
-
-  const testUserId = 4;
+  const [tab, setTab] = useState<Tab>('home');
+  const searchParams = useSearchParams();
+  const router = useRouter();
 
   useEffect(() => {
-    const fetchUserInfo = async () => {
-      setIsLoadingUser(true);
-      try {
-        const userInfo = await getUserById(testUserId);
-        setUserInfo(userInfo);
-      } catch (error) {
-        console.error('Error fetching user info:', error);
-      } finally {
-        setIsLoadingUser(false);
-      }
-    };
-    const fetchAssignments = async () => {
-      setIsLoadingAssignments(true);
-      try {
-        const assignments = await fetchProgramAssignmentsByUser(testUserId);
-        setAssignments(assignments);
-      } catch (error) {
-        console.error('Error fetching assignments:', error);
-      } finally {
-        setIsLoadingAssignments(false);
-      }
-    };
-    const fetchPrograms = async () => {
-      setIsLoadingPrograms(true);
-      try {
-        const programs = await fetchProgramsByUser(testUserId);
-        setPrograms(programs);
-      } catch (error) {
-        console.error('Error fetching programs:', error);
-      } finally {
-        setIsLoadingPrograms(false);
-      }
-    };
-    fetchUserInfo();
-    fetchAssignments();
-    fetchPrograms();
+    const q = searchParams.get('tab') as Tab | null;
+    setTab(q ? q : 'home');
+  }, [searchParams]);
 
-    setIsOpenModal(true);
+  const handleTabChange = (next: Tab) => {
+    setTab(next);
+    router.replace(`/dashboard?tab=${next}`);
+  };
+
+  useEffect(() => {
+    if (!dbUser?.id) return;
+
+    let isMounted = true;
+    setIsLoadingPageData(true);
+
+    const fetchAllData = async () => {
+      try {
+        const [assignmentsData, programsData, archivedProgramsData] = await Promise.all([
+          fetchProgramAssignmentsByUser(dbUser.id),
+          fetchProgramsByUser(dbUser.id),
+          fetchProgramsByUser(dbUser.id, true),
+        ]);
+
+        if (isMounted) {
+          setAssignments(assignmentsData);
+          setPrograms(programsData);
+          setArchivedPrograms(archivedProgramsData);
+        }
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+        if (isMounted) {
+          setAssignments([]);
+          setPrograms([]);
+          setArchivedPrograms([]);
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoadingPageData(false);
+        }
+      }
+    };
+
+    fetchAllData();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [dbUser?.id]);
+
+  useEffect(() => {
+    const key = 'dashboardModalShown';
+    if (!sessionStorage.getItem(key)) {
+      setIsOpenModal(true);
+      sessionStorage.setItem(key, 'true');
+    }
   }, []);
 
-  const tabs: Record<Tab, React.ReactNode> = {
-    home: (
-      <HomeSection
-        userInfo={userInfo}
-        assignments={assignments}
-        programs={programs}
-        isLoading={isLoadingUser || isLoadingAssignments || isLoadingPrograms}
-      />
-    ),
-    todo: <TodoSection assignments={assignments} points={userInfo?.points || 0} />,
-    editor: (
-      <>
+  const tabs = useMemo(
+    () => ({
+      home: (
+        <HomeSection userInfo={dbUser} assignments={assignments} programs={programs} isLoading={isLoadingPageData} />
+      ),
+      todo: <TodoSection assignments={assignments} points={dbUser?.points || 0} />,
+      editor: (
         <Heading fontSize="40px" fontWeight={700} p="32px 48px 16px 48px" lineHeight={'48px'}>
-          Page Under Construction!
+          Editor Under Construction!
         </Heading>
-      </>
-    ),
-    calendar: (
-      <>
+      ),
+      calendar: (
         <Heading fontSize="40px" fontWeight={700} p="32px 48px 16px 48px" lineHeight={'48px'}>
-          Page Under Construction!
+          Calendar Under Construction!
         </Heading>
-      </>
-    ),
-    shop: (
-      <>
+      ),
+      shop: (
         <Heading fontSize="40px" fontWeight={700} p="32px 48px 16px 48px" lineHeight={'48px'}>
-          Page Under Construction!
+          Shop Under Construction!
         </Heading>
-      </>
-    ),
-    archived: (
-      <>
+      ),
+      archived: <ArchivedPage userInfo={dbUser} archivedPrograms={archivedPrograms} isLoading={isLoadingPageData} />,
+      settings: (
         <Heading fontSize="40px" fontWeight={700} p="32px 48px 16px 48px" lineHeight={'48px'}>
-          Page Under Construction!
+          Settings Under Construction!
         </Heading>
-      </>
-    ),
-    settings: (
-      <>
-        <Heading fontSize="40px" fontWeight={700} p="32px 48px 16px 48px" lineHeight={'48px'}>
-          Page Under Construction!
-        </Heading>
-      </>
-    ),
-  };
+      ),
+    }),
+    [dbUser, assignments, programs, archivedPrograms, isLoadingPageData],
+  );
 
   const closeModal = () => {
     setIsOpenModal(false);
@@ -120,8 +119,8 @@ export default function DashboardPage() {
 
   return (
     <Flex height="100vh" width="100vw" position="relative">
-      <Box position="fixed" height="100vh" left={0} top={0}>
-        <SideBar currentTab={tab} onTabChange={setTab} />
+      <Box position="fixed" height="100vh" left={0} top={0} zIndex={10}>
+        <SideBar currentTab={tab} onTabChange={handleTabChange} />
       </Box>
       <Box flex={1} ml="210px" height="100vh" overflowX="visible" overflowY="auto">
         {tabs[tab]}
@@ -135,5 +134,13 @@ export default function DashboardPage() {
         </Box>
       )}
     </Flex>
+  );
+}
+
+export default function DashboardPage() {
+  return (
+    <Suspense>
+      <DashboardClient />
+    </Suspense>
   );
 }

@@ -1,7 +1,9 @@
 'use client';
 
 import TextInput from '../../components/TextInput';
+import BlocklyEditor from '../../components/BlocklyEditor';
 import ProgramCard from '../../components/ProgramCard';
+import CodeEditor from '../../components/CodeEditor';
 import { Box, Center, Heading, Stack, Text, VStack } from '@chakra-ui/react';
 import { Program, Announcement } from '@prisma/client';
 import { User, Calendar, Award } from 'lucide-react';
@@ -61,13 +63,13 @@ export default function DevPage() {
     updatedAt: new Date(),
     type: 'IN_PERSON',
     teacherId: 1,
+    archived: null,
   };
 
   const testFetchAllPrograms = async () => {
     setIsLoadingAll(true);
     try {
       const programs = await fetchAllPrograms();
-      console.log('All programs', programs);
       setAllPrograms(programs);
     } catch (error) {
       console.error('Error fetching all programs:', error);
@@ -80,7 +82,6 @@ export default function DevPage() {
     setIsLoadingUser(true);
     try {
       const programs = await fetchProgramsByUser(1);
-      console.log('Programs by user', programs);
       setUserPrograms(programs);
     } catch (error) {
       console.error('Error fetching user programs:', error);
@@ -93,7 +94,6 @@ export default function DevPage() {
     setIsLoadingMaterials(true);
     try {
       const materials = await fetchProgramMaterials(1);
-      console.log('Program materials', materials);
       setProgramMaterials(materials);
     } catch (error) {
       console.error('Error fetching program materials:', error);
@@ -106,7 +106,6 @@ export default function DevPage() {
     setIsLoadingAssignments(true);
     try {
       const assignments = await fetchProgramAssignments(1);
-      console.log('Program assignments', assignments);
       setProgramAssignments(assignments);
     } catch (error) {
       console.error('Error fetching program assignments:', error);
@@ -140,7 +139,6 @@ export default function DevPage() {
     setIsLoadingAnnouncements(true);
     try {
       const announcements = await getProgramAnnouncements(1);
-      console.log('Program Announcements', announcements);
       setProgramAnnouncements(announcements);
     } catch (error) {
       console.error('Error fetching program announcements:', error);
@@ -154,6 +152,12 @@ export default function DevPage() {
   return (
     <Box p={8} bg={'white'} color={'black'}>
       <Heading mb={6}>Development Page</Heading>
+
+      <BlocklyEditor />
+      <CodeEditor />
+
+      <br />
+      <br />
 
       <Box mb={6}>
         <ChakraButton onClick={testFetchAllPrograms} mr={2} loading={isLoadingAll}>

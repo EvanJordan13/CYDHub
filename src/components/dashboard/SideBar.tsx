@@ -14,17 +14,17 @@ function Bar({ Icon, text, isSelected, onClick }: BarProps) {
     <Flex
       direction="row"
       borderRadius="2xl"
-      height="60px"
-      width="160px"
+      height={16}
+      width={40}
       alignItems="center"
-      px="20px"
-      py="16px"
-      gap="16px"
+      px={5}
+      py={4}
+      gap={4}
       bg={isSelected ? 'Sky' : 'transparent'}
       _hover={{ bg: isSelected ? 'Sky' : 'LightGray' }}
       cursor={'pointer'}
       onClick={onClick}
-      transition="background-color 0.08s ease-out"
+      transition={'all 0.2s ease-in-out'}
     >
       <Icon color={isSelected ? 'black' : '#5A5A63'} />
       <Text color={isSelected ? 'black' : 'DarkGray'}>{text}</Text>
@@ -41,20 +41,21 @@ export default function SideBar({ currentTab, onTabChange }: SideBarProps) {
   return (
     <Flex
       direction={'column'}
-      paddingTop={'24px'}
-      paddingBottom={'24px'}
-      paddingLeft={'24px'}
-      paddingRight={'24px'}
+      paddingY={8}
+      paddingX={6}
       justify={'space-between'}
       height={'100vh'}
-      width={'208px'}
+      width={52}
       shadow={'2px 0px 2px #e3dbdb'}
       filter={'auto'}
-      fontSize={'16px'}
+      dropShadow={'10px 10px 0px rgba(0, 0, 0, 0.5)'}
+      position={'fixed'}
+      top={0}
+      left={0}
     >
-      <Flex direction={'column'} gap={'4px'}>
+      <Flex direction={'column'} height={'100vh'} gap={3}>
         <Link href="/" _focus={{ outline: 'none' }}>
-          <Image src="/cyd-dashboard-logo.svg" alt="logo" height={'44px'} width={'50px'} marginBottom={'8px'} />
+          <Image src="/cyd-dashboard-logo.svg" height={11} width={12} marginBottom={3} />
         </Link>
         <Bar Icon={House} text="Home" isSelected={currentTab === 'home'} onClick={() => onTabChange('home')} />
         <Bar
@@ -72,7 +73,7 @@ export default function SideBar({ currentTab, onTabChange }: SideBarProps) {
         />
         <Bar Icon={Store} text="Shop" isSelected={currentTab === 'shop'} onClick={() => onTabChange('shop')} />
       </Flex>
-      <Flex direction={'column'} gap={'4px'}>
+      <Flex direction={'column'} height={56} gap={5}>
         <Bar
           Icon={Archive}
           text="Archived"
@@ -85,7 +86,9 @@ export default function SideBar({ currentTab, onTabChange }: SideBarProps) {
           isSelected={currentTab === 'settings'}
           onClick={() => onTabChange('settings')}
         />
-        <Bar Icon={LogOut} text="Log Out" onClick={() => {}} />
+        <Link href="/api/auth/logout">
+          <Bar Icon={LogOut} text="Log Out" onClick={() => {}} />
+        </Link>
       </Flex>
     </Flex>
   );
