@@ -72,7 +72,7 @@ export default function Button({
       onClick={type === 'disabled' ? undefined : onClick}
     >
       <Flex gap={2} justify={'center'}>
-        <Text fontWeight="700" color={textColor} fontSize="lg">
+        <Text fontWeight="700" color={textColor} fontSize="clamp(12px, 1.11vw, 42px)">
           {text}
         </Text>
         {icon && (
