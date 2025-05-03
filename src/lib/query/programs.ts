@@ -100,7 +100,6 @@ export async function getProgramMaterials(programId: number): Promise<(ModuleMat
     });
 
     if (!materials) {
-      console.log(`No program found with ID ${programId}`);
       return [];
     }
 
@@ -142,7 +141,6 @@ export async function getProgramAssignments(programId: number): Promise<(Assignm
     });
 
     if (!assignments) {
-      console.log(`No program found with ID ${programId}`);
       return [];
     }
 
@@ -198,7 +196,6 @@ export async function getProgramModules(programId: number): Promise<Module[]> {
     });
 
     if (!program) {
-      console.log(`No program found with ID ${programId}`);
       return [];
     }
 
@@ -221,13 +218,11 @@ export async function getProgramAnnouncements(programId: number): Promise<Announ
     });
 
     if (!program) {
-      console.log(`No program found with ID ${programId}`);
       return [];
     }
 
     return program.announcements;
   } catch (error) {
-    console.log(`[GET_PROGRAM_ANNOUNCEMENTS_ERROR]`, error);
     return [];
   }
 }

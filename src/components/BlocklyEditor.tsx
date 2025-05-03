@@ -81,7 +81,7 @@ export default function BlocklyEditor() {
       { kind: 'block', type: 'text_isEmpty' },
       { kind: 'block', type: 'text_indexOf' },
       { kind: 'block', type: 'text_charAt' },
-      { kind: 'block', type: 'text_getSubstring' },
+      // { kind: 'block', type: 'text_getSubstring' },
       { kind: 'block', type: 'text_changeCase' },
       { kind: 'block', type: 'text_trim' },
       { kind: 'block', type: 'text_prompt_ext' },
@@ -194,7 +194,7 @@ export default function BlocklyEditor() {
   };
 
   return (
-    <Box>
+    <Box w={'95%'}>
       <Box marginBottom={4} display="flex" justifyContent="flex-end">
         <Button
           onClick={() => runCode()}

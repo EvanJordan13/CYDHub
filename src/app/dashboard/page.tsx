@@ -1,44 +1,28 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
-
-import { getUserById } from '@/src/lib/query/users';
-import { User, Assignment, Program, Announcement } from '@prisma/client';
+import { useState, useEffect, Suspense, useMemo } from 'react';
+import { useDbSession } from '@/src/hooks/useDbSession';
+import { Assignment, Program } from '@prisma/client';
 import { fetchProgramsByUser, fetchProgramAssignmentsByUser } from '@/src/lib/query/programs';
-
-import { Flex, Box, Heading } from '@chakra-ui/react';
+import { Flex, Box, Heading, Center, Spinner, Text, Skeleton } from '@chakra-ui/react';
 import HomeSection from '@/src/components/dashboard/sections/HomeSection';
 import SideBar from '@/src/components/dashboard/SideBar';
 import { Tab } from '@/src/components/dashboard/types';
 import MoodModal from '@/src/components/MoodModal';
-
 import TodoSection from '@/src/components/dashboard/sections/TodoSection';
 import ArchivedPage from '@/src/components/dashboard/sections/Archived';
 import { useSearchParams, useRouter } from 'next/navigation';
 import PlaygroundSection from '@/src/components/dashboard/sections/PlaygroundSection';
 
-export default function DashboardPage() {
-  return (
-    <Suspense fallback={<div>Loading…</div>}>
-      <DashboardClient />
-    </Suspense>
-  );
-}
-
 function DashboardClient() {
-  const [userInfo, setUserInfo] = useState<User | null>(null);
+  const { dbUser } = useDbSession();
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [programs, setPrograms] = useState<Program[]>([]);
   const [archivedPrograms, setArchivedPrograms] = useState<Program[]>([]);
-  const [isLoadingUser, setIsLoadingUser] = useState(true);
-  const [isLoadingAssignments, setIsLoadingAssignments] = useState(true);
-  const [isLoadingPrograms, setIsLoadingPrograms] = useState(true);
-  const [isLoadingArchivedPrograms, setIsLoadingArchivedPrograms] = useState(true);
+  const [isLoadingPageData, setIsLoadingPageData] = useState(true);
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [tab, setTab] = useState<Tab>('home');
   const searchParams = useSearchParams();
-
-  const testUserId = 1;
   const router = useRouter();
 
   useEffect(() => {
@@ -52,55 +36,44 @@ function DashboardClient() {
   };
 
   useEffect(() => {
-    const fetchUserInfo = async () => {
-      setIsLoadingUser(true);
+    if (!dbUser?.id) return;
+
+    let isMounted = true;
+    setIsLoadingPageData(true);
+
+    const fetchAllData = async () => {
       try {
-        const userInfo = await getUserById(testUserId);
-        setUserInfo(userInfo);
+        const [assignmentsData, programsData, archivedProgramsData] = await Promise.all([
+          fetchProgramAssignmentsByUser(dbUser.id),
+          fetchProgramsByUser(dbUser.id),
+          fetchProgramsByUser(dbUser.id, true),
+        ]);
+
+        if (isMounted) {
+          setAssignments(assignmentsData);
+          setPrograms(programsData);
+          setArchivedPrograms(archivedProgramsData);
+        }
       } catch (error) {
-        console.error('Error fetching user info:', error);
+        console.error('Error fetching dashboard data:', error);
+        if (isMounted) {
+          setAssignments([]);
+          setPrograms([]);
+          setArchivedPrograms([]);
+        }
       } finally {
-        setIsLoadingUser(false);
+        if (isMounted) {
+          setIsLoadingPageData(false);
+        }
       }
     };
-    const fetchAssignments = async () => {
-      setIsLoadingAssignments(true);
-      try {
-        const assignments = await fetchProgramAssignmentsByUser(testUserId);
-        setAssignments(assignments);
-      } catch (error) {
-        console.error('Error fetching assignments:', error);
-      } finally {
-        setIsLoadingAssignments(false);
-      }
+
+    fetchAllData();
+
+    return () => {
+      isMounted = false;
     };
-    const fetchPrograms = async () => {
-      setIsLoadingPrograms(true);
-      try {
-        const programs = await fetchProgramsByUser(testUserId);
-        setPrograms(programs);
-      } catch (error) {
-        console.error('Error fetching programs:', error);
-      } finally {
-        setIsLoadingPrograms(false);
-      }
-    };
-    const fetchArchivedPrograms = async () => {
-      setIsLoadingArchivedPrograms(true);
-      try {
-        const archivedProgs = await fetchProgramsByUser(testUserId, true);
-        setArchivedPrograms(archivedProgs);
-      } catch (error) {
-        console.error('Error fetching archived programs:', error);
-      } finally {
-        setIsLoadingArchivedPrograms(false);
-      }
-    };
-    fetchUserInfo();
-    fetchAssignments();
-    fetchPrograms();
-    fetchArchivedPrograms();
-  }, []);
+  }, [dbUser?.id]);
 
   useEffect(() => {
     const key = 'dashboardModalShown';
@@ -110,43 +83,32 @@ function DashboardClient() {
     }
   }, []);
 
-  if (tab === null) return null;
-  const tabs: Record<Tab, React.ReactNode> = {
-    home: (
-      <HomeSection
-        userInfo={userInfo}
-        assignments={assignments}
-        programs={programs}
-        isLoading={isLoadingUser || isLoadingAssignments || isLoadingPrograms}
-      />
-    ),
-    todo: <TodoSection assignments={assignments} points={userInfo?.points || 0} />,
-    editor: <PlaygroundSection points={userInfo?.points || 0} />,
-    calendar: (
-      <>
+  const tabs = useMemo(
+    () => ({
+      home: (
+        <HomeSection userInfo={dbUser} assignments={assignments} programs={programs} isLoading={isLoadingPageData} />
+      ),
+      todo: <TodoSection assignments={assignments} points={dbUser?.points || 0} />,
+      editor: <PlaygroundSection points={dbUser?.points || 0} />,
+      calendar: (
         <Heading fontSize="40px" fontWeight={700} p="32px 48px 16px 48px" lineHeight={'48px'}>
-          Page Under Construction!
+          Calendar Under Construction!
         </Heading>
-      </>
-    ),
-    shop: (
-      <>
+      ),
+      shop: (
         <Heading fontSize="40px" fontWeight={700} p="32px 48px 16px 48px" lineHeight={'48px'}>
-          Page Under Construction!
+          Shop Under Construction!
         </Heading>
-      </>
-    ),
-    archived: (
-      <ArchivedPage userInfo={userInfo} archivedPrograms={archivedPrograms} isLoading={isLoadingArchivedPrograms} />
-    ),
-    settings: (
-      <>
+      ),
+      archived: <ArchivedPage userInfo={dbUser} archivedPrograms={archivedPrograms} isLoading={isLoadingPageData} />,
+      settings: (
         <Heading fontSize="40px" fontWeight={700} p="32px 48px 16px 48px" lineHeight={'48px'}>
-          Page Under Construction!
+          Settings Under Construction!
         </Heading>
-      </>
-    ),
-  };
+      ),
+    }),
+    [dbUser, assignments, programs, archivedPrograms, isLoadingPageData],
+  );
 
   const closeModal = () => {
     setIsOpenModal(false);
@@ -154,7 +116,7 @@ function DashboardClient() {
 
   return (
     <Flex height="100vh" width="100vw" position="relative">
-      <Box position="fixed" height="100vh" left={0} top={0}>
+      <Box position="fixed" height="100vh" left={0} top={0} zIndex={10}>
         <SideBar currentTab={tab} onTabChange={handleTabChange} />
       </Box>
       <Box flex={1} ml="210px" height="100vh" overflowX="visible" overflowY="auto">
@@ -169,5 +131,13 @@ function DashboardClient() {
         </Box>
       )}
     </Flex>
+  );
+}
+
+export default function DashboardPage() {
+  return (
+    <Suspense>
+      <DashboardClient />
+    </Suspense>
   );
 }
