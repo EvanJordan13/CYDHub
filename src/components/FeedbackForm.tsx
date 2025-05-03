@@ -1,17 +1,12 @@
 'use client';
 
-import { Text, Heading, Box, Flex, RatingGroup, UseRatingGroupReturn, useRatingGroup } from '@chakra-ui/react';
+import { Text, Heading, Box, Flex, RatingGroup, UseRatingGroupReturn, useRatingGroup, Center, Spinner } from '@chakra-ui/react';
 import FeedbackCard from '@/src/components/FeedbackCard';
 import Button from '@/src/components/Button';
 import { useRouter } from 'next/navigation';
 import { storeSurveyResponse } from '../lib/query/survey';
 import { updateUserPoints } from '../lib/query/users';
 import { useState } from 'react';
-
-const defaultQuestions = [
-  ['What did you like about this assignment?', 'I liked...', ['like']],
-  ['What would you do to improve this assignment?', 'I would improve...', ['improve']],
-] as [string, string, string[]][];
 
 interface FeedbackFormProps {
   RatingsValue?: UseRatingGroupReturn;
@@ -32,9 +27,17 @@ export default function FeedbackForm({
   programId,
   points,
 }: FeedbackFormProps) {
+  const defaultRatings = useRatingGroup({ count: 5, defaultValue: 0 });
+  const defaultQuestions = [
+    ['What did you like about this assignment?', 'I liked...', ['like']],
+    ['What would you do to improve this assignment?', 'I would improve...', ['improve']],
+  ] as [string, string, string[]][];
+
   const router = useRouter();
   const [feedbackValues, setFeedbackValues] = useState<{ [key: number]: string }>({});
-  const ratings = RatingsValue ? RatingsValue : useRatingGroup({ count: 5, defaultValue: 0 });
+  const [submitted, setSubmitted] = useState(false);
+
+  const ratings = RatingsValue ? RatingsValue : defaultRatings
   const questions = FeedbackQuestions ? FeedbackQuestions : defaultQuestions;
 
   const changeHandler = handleFeedbackChange
@@ -46,6 +49,7 @@ export default function FeedbackForm({
   const onSubmit = onSubmitFeedback
     ? onSubmitFeedback
     : async () => {
+        setSubmitted(true);
         await Promise.all(
           questions.map(async ([questionText], index) => {
             const response = feedbackValues[index];
@@ -61,7 +65,14 @@ export default function FeedbackForm({
         await updateUserPoints(userId, points);
         router.push('/feedback/' + String(programId));
       };
-
+  if (submitted) {
+      return (
+        <Center height="80vh" width="100%">
+          <Spinner size="xl" />
+        </Center>
+      );
+    }
+  else {
   return (
     <Flex direction={'column'} ml={2} marginTop={7}>
       <Heading fontSize={'3xl'} fontWeight={'bold'} marginBottom={3}>
@@ -96,5 +107,5 @@ export default function FeedbackForm({
         <Button type="primary" pageColor="aqua" text="Submit" height={14} width={40} onClick={onSubmit} />
       </Box>
     </Flex>
-  );
+  )}
 }
