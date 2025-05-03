@@ -12,6 +12,7 @@ import MoodModal from '@/src/components/MoodModal';
 import TodoSection from '@/src/components/dashboard/sections/TodoSection';
 import ArchivedPage from '@/src/components/dashboard/sections/Archived';
 import { useSearchParams, useRouter } from 'next/navigation';
+import PlaygroundSection from '@/src/components/dashboard/sections/PlaygroundSection';
 
 function DashboardClient() {
   const { dbUser } = useDbSession();
@@ -88,11 +89,7 @@ function DashboardClient() {
         <HomeSection userInfo={dbUser} assignments={assignments} programs={programs} isLoading={isLoadingPageData} />
       ),
       todo: <TodoSection assignments={assignments} points={dbUser?.points || 0} />,
-      editor: (
-        <Heading fontSize="40px" fontWeight={700} p="32px 48px 16px 48px" lineHeight={'48px'}>
-          Editor Under Construction!
-        </Heading>
-      ),
+      editor: <PlaygroundSection points={dbUser?.points || 0} />,
       calendar: (
         <Heading fontSize="40px" fontWeight={700} p="32px 48px 16px 48px" lineHeight={'48px'}>
           Calendar Under Construction!
