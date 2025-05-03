@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { Box, Text } from '@chakra-ui/react';
+import { Box, IconButton, Stack, Text } from '@chakra-ui/react';
 import Button from './Button';
 import MaterialCard from './MaterialCard';
-import { EyeOff, Eye } from 'lucide-react';
+import { EyeOff, Eye, ArrowLeft } from 'lucide-react';
 
 interface MaterialDetailProps {
   title: string;
@@ -10,9 +10,17 @@ interface MaterialDetailProps {
   materialType: string;
   fileName: string | null;
   fileUrl: string | null;
+  onBackClick: () => void;
 }
 
-export default function MaterialDetail({ title, overview, materialType, fileName, fileUrl }: MaterialDetailProps) {
+export default function MaterialDetail({
+  title,
+  overview,
+  materialType,
+  fileName,
+  fileUrl,
+  onBackClick,
+}: MaterialDetailProps) {
   const [clicked, setClicked] = useState(false);
 
   return (
@@ -29,9 +37,15 @@ export default function MaterialDetail({ title, overview, materialType, fileName
         />
       </Box>
 
-      <Text fontWeight={'bold'} fontSize={'24px'}>
-        <Box as="span">Material:</Box> {title}
-      </Text>
+      <Stack direction={'row'}>
+        <IconButton variant={'ghost'} mt={-1} size={'md'} onClick={onBackClick}>
+          <ArrowLeft strokeWidth={'3px'}></ArrowLeft>
+        </IconButton>
+
+        <Text fontWeight={'bold'} fontSize={'24px'}>
+          <Box as="span">Material:</Box> {title}
+        </Text>
+      </Stack>
 
       {overview && (
         <Box>
