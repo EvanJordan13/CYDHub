@@ -1,6 +1,16 @@
 'use client';
 
-import { Text, Heading, Box, Flex, RatingGroup, UseRatingGroupReturn, useRatingGroup, Center, Spinner } from '@chakra-ui/react';
+import {
+  Text,
+  Heading,
+  Box,
+  Flex,
+  RatingGroup,
+  UseRatingGroupReturn,
+  useRatingGroup,
+  Center,
+  Spinner,
+} from '@chakra-ui/react';
 import FeedbackCard from '@/src/components/FeedbackCard';
 import Button from '@/src/components/Button';
 import { useRouter } from 'next/navigation';
@@ -37,7 +47,7 @@ export default function FeedbackForm({
   const [feedbackValues, setFeedbackValues] = useState<{ [key: number]: string }>({});
   const [submitted, setSubmitted] = useState(false);
 
-  const ratings = RatingsValue ? RatingsValue : defaultRatings
+  const ratings = RatingsValue ? RatingsValue : defaultRatings;
   const questions = FeedbackQuestions ? FeedbackQuestions : defaultQuestions;
 
   const changeHandler = handleFeedbackChange
@@ -66,46 +76,46 @@ export default function FeedbackForm({
         router.push('/feedback/' + String(programId));
       };
   if (submitted) {
-      return (
-        <Center height="80vh" width="100%">
-          <Spinner size="xl" />
-        </Center>
-      );
-    }
-  else {
-  return (
-    <Flex direction={'column'} ml={2} marginTop={7}>
-      <Heading fontSize={'3xl'} fontWeight={'bold'} marginBottom={3}>
-        Feedback Survey
-      </Heading>
+    return (
+      <Center height="80vh" width="100%">
+        <Spinner size="xl" />
+      </Center>
+    );
+  } else {
+    return (
+      <Flex direction={'column'} ml={2} marginTop={7}>
+        <Heading fontSize={'3xl'} fontWeight={'bold'} marginBottom={3}>
+          Feedback Survey
+        </Heading>
 
-      <Text fontWeight={'medium'} mb={7}>
-        Complete this optional survey to earn points!
-      </Text>
+        <Text fontWeight={'medium'} mb={7}>
+          Complete this optional survey to earn points!
+        </Text>
 
-      <Text fontSize={'lg'} fontWeight={'semibold'} mb={2}>
-        Please provide this assignment a star rating.
-      </Text>
+        <Text fontSize={'lg'} fontWeight={'semibold'} mb={2}>
+          Please provide this assignment a star rating.
+        </Text>
 
-      <RatingGroup.RootProvider value={ratings} size="lg" colorPalette={'yellow'} mb={10}>
-        <RatingGroup.HiddenInput />
-        <RatingGroup.Control />
-      </RatingGroup.RootProvider>
+        <RatingGroup.RootProvider value={ratings} size="lg" colorPalette={'yellow'} mb={10}>
+          <RatingGroup.HiddenInput />
+          <RatingGroup.Control />
+        </RatingGroup.RootProvider>
 
-      <Flex direction="column" gap={6}>
-        {questions.map(([question, placeholder, words], index) => (
-          <FeedbackCard
-            key={index}
-            question={question}
-            words={words}
-            placeholder={placeholder}
-            onFeedbackChange={value => changeHandler(index, value)}
-          />
-        ))}
+        <Flex direction="column" gap={6}>
+          {questions.map(([question, placeholder, words], index) => (
+            <FeedbackCard
+              key={index}
+              question={question}
+              words={words}
+              placeholder={placeholder}
+              onFeedbackChange={value => changeHandler(index, value)}
+            />
+          ))}
+        </Flex>
+        <Box mt={20} display={'flex'} justifyContent={'flex-end'}>
+          <Button type="primary" pageColor="aqua" text="Submit" height={14} width={40} onClick={onSubmit} />
+        </Box>
       </Flex>
-      <Box mt={20} display={'flex'} justifyContent={'flex-end'}>
-        <Button type="primary" pageColor="aqua" text="Submit" height={14} width={40} onClick={onSubmit} />
-      </Box>
-    </Flex>
-  )}
+    );
+  }
 }
