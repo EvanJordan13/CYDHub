@@ -20,8 +20,8 @@ export default function TodoCard({ assignments }: TodoCardProps) {
       for (const assignment of assignments) {
         if (assignment.moduleId) {
           try {
-            const module = await getModuleById(assignment.moduleId);
-            programIds[assignment.id] = module.programId;
+            const moduleData = await getModuleById(assignment.moduleId);
+            programIds[assignment.id] = moduleData.programId;
           } catch (error) {
             console.error(`Error fetching module for assignment ${assignment.id}:`, error);
           }
