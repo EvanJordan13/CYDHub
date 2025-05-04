@@ -1,6 +1,7 @@
 import { Box, Text, Stack, IconButton } from '@chakra-ui/react';
 import { ArrowLeft } from 'lucide-react';
 import Button from './Button';
+import { useRouter } from 'next/navigation';
 
 interface AssignmentDetailProps {
   assignmentNumber: number | null;
@@ -42,10 +43,21 @@ export default function AssignmentDetail({
   description,
   onBackClick,
 }: AssignmentDetailProps) {
+  const router = useRouter();
+  const handleAssignmentClick = () => {
+    router.push('/programs/1/assignments/1/questions/1');
+  };
   return (
     <Box position={'relative'} mt={6}>
       <Box position={'absolute'} top={0} right={0}>
-        <Button type={'secondary'} pageColor={'aqua'} text={'Start Assignment'} height={'12'} width={'44'} />
+        <Button
+          type={'secondary'}
+          pageColor={'aqua'}
+          text={'Start Assignment'}
+          height={'12'}
+          width={'44'}
+          onClick={handleAssignmentClick}
+        />
       </Box>
 
       <Stack direction={'row'}>

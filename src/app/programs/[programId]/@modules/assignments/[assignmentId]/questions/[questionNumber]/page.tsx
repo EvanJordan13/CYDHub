@@ -4,37 +4,32 @@ import { Box, HStack, VStack, Text, IconButton } from '@chakra-ui/react';
 import Button from '@/src/components/Button';
 import { X } from 'lucide-react';
 import { useState } from 'react';
-import { ModuleMaterial, Assignment, Module as Mod, Announcement, Program, User } from '@prisma/client';
 import { useEffect } from 'react';
+import { getAssignmentByIdQuestionsAndSubmissions } from '@/src/lib/query/assignments';
+import { Assignment } from '@prisma/client';
+import { useParams } from 'next/navigation';
 
-export default function QuestionPage({ params }: { params: { assignmentId: number } }) {
-  const [programAssignment, setProgramAssignment] = useState<Assignment>({} as Assignment);
+export default function QuestionPage() {
+  const { assignmentId, questionNumber } = useParams<{ assignmentId: string; questionNumber: string }>();
+  const assignmentIdNumber = Number(assignmentId);
 
-  const fetchModules = async () => {
-    try {
-      const assignment = await getProgramModules(assignmentId);
-      setProgramAssignment(assignment as Assignment);
-    } catch (error) {
-      console.error('Error fetching program modules:', error);
-      throw error;
-    }
-  };
+  if (Number.isNaN(assignmentIdNumber)) {
+    throw new Error(`Invalid assignmentId: ${assignmentId}`);
+  }
+
+  const [programAssignment, setProgramAssignment] = useState<Assignment | null>(null);
 
   useEffect(() => {
-    const loadInitialData = async () => {
+    async function fetchAssignment() {
       try {
-        // Reset previous states
-        setProgramAssignment({} as Assignment);
-
-        // Wait for all essential initial fetches to complete
-        await Promise.all([fetchModules()]);
-      } catch (error) {
-        console.error('Error fetching initial program data:', error);
+        const data = await getAssignmentByIdQuestionsAndSubmissions(assignmentIdNumber);
+        setProgramAssignment(data as Assignment);
+      } catch (err) {
+        console.error(err);
       }
-    };
-
-    loadInitialData();
-  }); // Re-run if programId changes
+    }
+    fetchAssignment();
+  }, [assignmentIdNumber]);
 
   return (
     <VStack w="100%" minH="200px" alignItems="left">
@@ -50,7 +45,7 @@ export default function QuestionPage({ params }: { params: { assignmentId: numbe
           {programAssignment?.title}
         </Text>
         <Text fontFamily="Poppins" fontSize="16px" fontWeight={500} color="Slate">
-          {programAssignment?.description}
+          {/* {programAssignment?.questions[0]?.questionText} */}
         </Text>
         <Box w="100%" h="40.3vh" backgroundColor="blue" mt="30px"></Box>
         <HStack w="100%" justifyContent="right" mt="23px">
