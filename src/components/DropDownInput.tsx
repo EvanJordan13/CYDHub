@@ -84,9 +84,7 @@ const DropDownInput: React.FC<DropDownInputProps> = ({
               _disabled={{ opacity: 1 }}
             >
               <Flex justify="space-between" align="center" width="100%">
-
                 <Text color={selectedOption ? 'black' : '#AAAAAA'} fontWeight={500} fontSize={'clamp(16px,.97vw,40px)'}>
-
                   {selectedOption || helperText}
                 </Text>
                 {showIcon && <ChevronDown color="#AAAAAA" />}

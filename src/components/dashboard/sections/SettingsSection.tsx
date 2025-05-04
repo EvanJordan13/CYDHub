@@ -9,6 +9,7 @@ import DropDownInput from '@/src/components/DropDownInput';
 import ConfirmChangesModal from '@/src/components/dashboard/ConfirmChangesModal';
 import { User as UserIcon, Mail, Lock, Link } from 'lucide-react';
 import AnimatedLink from '../../AnimatedLink';
+import { useUser } from '@auth0/nextjs-auth0/client';
 
 interface SettingsSectionProps {
   userInfo: User | null;
@@ -18,11 +19,12 @@ interface SettingsSectionProps {
 const pronounOptions = ['He/Him', 'She/Her', 'They/Them', 'Prefer not to answer'];
 
 export default function SettingsSection({ userInfo, onUserUpdate }: SettingsSectionProps) {
+  const { user } = useUser();
   const [isEditing, setIsEditing] = useState(false);
   const [isConfirmChangesModalOpen, setIsConfirmChangesModalOpen] = useState(false);
   const [resetPasswordMessage, setResetPasswordMessage] = useState<string | null>(null);
 
-  const [name, setName] = useState(userInfo?.name || '');
+  const [name, setName] = useState(user?.nickname || '');
   const [pronouns, setPronouns] = useState(
     userInfo?.pronouns && pronounOptions.includes(userInfo.pronouns) ? userInfo.pronouns : '',
   );
@@ -183,7 +185,7 @@ export default function SettingsSection({ userInfo, onUserUpdate }: SettingsSect
             <TextInput label="Email" icon={<Mail />} disabled={!isEditing} value={userInfo?.email || ''} height={20} />
           </Box>
           <Flex direction="column" gap="6px" width="35%">
-            <Box width="100%">
+            <Box width="100%" mb={6}>
               <DropDownInput
                 labelText="Pronouns"
                 helperText="Pronouns"
@@ -195,14 +197,14 @@ export default function SettingsSection({ userInfo, onUserUpdate }: SettingsSect
               />
             </Box>
           </Flex>
-          <AnimatedLink
+          {/* <AnimatedLink
             link="#"
             linkName="Send Password Reset Email"
             underlineColor="Aqua"
             onClick={handlePasswordReset}
           >
             Send Password Reset Email
-          </AnimatedLink>
+          </AnimatedLink> */}
           {resetPasswordMessage && (
             <Text color={resetPasswordMessage.includes('successfully') ? 'green.500' : 'red.500'} mt={2}>
               {resetPasswordMessage}
