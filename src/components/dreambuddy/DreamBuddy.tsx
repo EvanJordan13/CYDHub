@@ -81,7 +81,7 @@ const bounceIn = keyframes`
 `;
 
 interface DreamBuddyProps {
-  calloutType?: 'greeting' | 'gainPoints';
+  calloutType?: 'greeting' | 'gainPoints' | 'save';
   numPointsGained?: number;
   userName?: string;
   isVisible?: boolean;

@@ -5,6 +5,7 @@ interface ButtonProps {
   type: 'primary' | 'secondary' | 'disabled';
   pageColor: 'flamingo' | 'aqua';
   text: string;
+  textSize: string;
   icon?: ReactNode;
   disableHover?: boolean;
   height: string | number;
@@ -16,6 +17,7 @@ export default function Button({
   type,
   pageColor,
   text,
+  textSize,
   icon,
   disableHover = false,
   height,
@@ -58,7 +60,7 @@ export default function Button({
                   : pageColor === 'flamingo'
                     ? 'SecondaryFlamingoHover'
                     : 'SecondaryAquaHover',
-              textDecoration: 'underline',
+              textDecoration: 'none',
               textDecorationColor: textColor,
               cursor: 'pointer',
               transform: 'translateY(-2px)',
@@ -75,7 +77,7 @@ export default function Button({
       transition={'all 0.2s ease-in-out'}
     >
       <Flex gap={2} justify={'center'}>
-        <Text fontWeight="700" color={textColor} fontSize="clamp(12px, 1.11vw, 42px)">
+        <Text fontWeight="700" color={textColor} fontSize={textSize}>
           {text}
         </Text>
         {icon && (

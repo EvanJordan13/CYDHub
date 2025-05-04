@@ -240,6 +240,7 @@ export default function OnboardingPage() {
                 type={!formValid ? 'disabled' : 'primary'}
                 pageColor="flamingo"
                 text="Next"
+                textSize="16px"
                 height="70px"
                 width="79%"
                 onClick={handleNextClick}
