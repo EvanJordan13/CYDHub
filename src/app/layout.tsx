@@ -1,6 +1,7 @@
 import Provider from './providers';
 import type { Metadata } from 'next';
 import { siteConfig } from '@/src/config/site';
+import { Toaster } from '../components/ui/toaster';
 
 export const metadata: Metadata = {
   title: {
@@ -21,6 +22,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body suppressHydrationWarning>
         <Provider>
           <main>{children}</main>
+          <Toaster />
         </Provider>
       </body>
     </html>

@@ -7,8 +7,8 @@ interface ButtonProps {
   text: string;
   icon?: ReactNode;
   disableHover?: boolean;
-  height: string;
-  width: string;
+  height: string | number;
+  width: string | number;
   onClick?: () => void;
 }
 
@@ -60,19 +60,22 @@ export default function Button({
                     : 'SecondaryAquaHover',
               textDecoration: 'underline',
               textDecorationColor: textColor,
+              cursor: 'pointer',
+              transform: 'translateY(-2px)',
             }
       }
       borderWidth={'thin'}
       borderColor={borderColor}
       borderRadius={'xl'}
-      borderBottomWidth={'4px'}
+      borderBottomWidth={4}
       display="flex"
       alignItems={'center'}
       justifyContent={'center'}
       onClick={type === 'disabled' ? undefined : onClick}
+      transition={'all 0.2s ease-in-out'}
     >
       <Flex gap={2} justify={'center'}>
-        <Text fontWeight="700" color={textColor} fontSize="lg">
+        <Text fontWeight="700" color={textColor} fontSize="clamp(12px, 1.11vw, 42px)">
           {text}
         </Text>
         {icon && (

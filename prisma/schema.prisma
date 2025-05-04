@@ -44,6 +44,7 @@ model Program {
   syllabus      String?
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
+  archived      Boolean?       @default(false)
   announcements Announcement[]
   Invitation    Invitation[]
   meetings      Meeting[]
@@ -51,7 +52,6 @@ model Program {
   teacher       User           @relation("TeacherPrograms", fields: [teacherId], references: [id])
   enrollments   ProgramUser[]
   Survey        Survey[]
-  archived      Boolean?        @default(false)
 }
 
 /// Join table for Users and Programs.
@@ -115,28 +115,46 @@ model Assignment {
 /// Questions that make up an assignment.
 /// Supports various types (multiple choice, short answer, code editor, file upload).
 model AssignmentQuestion {
-  id           Int          @id @default(autoincrement())
-  assignmentId Int
-  questionText String
-  questionType QuestionType
-  options      String?
-  order        Int?
-  assignment   Assignment   @relation(fields: [assignmentId], references: [id])
+  id               Int                @id @default(autoincrement())
+  assignmentId     Int
+  questionText     String
+  questionType     QuestionType
+  options          String?
+  order            Int?
+  assignment       Assignment         @relation(fields: [assignmentId], references: [id])
+  SubmissionAnswer SubmissionAnswer[]
 }
 
 /// A student’s submission to an assignment.
 model Submission {
-  id              Int        @id @default(autoincrement())
-  assignmentId    Int
-  studentId       Int
-  content         String?
-  fileUrl         String?
-  grade           Float?
-  teacherFeedback String?
-  submittedAt     DateTime   @default(now())
-  updatedAt       DateTime   @updatedAt
-  assignment      Assignment @relation(fields: [assignmentId], references: [id])
-  student         User       @relation(fields: [studentId], references: [id])
+  id               Int                @id @default(autoincrement())
+  assignmentId     Int
+  studentId        Int
+  content          String?
+  fileUrl          String?
+  grade            Float?
+  teacherFeedback  String?
+  submittedAt      DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  assignment       Assignment         @relation(fields: [assignmentId], references: [id])
+  student          User               @relation(fields: [studentId], references: [id])
+  SubmissionAnswer SubmissionAnswer[]
+
+  @@unique([studentId, assignmentId], name: "studentId_assignmentId")
+}
+
+model SubmissionAnswer {
+  id                   Int                @id @default(autoincrement())
+  submissionId         Int
+  assignmentQuestionId Int
+  answerText           String?
+  fileUrl              String?
+  grade                Float?
+  feedback             String?
+  question             AssignmentQuestion @relation(fields: [assignmentQuestionId], references: [id])
+  submission           Submission         @relation(fields: [submissionId], references: [id])
+
+  @@unique([submissionId, assignmentQuestionId])
 }
 
 /// Surveys for collecting pre/post (or other) feedback.
@@ -243,7 +261,6 @@ model Invitation {
   program     Program   @relation(fields: [programId], references: [id])
 }
 
-/// Enums to standardize various roles and types.
 enum UserRole {
   STUDENT
   TEACHER

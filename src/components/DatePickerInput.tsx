@@ -28,7 +28,7 @@ const DatePickerInput: React.FC<DatePickerInputProps> = ({
 }) => {
   const [value, setValue] = useState(val ? val : '');
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const inputEvent = e.nativeEvent as InputEvent;
     const isBackspace = inputEvent.inputType === 'deleteContentBackward';
 
@@ -49,7 +49,6 @@ const DatePickerInput: React.FC<DatePickerInputProps> = ({
     if (isBackspace && lastIsSlash) {
       formattedValue = formattedValue.slice(0, formattedValue.length - 1);
 
-      console.log(formattedValue);
       setValue(formattedValue);
       if (onChange) onChange(formattedValue);
       return;

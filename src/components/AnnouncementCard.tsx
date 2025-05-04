@@ -55,10 +55,8 @@ export default function AnnouncementCard({
       }}
       transition="all 0.2s ease-in-out"
     >
-      {/* Header section */}
       <Flex gap={3} mb={3} alignItems="flex-start">
-        {/* Left: Avatar */}
-        <Box flexShrink={0} width="50px" height="50px" borderRadius="full" overflow="hidden">
+        <Box flexShrink={0} width={12} height={12} borderRadius="full" overflow="hidden">
           <Image
             src={avatarUrl || '/images/default-avatar.svg'}
             alt={avatarUrl ? `${name}'s avatar` : 'Default avatar'}
@@ -68,13 +66,12 @@ export default function AnnouncementCard({
           />
         </Box>
 
-        {/* Right: Name and Time */}
         <Box flex={1}>
-          <Flex alignItems="center" gap={1.5} fontSize={'16px'} fontWeight={600} color={'Slate'}>
+          <Flex alignItems="center" gap={1.5} fontWeight={600} color={'Slate'}>
             <Text>{name}</Text>
             {subject && <Text>({subject})</Text>}
           </Flex>
-          <Text fontSize="13px" color="#4B5B63" fontWeight={500}>
+          <Text fontSize={'xs'} color="#4B5B63" fontWeight={500}>
             {formatDate(new Date(createdAt))}
           </Text>
         </Box>
@@ -83,11 +80,11 @@ export default function AnnouncementCard({
       {/* Content section */}
       <Box color={'Slate'}>
         {title && (
-          <Heading as="h2" fontSize="24px" fontWeight={700} mb={'20px'}>
+          <Heading as="h2" fontSize={'2xl'} fontWeight={700} mb={5}>
             {title}
           </Heading>
         )}
-        <Text fontSize="14px" lineHeight="relaxed">
+        <Text fontSize={'sm'} lineHeight="relaxed">
           {message}
         </Text>
       </Box>

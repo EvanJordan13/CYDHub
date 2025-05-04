@@ -1,7 +1,9 @@
 'use client';
 
 import TextInput from '../../components/TextInput';
+import BlocklyEditor from '../../components/BlocklyEditor';
 import ProgramCard from '../../components/ProgramCard';
+import CodeEditor from '../../components/CodeEditor';
 import { Box, Center, Heading, Stack, Text, VStack } from '@chakra-ui/react';
 import { Program, Announcement } from '@prisma/client';
 import { User, Calendar, Award } from 'lucide-react';
@@ -12,6 +14,7 @@ import {
   getProgramAnnouncements,
   fetchProgramAssignments,
 } from '@/src/lib/query/programs';
+import { fetchCompletedAssignments } from '@/src/lib/query/users';
 import { Flex } from '@chakra-ui/react';
 import Button from '@/src/components/Button';
 import { Button as ChakraButton } from '@chakra-ui/react';
@@ -39,6 +42,7 @@ export default function DevPage() {
   const [isLoadingAssignments, setIsLoadingAssignments] = useState(false);
   const [showAllPrograms, setShowAllPrograms] = useState(true);
   const [showUserPrograms, setShowUserPrograms] = useState(true);
+  const [completedAssignments, setCompletedAssignments] = useState<Assignment[]>([]);
   const [showMaterials, setShowMaterials] = useState(true);
   const [isLoadingAnnouncements, setIsLoadingAnnouncements] = useState(false);
   const [programAnnouncements, setProgramAnnouncements] = useState<Announcement[]>([]);
@@ -68,7 +72,6 @@ export default function DevPage() {
     setIsLoadingAll(true);
     try {
       const programs = await fetchAllPrograms();
-      console.log('All programs', programs);
       setAllPrograms(programs);
     } catch (error) {
       console.error('Error fetching all programs:', error);
@@ -81,10 +84,22 @@ export default function DevPage() {
     setIsLoadingUser(true);
     try {
       const programs = await fetchProgramsByUser(1);
-      console.log('Programs by user', programs);
       setUserPrograms(programs);
     } catch (error) {
       console.error('Error fetching user programs:', error);
+    } finally {
+      setIsLoadingUser(false);
+    }
+  };
+
+  const testFetchCompletedAssignments = async () => {
+    setIsLoadingUser(true);
+    try {
+      const completedAssignments = await fetchCompletedAssignments(15);
+      setCompletedAssignments(completedAssignments);
+      console.log(completedAssignments);
+    } catch (error) {
+      console.error('Error fetching completed assignments:', error);
     } finally {
       setIsLoadingUser(false);
     }
@@ -94,7 +109,6 @@ export default function DevPage() {
     setIsLoadingMaterials(true);
     try {
       const materials = await fetchProgramMaterials(1);
-      console.log('Program materials', materials);
       setProgramMaterials(materials);
     } catch (error) {
       console.error('Error fetching program materials:', error);
@@ -107,7 +121,6 @@ export default function DevPage() {
     setIsLoadingAssignments(true);
     try {
       const assignments = await fetchProgramAssignments(1);
-      console.log('Program assignments', assignments);
       setProgramAssignments(assignments);
     } catch (error) {
       console.error('Error fetching program assignments:', error);
@@ -141,7 +154,6 @@ export default function DevPage() {
     setIsLoadingAnnouncements(true);
     try {
       const announcements = await getProgramAnnouncements(1);
-      console.log('Program Announcements', announcements);
       setProgramAnnouncements(announcements);
     } catch (error) {
       console.error('Error fetching program announcements:', error);
@@ -155,6 +167,12 @@ export default function DevPage() {
   return (
     <Box p={8} bg={'white'} color={'black'}>
       <Heading mb={6}>Development Page</Heading>
+
+      {/* <BlocklyEditor />
+      <CodeEditor />
+
+      <br />
+      <br /> */}
 
       <Box mb={6}>
         <ChakraButton onClick={testFetchAllPrograms} mr={2} loading={isLoadingAll}>
@@ -171,6 +189,9 @@ export default function DevPage() {
         </ChakraButton>
         <ChakraButton onClick={testFetchProgramAssignments} loading={isLoadingAssignments}>
           Test Fetch Program 1 Assignments
+        </ChakraButton>
+        <ChakraButton onClick={testFetchCompletedAssignments} loading={isLoadingAssignments}>
+          Test Fetch Completed Assignments
         </ChakraButton>
       </Box>
 
