@@ -9,7 +9,6 @@ import DropDownInput from '@/src/components/DropDownInput';
 import ConfirmChangesModal from '@/src/components/dashboard/ConfirmChangesModal';
 import { User as UserIcon, Mail, Lock, Link } from 'lucide-react';
 import AnimatedLink from '../../AnimatedLink';
-import { getPasswordResetLink } from '@/src/lib/actions/auth';
 
 interface SettingsSectionProps {
   userInfo: User | null;
@@ -21,12 +20,20 @@ const pronounOptions = ['He/Him', 'She/Her', 'They/Them', 'Prefer not to answer'
 export default function SettingsSection({ userInfo, onUserUpdate }: SettingsSectionProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [isConfirmChangesModalOpen, setIsConfirmChangesModalOpen] = useState(false);
-  const [resetPasswordLink, setResetPasswordLink] = useState<string>('');
+  const [resetPasswordMessage, setResetPasswordMessage] = useState<string | null>(null);
 
   const [name, setName] = useState(userInfo?.name || '');
   const [pronouns, setPronouns] = useState(
     userInfo?.pronouns && pronounOptions.includes(userInfo.pronouns) ? userInfo.pronouns : '',
   );
+
+  const getPasswordResetLink = (email: string) => {
+    const domain = process.env.NEXT_PUBLIC_AUTH0_DOMAIN;
+    const clientId = process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID;
+    const connection = 'Username-Password-Authentication'; // must match your dashboard exactly
+
+    return `${domain}/dbconnections/change_password?client_id=${clientId}&email=${encodeURIComponent(email)}&connection=${encodeURIComponent(connection)}`;
+  };
 
   const handleToggleEdit = () => {
     setIsEditing(!isEditing);
@@ -57,8 +64,46 @@ export default function SettingsSection({ userInfo, onUserUpdate }: SettingsSect
   };
 
   const handlePasswordReset = async () => {
-    const link = await getPasswordResetLink(userInfo?.email || '');
-    setResetPasswordLink(link);
+    try {
+      const domain = process.env.NEXT_PUBLIC_AUTH0_DOMAIN;
+      const clientId = process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID;
+
+      console.log('Auth0 Domain:', domain);
+      console.log('Auth0 Client ID:', clientId);
+      console.log('User Email:', userInfo?.email);
+
+      if (!domain || !clientId) {
+        console.error('Missing Auth0 configuration:', { domain, clientId });
+        setResetPasswordMessage('Configuration error. Please contact support.');
+        return;
+      }
+
+      const url = `https://${domain}/dbconnections/change_password`;
+      console.log('Request URL:', url);
+
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          client_id: clientId,
+          email: userInfo?.email || '',
+          connection: 'Username-Password-Authentication',
+        }),
+      });
+
+      console.log('Response status:', res.status);
+      const text = await res.text();
+      console.log('Response text:', text);
+
+      if (res.ok) {
+        setResetPasswordMessage('Password reset email sent successfully!');
+      } else {
+        setResetPasswordMessage('Failed to send password reset email. Please try again.');
+      }
+    } catch (error) {
+      console.error('Password reset error:', error);
+      setResetPasswordMessage('An error occurred. Please try again.');
+    }
   };
 
   return (
@@ -151,14 +196,18 @@ export default function SettingsSection({ userInfo, onUserUpdate }: SettingsSect
             </Box>
           </Flex>
           <AnimatedLink
-            link={resetPasswordLink}
-            linkName="Forgot your password?"
+            link="#"
+            linkName="Send Password Reset Email"
             underlineColor="Aqua"
             onClick={handlePasswordReset}
-            target="_blank"
           >
-            Forgot your password?
+            Send Password Reset Email
           </AnimatedLink>
+          {resetPasswordMessage && (
+            <Text color={resetPasswordMessage.includes('successfully') ? 'green.500' : 'red.500'} mt={2}>
+              {resetPasswordMessage}
+            </Text>
+          )}
           {isEditing ? (
             <Flex flexDirection={'row'} justifyContent={'space-between'}>
               <Button
