@@ -37,6 +37,9 @@ export default function AnimatedLink({ link, linkName, underlineColor = 'Flaming
             width: '100%',
           },
         }}
+        _focus={{
+          outline: 'none',
+        }}
         {...rest}
       >
         {linkName}
