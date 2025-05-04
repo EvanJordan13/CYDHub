@@ -3,8 +3,8 @@
 import { useState, useEffect, Suspense } from 'react';
 
 import { getUserById } from '@/src/lib/query/users';
-import { User, Assignment, Program, Announcement } from '@prisma/client';
-import { fetchProgramsByUser, fetchProgramAssignmentsByUser } from '@/src/lib/query/programs';
+import { User, Assignment, Program, Announcement, ModuleMaterial } from '@prisma/client';
+import { fetchProgramsByUser, fetchProgramAssignmentsByUser, fetchProgramMaterialsByUser } from '@/src/lib/query/programs';
 
 import { Flex, Box, Heading } from '@chakra-ui/react';
 import HomeSection from '@/src/components/dashboard/sections/HomeSection';
@@ -15,6 +15,7 @@ import MoodModal from '@/src/components/MoodModal';
 import TodoSection from '@/src/components/dashboard/sections/TodoSection';
 import ArchivedPage from '@/src/components/dashboard/sections/Archived';
 import { useSearchParams, useRouter } from 'next/navigation';
+import CalendarSection from '@/src/components/dashboard/sections/CalendarSection';
 
 export default function DashboardPage() {
   return (
@@ -27,6 +28,7 @@ export default function DashboardPage() {
 function DashboardClient() {
   const [userInfo, setUserInfo] = useState<User | null>(null);
   const [assignments, setAssignments] = useState<Assignment[]>([]);
+  const [materials, setMaterials] = useState<ModuleMaterial[]>([]);
   const [programs, setPrograms] = useState<Program[]>([]);
   const [archivedPrograms, setArchivedPrograms] = useState<Program[]>([]);
   const [isLoadingUser, setIsLoadingUser] = useState(true);
@@ -73,6 +75,14 @@ function DashboardClient() {
         setIsLoadingAssignments(false);
       }
     };
+    const fetchMaterials = async () => {
+      try {
+        const materials = await fetchProgramMaterialsByUser(testUserId);
+        setMaterials(materials);
+      } catch (error) {
+        console.error('Error fetching materials:', error);
+      }
+    };
     const fetchPrograms = async () => {
       setIsLoadingPrograms(true);
       try {
@@ -97,6 +107,7 @@ function DashboardClient() {
     };
     fetchUserInfo();
     fetchAssignments();
+    fetchMaterials();
     fetchPrograms();
     fetchArchivedPrograms();
   }, []);
@@ -129,9 +140,7 @@ function DashboardClient() {
     ),
     calendar: (
       <>
-        <Heading fontSize="40px" fontWeight={700} p="32px 48px 16px 48px" lineHeight={'48px'}>
-          Page Under Construction!
-        </Heading>
+        <CalendarSection userInfo={userInfo} assignments={assignments} materials={materials} />
       </>
     ),
     shop: (
