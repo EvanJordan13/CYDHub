@@ -28,7 +28,7 @@ const DatePickerInput: React.FC<DatePickerInputProps> = ({
 }) => {
   const [value, setValue] = useState(val ? val : '');
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const inputEvent = e.nativeEvent as InputEvent;
     const isBackspace = inputEvent.inputType === 'deleteContentBackward';
 
