@@ -50,15 +50,15 @@ export default function ModulesPage() {
     }
   }, [programId]);
 
-  const filteredModules = programModules.map(module => ({
-    ...module,
-    materials: showMaterials ? module.materials : [],
-    assignments: showAssignments ? module.assignments : []
-  })).filter(module =>
-    (showAssignments && module.assignments.length > 0) ||
-    (showMaterials && module.materials.length > 0)
-  );
-
+  const filteredModules = programModules
+    .map(module => ({
+      ...module,
+      materials: showMaterials ? module.materials : [],
+      assignments: showAssignments ? module.assignments : [],
+    }))
+    .filter(
+      module => (showAssignments && module.assignments.length > 0) || (showMaterials && module.materials.length > 0),
+    );
 
   return isLoadingModules ? (
     <Stack gap={6}>
@@ -80,6 +80,8 @@ export default function ModulesPage() {
       />
     ))
   ) : (
-    <Text mt={4}>No {(showAssignments && showMaterials) ? 'Modules' : (showAssignments) ? 'Assignments' : 'Materials'} found.</Text>
+    <Text mt={4}>
+      No {showAssignments && showMaterials ? 'Modules' : showAssignments ? 'Assignments' : 'Materials'} found.
+    </Text>
   );
 }

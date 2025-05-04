@@ -66,7 +66,6 @@ export function useModuleView() {
   return context;
 }
 
-
 export default function ProgramLayout({
   modules,
   params,
@@ -155,16 +154,12 @@ export default function ProgramLayout({
   const changeResourcesShown = (value: string) => {
     const newView = value as 'assignments' | 'materials' | 'both';
     setView(newView);
-    setModulesTabTitle(
-      newView === 'assignments' ? 'Assignments' :
-        newView === 'materials' ? 'Materials' : 'Modules'
-    );
+    setModulesTabTitle(newView === 'assignments' ? 'Assignments' : newView === 'materials' ? 'Materials' : 'Modules');
   };
 
   return (
     <AuthWrapper>
       <ModuleViewContext.Provider value={contextValue}>
-
         <Box display={'flex'} minH={'100vh'} backgroundColor={'white'} color={'black'}>
           <SideBar currentTab="home" onTabChange={handleTabChange} />
           {isInitialLoading ? (
