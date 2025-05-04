@@ -1,22 +1,22 @@
 # Code Your Dreams
 
-**Table of Contents**
+**Table of Contents** 
 
 - [Getting Started](#️-getting-started)
 - [Contributing](#️-contributing)
 - [Development Guidelines](#️-development-guidelines)
 - [Quick Tips](#️-quick-tips)
 
-## Getting Started
+## Getting Started 
 
 ### Prerequisites
 
 1. Install **Node.js** and **npm**: [Download here](https://nodejs.org/en/download).
 
-### Local setup
+### Local setup 
 
-1. Clone the repository:
-   ```bash
+1. Clone the repository: 
+   ```bash 
    git clone https://github.com/hack4impact-uiuc/code-your-dreams.git
    cd code-your-dreams
    ```
