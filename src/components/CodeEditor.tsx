@@ -18,7 +18,7 @@ interface CodeEditorProps {
 }
 
 export default function CodeEditor({ value, onChange }: CodeEditorProps) {
-  const [currentCode, setCurrentCode] = useState('');
+  const [currentCode, setCurrentCode] = useState(value ?? '');
   const [savedCode, setSavedCode] = useState('');
   const [language, setLanguage] = useState('javascript');
   const [output, setOutput] = useState<string | null>(null);
@@ -68,6 +68,12 @@ export default function CodeEditor({ value, onChange }: CodeEditorProps) {
         return javascript({ jsx: true });
     }
   };
+
+  useEffect(() => {
+    if (value !== undefined) {
+      setCurrentCode(value);
+    }
+  }, [value]);
 
   useEffect(() => {
     const initPyodide = async () => {
@@ -220,7 +226,8 @@ export default function CodeEditor({ value, onChange }: CodeEditorProps) {
           theme={customTheme}
           extensions={[getLanguageExtension(language)]}
           onChange={val => {
-            onChange ? onChange(val) : setCurrentCode(val);
+            setCurrentCode(val);
+            onChange?.(val);
           }}
         />
       </Box>
