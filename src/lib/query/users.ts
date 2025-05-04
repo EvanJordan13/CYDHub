@@ -33,7 +33,7 @@ export async function fetchCompletedAssignments(userId: number) {
     include: {
       submissions: {
         include: {
-          assignment: true, 
+          assignment: true,
         },
       },
     },
@@ -43,9 +43,7 @@ export async function fetchCompletedAssignments(userId: number) {
     throw new Error(`No user found with ID ${userId}`);
   }
 
-  const completedAssignments = userWithSubmissions.submissions.map(
-    (submission) => submission.assignment
-  );
+  const completedAssignments = userWithSubmissions.submissions.map(submission => submission.assignment);
 
   return completedAssignments;
 }
