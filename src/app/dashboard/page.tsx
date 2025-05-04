@@ -14,6 +14,7 @@ import SideBar from '@/src/components/dashboard/SideBar';
 import { Tab } from '@/src/components/dashboard/types';
 import MoodModal from '@/src/components/MoodModal';
 import TodoSection from '@/src/components/dashboard/sections/TodoSection';
+import SettingsSection from '@/src/components/dashboard/sections/SettingsSection';
 import ArchivedPage from '@/src/components/dashboard/sections/Archived';
 import { useSearchParams, useRouter } from 'next/navigation';
 import PlaygroundSection from '@/src/components/dashboard/sections/PlaygroundSection';
@@ -105,11 +106,7 @@ function DashboardClient() {
         </Heading>
       ),
       archived: <ArchivedPage userInfo={dbUser} archivedPrograms={archivedPrograms} isLoading={isLoadingPageData} />,
-      settings: (
-        <Heading fontSize="40px" fontWeight={700} p="32px 48px 16px 48px" lineHeight={'48px'}>
-          Settings Under Construction!
-        </Heading>
-      ),
+      settings: <SettingsSection userInfo={dbUser} />,
     }),
     [dbUser, assignments, programs, archivedPrograms, isLoadingPageData],
   );
