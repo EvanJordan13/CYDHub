@@ -4,6 +4,8 @@ import Button from './Button';
 import { useRouter } from 'next/navigation';
 
 interface AssignmentDetailProps {
+  programId: number;
+  assignmentId: number;
   assignmentNumber: number | null;
   assignmentTitle: string;
   dueDate: Date | null;
@@ -36,6 +38,8 @@ const formatDate = (date: Date) => {
 };
 
 export default function AssignmentDetail({
+  programId,
+  assignmentId,
   assignmentNumber,
   assignmentTitle,
   dueDate,
@@ -45,7 +49,7 @@ export default function AssignmentDetail({
 }: AssignmentDetailProps) {
   const router = useRouter();
   const handleAssignmentClick = () => {
-    router.push(`/programs/5/assignments/11/questions/1`);
+    router.push(`/programs/${programId}/assignments/${assignmentId}/questions/0`);
   };
   return (
     <Box position={'relative'} mt={6}>
@@ -54,6 +58,7 @@ export default function AssignmentDetail({
           type={'secondary'}
           pageColor={'aqua'}
           text={'Start Assignment'}
+          textSize="16px"
           height={'12'}
           width={'44'}
           onClick={handleAssignmentClick}

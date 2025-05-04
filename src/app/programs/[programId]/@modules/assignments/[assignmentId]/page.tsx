@@ -51,6 +51,8 @@ export default function AssignmentPage() {
   ) : (
     assignment && (
       <AssignmentDetail
+        programId={Number(programId)}
+        assignmentId={assignmentId}
         assignmentNumber={assignment.assignmentNumber}
         assignmentTitle={assignment.title}
         dueDate={assignment.dueDate}
