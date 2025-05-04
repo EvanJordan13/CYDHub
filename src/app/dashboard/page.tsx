@@ -4,7 +4,11 @@ import { useState, useEffect, Suspense } from 'react';
 
 import { getUserById } from '@/src/lib/query/users';
 import { User, Assignment, Program, Announcement, ModuleMaterial } from '@prisma/client';
-import { fetchProgramsByUser, fetchProgramAssignmentsByUser, fetchProgramMaterialsByUser } from '@/src/lib/query/programs';
+import {
+  fetchProgramsByUser,
+  fetchProgramAssignmentsByUser,
+  fetchProgramMaterialsByUser,
+} from '@/src/lib/query/programs';
 
 import { Flex, Box, Heading } from '@chakra-ui/react';
 import HomeSection from '@/src/components/dashboard/sections/HomeSection';

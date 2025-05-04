@@ -43,17 +43,17 @@ export default function ArchivedPage({ userInfo, archivedPrograms, isLoading }: 
             <Wrap gap={4} justify="flex-start">
               {isLoading
                 ? [...Array(3)].map((_, i) => (
-                  <WrapItem key={i}>
-                    <ProgramCardSkeleton />
-                  </WrapItem>
-                ))
+                    <WrapItem key={i}>
+                      <ProgramCardSkeleton />
+                    </WrapItem>
+                  ))
                 : archivedPrograms.map(program => (
-                  <WrapItem key={program.id}>
-                    <Link href={`/programs/${program.id}`} style={{ textDecoration: 'none' }}>
-                      <ProgramCard program={program} />
-                    </Link>
-                  </WrapItem>
-                ))}
+                    <WrapItem key={program.id}>
+                      <Link href={`/programs/${program.id}`} style={{ textDecoration: 'none' }}>
+                        <ProgramCard program={program} />
+                      </Link>
+                    </WrapItem>
+                  ))}
             </Wrap>
           </VStack>
         ) : (

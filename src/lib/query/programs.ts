@@ -248,7 +248,9 @@ export async function getArchivedProgramsByUserId(userId: number): Promise<Progr
   }
 }
 
-export async function fetchProgramMaterialsByUser(userId: number): Promise<(ModuleMaterial & { moduleTitle: string })[]> {
+export async function fetchProgramMaterialsByUser(
+  userId: number,
+): Promise<(ModuleMaterial & { moduleTitle: string })[]> {
   console.log('fetchProgramMaterialsByUser called');
   try {
     const programs = await getProgramsByUser(userId);

@@ -26,7 +26,6 @@ export default function HomeSection({ userInfo, assignments, programs, isLoading
         <Skeleton width="calc(100% - 96px)" height="60px" m="32px 48px 16px 48px" />
       ) : (
         <Header userInfo={userInfo}></Header>
-
       )}
       <Flex flexDirection={'column'} gap={'20px'} p="20px 48px" mt="16px">
         <Heading fontSize="28px" fontWeight={700}>
@@ -47,10 +46,10 @@ export default function HomeSection({ userInfo, assignments, programs, isLoading
           {isLoading
             ? [...Array(2)].map((_, index) => <Skeleton key={index} width="420px" height="136px" />)
             : programs.map(program => (
-              <Link key={program.id} href={`/programs/${program.id}`} passHref style={{ textDecoration: 'none' }}>
-                <ProgramCard program={program} />
-              </Link>
-            ))}
+                <Link key={program.id} href={`/programs/${program.id}`} passHref style={{ textDecoration: 'none' }}>
+                  <ProgramCard program={program} />
+                </Link>
+              ))}
         </Flex>
       </Box>
       {!isLoading && (
