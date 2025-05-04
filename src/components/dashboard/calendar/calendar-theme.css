@@ -1,0 +1,97 @@
+:root {
+  --border-style: 1px solid #d5d5d5;
+}
+
+.rbc-month-view,
+.rbc-header {
+  border: none !important;
+}
+
+.rbc-header {
+  border-bottom: var(--border-style) !important;
+  padding: 0px 0px 20px 0px;
+  font-weight: 500;
+  font-size: 16px;
+}
+
+.rbc-month-row:not(:first-of-type) {
+  border-left: var(--border-style) !important;
+  border-right: var(--border-style) !important;
+}
+
+.rbc-month-view .rbc-month-row:last-of-type {
+  border-bottom: var(--border-style) !important;
+}
+
+.rbc-month-row + .rbc-month-row {
+  border-top: var(--border-style) !important;
+}
+
+.rbc-day-bg + .rbc-day-bg {
+  border-left: var(--border-style) !important;
+}
+
+.rbc-rtl .rbc-day-bg + .rbc-day-bg {
+  border-left-width: 0 !important;
+  border-right: var(--border-style) !important;
+}
+
+.rbc-overlay {
+  border: var(--border-style) !important;
+}
+
+.rbc-overlay-header {
+  border-bottom: var(--border-style) !important;
+}
+
+.rbc-date-cell {
+  padding: 10px 10px;
+}
+
+.rbc-today {
+  background-color: transparent;
+}
+
+.rbc-date-cell.rbc-now > button {
+  display: inline-block;
+  width: 35px;
+  height: 35px;
+  line-height: 35px;
+  text-align: center;
+  border-radius: 50%;
+  font-weight: bold;
+  color: white;
+  background: #4d80bb;
+}
+
+.rbc-off-range-bg {
+  background-color: transparent;
+}
+
+.rbc-event-material {
+  background-color: #bbd0e5 !important;
+  color: black !important;
+  margin-left: -1px;
+  border-left: 4px solid #4d80bb !important;
+  border-top-right-radius: 4px !important;
+  border-bottom-right-radius: 4px !important;
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+  padding-left: 8px;
+  width: 90%;
+  margin-bottom: 8px;
+}
+
+.rbc-event-assignment {
+  background-color: #e3b9c6 !important;
+  color: black !important;
+  margin-left: -1px;
+  border-left: 4px solid #bc3860 !important;
+  border-top-right-radius: 4px !important;
+  border-bottom-right-radius: 4px !important;
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+  padding-left: 8px;
+  width: 90%;
+  margin-bottom: 8px;
+}

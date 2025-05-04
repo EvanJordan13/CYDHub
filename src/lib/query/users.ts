@@ -44,6 +44,29 @@ export async function getUserNameById(userId: number): Promise<string> {
   return user.name;
 }
 
+export async function fetchCompletedAssignments(userId: number) {
+  const userWithSubmissions = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+    include: {
+      submissions: {
+        include: {
+          assignment: true,
+        },
+      },
+    },
+  });
+
+  if (!userWithSubmissions) {
+    throw new Error(`No user found with ID ${userId}`);
+  }
+
+  const completedAssignments = userWithSubmissions.submissions.map(submission => submission.assignment);
+
+  return completedAssignments;
+}
+
 export async function storeUserSurveyResponse(userId: number, surveyResponse: SurveyResponse) {
   if (userId === null) {
     throw new Error(`ID provided is null`);
