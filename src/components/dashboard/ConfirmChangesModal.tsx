@@ -128,6 +128,7 @@ export default function ConfirmChangesModal({
                   width={'100%'}
                   justifyContent={'space-between'}
                   alignItems={'center'}
+                  key={change.field}
                 >
                   <Flex flexDirection={'column'} gap={'4px'} flex={1}>
                     <Text fontSize={'16px'} fontWeight={'500'}>
