@@ -169,6 +169,7 @@ export default function ConfirmChangesModal({
                 type={'secondary'}
                 pageColor={'aqua'}
                 text={'Go Back'}
+                textSize={'16px'}
                 height={''}
                 width={''}
               />
@@ -177,6 +178,7 @@ export default function ConfirmChangesModal({
                 type={isSaving ? 'disabled' : 'primary'}
                 pageColor={'aqua'}
                 text={isSaving ? 'Saving Changes...' : 'Confirm Change'}
+                textSize={'16px'}
                 height={''}
                 width={''}
               />
