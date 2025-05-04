@@ -3,7 +3,11 @@
 import { useState, useEffect, Suspense, useMemo } from 'react';
 import { useDbSession } from '@/src/hooks/useDbSession';
 import { Assignment, Program, ModuleMaterial } from '@prisma/client';
-import { fetchProgramsByUser, fetchProgramAssignmentsByUser, fetchProgramMaterialsByUser } from '@/src/lib/query/programs';
+import {
+  fetchProgramsByUser,
+  fetchProgramAssignmentsByUser,
+  fetchProgramMaterialsByUser,
+} from '@/src/lib/query/programs';
 import { Flex, Box, Heading, Center, Spinner, Text, Skeleton } from '@chakra-ui/react';
 import HomeSection from '@/src/components/dashboard/sections/HomeSection';
 import SideBar from '@/src/components/dashboard/SideBar';
@@ -94,9 +98,7 @@ function DashboardClient() {
       ),
       todo: <TodoSection assignments={assignments} userInfo={dbUser} />,
       editor: <PlaygroundSection points={dbUser?.points || 0} />,
-      calendar: (
-        <CalendarSection assignments={assignments} materials={materials} userInfo={dbUser} />
-      ),
+      calendar: <CalendarSection assignments={assignments} materials={materials} userInfo={dbUser} />,
       shop: (
         <Heading fontSize="40px" fontWeight={700} p="32px 48px 16px 48px" lineHeight={'48px'}>
           Shop Under Construction!
