@@ -76,6 +76,3 @@ export async function updateUser(userId: number, data: { name?: string; pronouns
 
   return user;
 }
-
-
-
