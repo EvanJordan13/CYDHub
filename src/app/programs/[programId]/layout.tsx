@@ -8,6 +8,7 @@ import { Announcement, Program, User } from '@prisma/client';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Tab } from '@/src/components/dashboard/types';
+import FeedbackForm from '@/src/components/FeedbackForm';
 import AuthWrapper from '@/src/components/AuthWrapper';
 
 const ProgramPageSkeleton = () => (
@@ -172,9 +173,7 @@ export default function ProgramLayout({
                 </Tabs.Content>
 
                 <Tabs.Content value="feedback">
-                  <Heading fontSize="40px" fontWeight={700} p="32px 48px 16px 48px" lineHeight={'48px'}>
-                    Feedback Under Construction!
-                  </Heading>
+                  <FeedbackForm programId={programId} userId={1} points={52} />
                 </Tabs.Content>
               </Tabs.Root>
             </Box>

@@ -1,15 +1,16 @@
 'use client';
 
 import { useState } from 'react';
-import { Input, Flex, Box, Field } from '@chakra-ui/react';
+import { Input, Flex, Box, Field, Textarea } from '@chakra-ui/react';
 
 interface TextInputProps {
   label: string;
   icon: React.ReactNode;
   value?: string;
-  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange?: (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
   disabled?: boolean;
   height?: string;
+  wrap?: boolean;
   invalidFunction?: () => boolean;
 }
 
@@ -21,6 +22,8 @@ export default function TextInput({
   disabled = false,
   height = '12px',
   invalidFunction = () => !value || value.trim() === '',
+  wrap = false,
+  ...props
 }: TextInputProps) {
   const [hasBeenTouched, setHasBeenTouched] = useState(false);
   const isInvalid = hasBeenTouched && invalidFunction();
@@ -33,30 +36,55 @@ export default function TextInput({
         borderColor={isInvalid ? 'red' : disabled || !hasBeenTouched ? '#AAAAAA' : 'Aqua'}
         borderRadius="md"
         width="100%"
-        height={height}
+        minH={height}
         _hover={{ background: disabled ? '' : '#E0EEFF' }}
         bgColor={disabled ? '#F0EFEF' : ''}
       >
-        <Box color="#AAAAAA" ml="4%" transform="scale(1.2)" bgColor={disabled ? '#F0EFEF' : ''}>
-          {icon}
-        </Box>
+        {icon ? (
+          <Box color="#AAAAAA" ml="4%" transform="scale(1.2)" bgColor={disabled ? '#F0EFEF' : ''}>
+            {icon}
+          </Box>
+        ) : null}
 
-        <Input
-          variant="flushed"
-          ml={3}
-          placeholder={label}
-          _placeholder={{ color: '#AAAAAA' }}
-          aria-label={label}
-          color="black"
-          borderColor="transparent"
-          _focus={{ boxShadow: 'none', borderColor: 'transparent' }}
-          onChange={onChange}
-          value={value}
-          onBlur={() => setHasBeenTouched(true)}
-          fontSize="1.1vw"
-          fontWeight={500}
-          disabled={disabled}
-        />
+        {wrap ? (
+          <Textarea
+            variant="flushed"
+            ml={icon ? 3 : 5}
+            placeholder={label}
+            _placeholder={{ color: '#AAAAAA' }}
+            aria-label={label}
+            color="black"
+            borderColor="transparent"
+            _focus={{ boxShadow: 'none', borderColor: 'transparent' }}
+            onChange={onChange}
+            value={value}
+            onBlur={() => setHasBeenTouched(true)}
+            fontSize="sm%"
+            fontWeight={500}
+            disabled={disabled}
+            autoresize
+            maxH="5lh"
+            {...props}
+          />
+        ) : (
+          <Input
+            variant="flushed"
+            ml={icon ? 3 : 5}
+            placeholder={label}
+            _placeholder={{ color: '#AAAAAA' }}
+            aria-label={label}
+            color="black"
+            borderColor="transparent"
+            _focus={{ boxShadow: 'none', borderColor: 'transparent' }}
+            onChange={onChange}
+            value={value}
+            onBlur={() => setHasBeenTouched(true)}
+            fontSize="sm%"
+            fontWeight={500}
+            disabled={disabled}
+            {...props}
+          />
+        )}
       </Flex>
     </Field.Root>
   );
