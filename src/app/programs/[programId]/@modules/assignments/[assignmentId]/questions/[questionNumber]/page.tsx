@@ -49,17 +49,26 @@ export default function QuestionPage() {
   }, [assignmentIdNumber]);
 
   useEffect(() => {
-    async function fetchData() {
-      const a = await getAssignmentById(assignmentIdNumber);
+    if (!user) return;
+    setIsLoading(true);
+    (async () => {
+      // 1) fetch the assignment meta
+      const assignment = await getAssignmentById(assignmentIdNumber);
+      setProgramAssignment(assignment as Assignment);
+
+      // 2) fetch questions + any existing submission answers
       const qs = await getAssignmentByIdQuestions(assignmentIdNumber, user?.id as number);
-      setProgramAssignment(a as Assignment);
       setAssignmentQuestions(qs as AssignmentQuestion[]);
-      const existing = qs?.[questionIdx]?.existingAnswer;
-      if (existing) setAnswerText(existing.answerText || '');
+      setAssignmentQuestionsLength(qs.length);
+
+      // 3) prefill answerText (or clear it if none)
+      const existing = qs[questionIdx]?.existingAnswer;
+      console.log({ existing });
+      setAnswerText(existing?.answerText ?? '');
+
       setIsLoading(false);
-    }
-    fetchData();
-  }, [assignmentIdNumber, questionIdx]);
+    })();
+  }, [assignmentIdNumber, questionIdx, user]);
 
   const handleExitClick = () => {
     router.push(`/programs/${programIdNumber}`);

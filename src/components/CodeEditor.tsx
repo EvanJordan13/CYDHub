@@ -20,7 +20,7 @@ interface CodeEditorProps {
 export default function CodeEditor({ value, onChange }: CodeEditorProps) {
   const [currentCode, setCurrentCode] = useState(value ?? '');
   const [savedCode, setSavedCode] = useState('');
-  const [language, setLanguage] = useState('javascript');
+  const [language, setLanguage] = useState('python');
   const [output, setOutput] = useState<string | null>(null);
   const [pyodide, setPyodide] = useState<PyodideInterface | null>(null);
   const [pyodideLoading, setPyodideLoading] = useState(false);
@@ -65,7 +65,7 @@ export default function CodeEditor({ value, onChange }: CodeEditorProps) {
       case 'css':
         return css();
       default:
-        return javascript({ jsx: true });
+        return python();
     }
   };
 
@@ -164,7 +164,7 @@ export default function CodeEditor({ value, onChange }: CodeEditorProps) {
           <Select.HiddenSelect />
           <Select.Control bg="Aqua" color="white" borderRadius="md" _hover={{ bg: '#3d5aa9' }}>
             <Select.Trigger px={4} py={2}>
-              <Select.ValueText color="white" placeholder="JavaScript" />
+              <Select.ValueText color="white" placeholder="Python" />
             </Select.Trigger>
             <Select.IndicatorGroup>
               <Select.Indicator color="white" />
