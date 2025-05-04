@@ -9,7 +9,7 @@ interface TextInputProps {
   value?: string;
   onChange?: (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
   disabled?: boolean;
-  height?: number;
+  height?: string | number;
   wrap?: boolean;
   invalidFunction?: () => boolean;
 }
@@ -20,7 +20,7 @@ export default function TextInput({
   value,
   onChange,
   disabled = false,
-  height = 12,
+  height = '12px',
   invalidFunction = () => !value || value.trim() === '',
   wrap = false,
   ...props

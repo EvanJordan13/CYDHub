@@ -10,7 +10,7 @@ interface MaterialDetailProps {
   materialType: string;
   fileName: string | null;
   fileUrl: string | null;
-  onBackClick: () => void;
+  onBackClick?: () => void;
 }
 
 export default function MaterialDetail({
@@ -30,6 +30,7 @@ export default function MaterialDetail({
           type={'secondary'}
           pageColor={'aqua'}
           text={clicked ? 'Viewed' : 'Not Viewed'}
+          textSize="16px"
           icon={clicked ? <Eye /> : <EyeOff />}
           disableHover={true}
           height={'12'}
