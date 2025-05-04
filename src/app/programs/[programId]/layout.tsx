@@ -93,6 +93,13 @@ export default function ProgramLayout({
   return (
     <AuthWrapper>
       <Box display={'flex'} minH={'100vh'} backgroundColor={'white'} color={'black'}>
+        <style jsx global>{`
+          [data-orientation='horizontal'][aria-selected='true'] {
+            --indicator-color-fallback: transparent !important;
+            --indicator-color: transparent !important;
+            --indicator-offset-y: 0px !important;
+          }
+        `}</style>
         <SideBar currentTab="home" onTabChange={handleTabChange} />
         {isInitialLoading ? (
           <ProgramPageSkeleton />
@@ -116,22 +123,118 @@ export default function ProgramLayout({
 
             <Box marginTop={5} width={'96.5%'}>
               <Tabs.Root defaultValue="modules">
-                <Tabs.List>
+                <Tabs.List
+                  borderBottom="none"
+                  style={
+                    {
+                      '--indicator-color-fallback': 'transparent',
+                      '--indicator-color': 'transparent',
+                      '--indicator-offset-y': '0px',
+                    } as React.CSSProperties
+                  }
+                >
                   <Tabs.Trigger
                     value="modules"
-                    _selected={{ color: 'Aqua', fontWeight: '700', borderBottom: '4px solid #4D80BB' }}
+                    _selected={{
+                      color: 'Aqua',
+                      fontWeight: '700',
+                      position: 'relative',
+                      _after: {
+                        content: '""',
+                        position: 'absolute',
+                        bottom: '0',
+                        left: '0',
+                        width: '100%',
+                        height: '3px',
+                        backgroundColor: '#4D80BB',
+                        transition: 'width 0.3s ease-in-out',
+                      },
+                    }}
+                    position="relative"
+                    _after={{
+                      content: '""',
+                      position: 'absolute',
+                      bottom: '0',
+                      left: '0',
+                      width: '0%',
+                      height: '3px',
+                      backgroundColor: '#4D80BB',
+                      transition: 'width 0.3s ease-in-out',
+                    }}
+                    borderBottom="none"
+                    boxShadow="none"
+                    outline="none"
+                    _focus={{ outline: 'none' }}
                   >
                     <Text>Modules</Text>
                   </Tabs.Trigger>
                   <Tabs.Trigger
                     value="announcements"
-                    _selected={{ color: 'Aqua', fontWeight: '700', borderBottom: '4px solid #4D80BB' }}
+                    _selected={{
+                      color: 'Aqua',
+                      fontWeight: '700',
+                      position: 'relative',
+                      _after: {
+                        content: '""',
+                        position: 'absolute',
+                        bottom: '0',
+                        left: '0',
+                        width: '100%',
+                        height: '3px',
+                        backgroundColor: '#4D80BB',
+                        transition: 'width 0.3s ease-in-out',
+                      },
+                    }}
+                    position="relative"
+                    _after={{
+                      content: '""',
+                      position: 'absolute',
+                      bottom: '0',
+                      left: '0',
+                      width: '0%',
+                      height: '3px',
+                      backgroundColor: '#4D80BB',
+                      transition: 'width 0.3s ease-in-out',
+                    }}
+                    borderBottom="none"
+                    boxShadow="none"
+                    outline="none"
+                    _focus={{ outline: 'none' }}
                   >
                     <Text>Announcements</Text>
                   </Tabs.Trigger>
                   <Tabs.Trigger
                     value="feedback"
-                    _selected={{ color: 'Aqua', fontWeight: '700', borderBottom: '4px solid #4D80BB' }}
+                    _selected={{
+                      color: 'Aqua',
+                      fontWeight: '700',
+                      position: 'relative',
+                      _after: {
+                        content: '""',
+                        position: 'absolute',
+                        bottom: '0',
+                        left: '0',
+                        width: '100%',
+                        height: '3px',
+                        backgroundColor: '#4D80BB',
+                        transition: 'width 0.3s ease-in-out',
+                      },
+                    }}
+                    position="relative"
+                    _after={{
+                      content: '""',
+                      position: 'absolute',
+                      bottom: '0',
+                      left: '0',
+                      width: '0%',
+                      height: '3px',
+                      backgroundColor: '#4D80BB',
+                      transition: 'width 0.3s ease-in-out',
+                    }}
+                    borderBottom="none"
+                    boxShadow="none"
+                    outline="none"
+                    _focus={{ outline: 'none' }}
                   >
                     <Text>Feedback</Text>
                   </Tabs.Trigger>
