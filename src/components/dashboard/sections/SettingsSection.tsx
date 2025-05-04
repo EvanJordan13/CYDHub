@@ -9,7 +9,6 @@ import DropDownInput from '@/src/components/DropDownInput';
 import ConfirmChangesModal from '@/src/components/dashboard/ConfirmChangesModal';
 import { User as UserIcon, Mail, Lock, Link } from 'lucide-react';
 import AnimatedLink from '../../AnimatedLink';
-import { useUser } from '@auth0/nextjs-auth0/client';
 
 interface SettingsSectionProps {
   userInfo: User | null;
@@ -19,12 +18,11 @@ interface SettingsSectionProps {
 const pronounOptions = ['He/Him', 'She/Her', 'They/Them', 'Prefer not to answer'];
 
 export default function SettingsSection({ userInfo, onUserUpdate }: SettingsSectionProps) {
-  const { user } = useUser();
   const [isEditing, setIsEditing] = useState(false);
   const [isConfirmChangesModalOpen, setIsConfirmChangesModalOpen] = useState(false);
   const [resetPasswordMessage, setResetPasswordMessage] = useState<string | null>(null);
 
-  const [name, setName] = useState(user?.nickname || '');
+  const [name, setName] = useState(userInfo?.name || '');
   const [pronouns, setPronouns] = useState(
     userInfo?.pronouns && pronounOptions.includes(userInfo.pronouns) ? userInfo.pronouns : '',
   );
@@ -174,7 +172,7 @@ export default function SettingsSection({ userInfo, onUserUpdate }: SettingsSect
               label="Input"
               icon={<UserIcon />}
               disabled={!isEditing}
-              value={name}
+              value={userInfo?.name || ''}
               onChange={e => setName(e.target.value)}
             />
           </Box>
@@ -188,11 +186,12 @@ export default function SettingsSection({ userInfo, onUserUpdate }: SettingsSect
             <Box width="100%" mb={6}>
               <DropDownInput
                 labelText="Pronouns"
+                size="18px"
                 helperText="Pronouns"
                 options={pronounOptions}
                 isRequired={true}
                 disabled={!isEditing}
-                value={pronouns}
+                value={userInfo?.pronouns}
                 onChange={value => setPronouns(value)}
               />
             </Box>

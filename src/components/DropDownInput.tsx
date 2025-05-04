@@ -13,6 +13,7 @@ interface DropDownInputProps {
   height?: string | number;
   disabled?: boolean;
   value?: string | null;
+  size?: string;
   onChange?: (value: string) => void;
 }
 
@@ -25,6 +26,7 @@ const DropDownInput: React.FC<DropDownInputProps> = ({
   disabled = false,
   height = 12,
   value,
+  size,
   onChange,
   ...rest
 }) => {
@@ -47,7 +49,7 @@ const DropDownInput: React.FC<DropDownInputProps> = ({
     <Field.Root required>
       <Box width="100%" height={height} {...rest}>
         {labelText && (
-          <Text mb={2} fontSize=".97vw" fontWeight={'medium'} color={'black'}>
+          <Text mb={2} fontSize={size || '.97vw'} fontWeight={'medium'} color={'black'}>
             {labelText}
             {isRequired && (
               <Text as="span" color="red.500">
@@ -84,7 +86,11 @@ const DropDownInput: React.FC<DropDownInputProps> = ({
               _disabled={{ opacity: 1 }}
             >
               <Flex justify="space-between" align="center" width="100%">
-                <Text color={selectedOption ? 'black' : '#AAAAAA'} fontWeight={500} fontSize={'clamp(16px,.97vw,40px)'}>
+                <Text
+                  color={selectedOption ? 'black' : '#AAAAAA'}
+                  fontWeight={500}
+                  fontSize={size || 'clamp(16px,.97vw,40px)'}
+                >
                   {selectedOption || helperText}
                 </Text>
                 {showIcon && <ChevronDown color="#AAAAAA" />}
