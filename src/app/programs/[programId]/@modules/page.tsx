@@ -6,6 +6,7 @@ import { Text, Skeleton, Stack, SkeletonText, Box } from '@chakra-ui/react';
 import Module from '@/src/components/Module';
 import { getProgramModules } from '@/src/lib/query/programs';
 import { ModuleMaterial, Assignment, Module as Mod } from '@prisma/client';
+import { useModuleView } from '../layout';
 
 type ModuleWithRelations = Mod & {
   materials: ModuleMaterial[];
@@ -15,6 +16,8 @@ type ModuleWithRelations = Mod & {
 type ResourceItem = { type: 'assignment'; data: Assignment } | { type: 'material'; data: ModuleMaterial };
 
 export default function ModulesPage() {
+  const { showAssignments, showMaterials } = useModuleView();
+
   const router = useRouter();
   const params = useParams();
   const programId = Number(params?.programId);
@@ -47,6 +50,16 @@ export default function ModulesPage() {
     }
   }, [programId]);
 
+  const filteredModules = programModules.map(module => ({
+    ...module,
+    materials: showMaterials ? module.materials : [],
+    assignments: showAssignments ? module.assignments : []
+  })).filter(module =>
+    (showAssignments && module.assignments.length > 0) ||
+    (showMaterials && module.materials.length > 0)
+  );
+
+
   return isLoadingModules ? (
     <Stack gap={6}>
       {[...Array(3)].map((_, i) => (
@@ -56,8 +69,8 @@ export default function ModulesPage() {
         </Box>
       ))}
     </Stack>
-  ) : programModules.length > 0 ? (
-    programModules.map((module, index) => (
+  ) : filteredModules.length > 0 ? (
+    filteredModules.map((module, index) => (
       <Module
         key={index}
         title={module.title}
@@ -67,6 +80,6 @@ export default function ModulesPage() {
       />
     ))
   ) : (
-    <Text mt={4}>No modules found.</Text>
+    <Text mt={4}>No {(showAssignments && showMaterials) ? 'Modules' : (showAssignments) ? 'Assignments' : 'Materials'} found.</Text>
   );
 }
