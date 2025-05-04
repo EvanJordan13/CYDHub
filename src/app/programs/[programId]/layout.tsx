@@ -10,9 +10,10 @@ import { useRouter } from 'next/navigation';
 import { Tab } from '@/src/components/dashboard/types';
 import FeedbackForm from '@/src/components/FeedbackForm';
 import AuthWrapper from '@/src/components/AuthWrapper';
+import { useDbSession } from '@/src/hooks/useDbSession';
 
 const ProgramPageSkeleton = () => (
-  <Box marginY={6} marginLeft={250} style={{ flexBasis: '80%' }} paddingX={4}>
+  <Box marginY={6} marginLeft={250} style={{ flexBasis: '80%' }} paddingX={4} mt={10}>
     <Flex height={'35px'} justifyContent={'space-between'} alignItems="center" mb={5}>
       <Skeleton height="35px" width="clamp(200px, 30%, 400px)" />
       <Skeleton height="35px" width="80px" />
@@ -37,6 +38,7 @@ export default function ProgramLayout({
   params: { programId: number };
 }) {
   const programId = Number(params.programId);
+  const { dbUser } = useDbSession();
   const [isLoadingAnnouncements, setIsLoadingAnnouncements] = useState(true);
   const [programAnnouncements, setProgramAnnouncements] = useState<Announcement[]>([]);
   const [program, setProgram] = useState<Program | undefined>();
@@ -109,7 +111,7 @@ export default function ProgramLayout({
               <Box display={'flex'} alignItems={'center'} gap={2}>
                 <Image width={'19px'} height={'28px'} src={'/streak-card-icon.svg'} alt="Streak Icon" />
                 <Text color={'#FFCE29'} fontWeight={'bold'} fontSize={30} marginRight={10}>
-                  ?
+                  {dbUser?.points}
                 </Text>
               </Box>
             </Box>
