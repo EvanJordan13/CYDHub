@@ -45,7 +45,7 @@ export default function AssignmentDetail({
 }: AssignmentDetailProps) {
   const router = useRouter();
   const handleAssignmentClick = () => {
-    router.push('/programs/1/assignments/1/questions/1');
+    router.push(`/programs/5/assignments/11/questions/1`);
   };
   return (
     <Box position={'relative'} mt={6}>

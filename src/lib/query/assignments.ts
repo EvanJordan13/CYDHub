@@ -24,11 +24,7 @@ export async function getAssignmentById(
   return assignment;
 }
 
-export async function getAssignmentByIdQuestionsAndSubmissions(assignmentId: number): Promise<
-  Assignment & {
-    questions: (AssignmentQuestion & { SubmissionAnswer: SubmissionAnswer[] })[];
-  }
-> {
+export async function getAssignmentByIdQuestionsAndSubmissions(assignmentId: number): Promise<AssignmentQuestion[]> {
   const assignment = await prisma.assignment.findUnique({
     where: { id: assignmentId },
     include: {
@@ -40,5 +36,5 @@ export async function getAssignmentByIdQuestionsAndSubmissions(assignmentId: num
     },
   });
   if (!assignment) throw new Error('Not found');
-  return assignment;
+  return assignment.questions;
 }
