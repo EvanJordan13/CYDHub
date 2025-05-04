@@ -102,7 +102,7 @@ export default function ProgramLayout({
           </Box>
         ) : (
           <Box marginY={6} marginLeft={250} style={{ flexBasis: '80%' }}>
-            <Box display={'flex'} height={'28px'} justifyContent={'space-between'} alignItems="center">
+            <Box display={'flex'} height={'28px'} justifyContent={'space-between'} alignItems="center" mt={10} mb={8}>
               <Heading fontSize={35} fontWeight={'bold'} color={'Aqua'}>
                 {program.name}
               </Heading>
