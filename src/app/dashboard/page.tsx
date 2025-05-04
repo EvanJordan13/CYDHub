@@ -130,7 +130,7 @@ function DashboardClient() {
         isLoading={isLoadingUser || isLoadingAssignments || isLoadingPrograms}
       />
     ),
-    todo: <TodoSection assignments={assignments} points={userInfo?.points || 0} />,
+    todo: <TodoSection assignments={assignments} userInfo={userInfo} />,
     editor: (
       <>
         <Heading fontSize="40px" fontWeight={700} p="32px 48px 16px 48px" lineHeight={'48px'}>
