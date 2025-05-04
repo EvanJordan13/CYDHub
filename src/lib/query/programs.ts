@@ -242,3 +242,17 @@ export async function getArchivedProgramsByUserId(userId: number): Promise<Progr
     return [];
   }
 }
+
+export async function fetchProgramMaterialsByUser(
+  userId: number,
+): Promise<(ModuleMaterial & { moduleTitle: string })[]> {
+  console.log('fetchProgramMaterialsByUser called');
+  try {
+    const programs = await getProgramsByUser(userId);
+    const materials = await Promise.all(programs.map(program => fetchProgramMaterials(program.id)));
+    return materials.flat();
+  } catch (error) {
+    console.error('[FETCH_PROGRAM_MATERIALS_BY_USER]', error);
+    throw error;
+  }
+}

@@ -7,8 +7,8 @@ import StreakCard from '@/src/components/StreakCard';
 import TodoCard from '@/src/components/dashboard/TodoCard';
 import ProgramCard from '@/src/components/ProgramCard';
 import Link from 'next/link';
-import Image from 'next/image';
 import DreamBuddy from '@/src/components/dreambuddy/DreamBuddy';
+import Header from '../Header';
 
 interface HomeSectionProps {
   userInfo: User | null;
@@ -25,17 +25,7 @@ export default function HomeSection({ userInfo, assignments, programs, isLoading
       {isLoading ? (
         <Skeleton width="calc(100% - 96px)" height="60px" m="32px 48px 16px 48px" />
       ) : (
-        <Flex flexDirection={'row'} justifyContent={'space-between'} p="32px 48px 16px 48px">
-          <Heading fontSize="40px" fontWeight={700} lineHeight={'48px'}>
-            Welcome, {userInfo?.name}
-          </Heading>
-          <Flex flexDirection={'row'} gap={'8px'} alignItems={'center'}>
-            <Image src="/streak-card-icon.svg" alt="streak" width={19} height={28} />
-            <Text fontSize={'32px'} fontWeight={700} lineHeight={'normal'} color={'#FFCE29'}>
-              {userInfo?.points}
-            </Text>
-          </Flex>
-        </Flex>
+        <Header userInfo={userInfo}></Header>
       )}
       <Flex flexDirection={'column'} gap={'20px'} p="20px 48px" mt="16px">
         <Heading fontSize="28px" fontWeight={700}>
