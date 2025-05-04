@@ -34,7 +34,7 @@ export async function getUserNameById(userId: number): Promise<string> {
   }
 
   const user = await getUserById(userId);
-  
+
   if (!user) {
     throw new Error(`No user found with ID ${userId}`);
   }
@@ -43,7 +43,7 @@ export async function getUserNameById(userId: number): Promise<string> {
   }
   return user.name;
 }
-  
+
 export async function fetchCompletedAssignments(userId: number) {
   const userWithSubmissions = await prisma.user.findUnique({
     where: {
@@ -66,7 +66,7 @@ export async function fetchCompletedAssignments(userId: number) {
 
   return completedAssignments;
 }
-  
+
 export async function storeUserSurveyResponse(userId: number, surveyResponse: SurveyResponse) {
   if (userId === null) {
     throw new Error(`ID provided is null`);
