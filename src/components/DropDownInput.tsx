@@ -10,7 +10,7 @@ interface DropDownInputProps {
   options: string[];
   showIcon?: boolean;
   isRequired?: boolean;
-  height?: string;
+  height?: string | number;
   value?: string | null;
   onChange?: (value: string) => void;
 }

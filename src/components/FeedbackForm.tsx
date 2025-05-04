@@ -113,7 +113,15 @@ export default function FeedbackForm({
           ))}
         </Flex>
         <Box mt={20} display={'flex'} justifyContent={'flex-end'}>
-          <Button type="primary" pageColor="aqua" text="Submit" height={14} width={40} onClick={onSubmit} />
+          <Button
+            type="primary"
+            pageColor="aqua"
+            text="Submit"
+            textSize="16px"
+            height={14}
+            width={40}
+            onClick={onSubmit}
+          />
         </Box>
       </Flex>
     );

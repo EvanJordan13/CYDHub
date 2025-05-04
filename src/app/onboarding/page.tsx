@@ -240,113 +240,25 @@ export default function OnboardingPage() {
                 type={!formValid ? 'disabled' : 'primary'}
                 pageColor="flamingo"
                 text="Next"
+                textSize="16px"
                 height="70px"
                 width="79%"
                 onClick={handleNextClick}
               />
-            </Box>
-            <Text color="black" fontSize="clamp(14px,.97vw,40px)" fontWeight="medium" mt={3}>
-              Email
-            </Text>
-            <Box w="clamp(460px,31.9vw,1000px)">
-              <TextInput
-                label="Email"
-                icon={<LockKeyhole />}
-                disabled={true}
-                value="RandomExample@email.com"
-                height="clamp(54px, 6.25vh, 200px)"
-              />
-            </Box>
-
-            <HStack gap="16px" width="clamp(460px,31.9vw,1000px)" justifyContent={'space-between'} mt={3}>
-              <VStack alignItems="left" width="35%">
-                <Text color="black" fontSize="clamp(14px,.97vw,40px)" fontWeight="medium">
-                  Pronouns
-                  <Text as="span" color="#BC3860">
-                    *
-                  </Text>
-                </Text>
-                <Box width="100%">
-                  <DropDownInput
-                    helperText="Pronouns"
-                    options={pronouns}
-                    isRequired={true}
-                    height="clamp(54px, 6.25vh, 200px)"
-                    value={selectedPronoun}
-                    onChange={value => setSelectedPronoun(value)}
-                  />
-                </Box>
-              </VStack>
-              <VStack gap="6px" alignItems="left" w="55%">
-                <Text color="black" fontSize="clamp(14px,.97vw,40px)" fontWeight="medium">
-                  Date of Birth
-                  <Text as="span" color="#BC3860">
-                    *
-                  </Text>
-                </Text>
-                <Box width="100%">
-                  <DatePickerInput
-                    helperText="XX/XX/XXXX"
-                    height="clamp(54px, 6.25vh, 200px)"
-                    val={date}
-                    onChange={value => setDate(value)}
-                  />
-                </Box>
-              </VStack>
-            </HStack>
-            <Checkbox
-              size="lg"
-              borderColor="gray.400"
-              borderStartEndRadius={'full'}
-              variant="outline"
-              colorPalette="white"
-              _checked={{ bg: 'white', borderColor: 'gray.400' }}
-              checked={checked}
-              onCheckedChange={() => setChecked(prev => !prev)}
-              mt="clamp(20px, 2.5vh, 80px)"
-              mb="clamp(20px, 3.5vh, 80px)"
-            >
-              <Flex direction="row">
-                <Text color="black" fontSize="clamp(16px,1.1vw,40px)" fontWeight="medium">
-                  I certify that I have read the{'\u00A0'}
-                </Text>
-                <Link color="#4D80BB" href="/" fontSize="clamp(16px,1.1vw,40px)" textDecoration="underline">
-                  Terms of Conditions
-                </Link>
-              </Flex>
-            </Checkbox>
-            <Button
-              type={!formValid ? 'disabled' : 'primary'}
-              pageColor="flamingo"
-              text="Next"
-              height="clamp(64px,9.25vh,80px)"
-              width="clamp(460px,31.9vw,1000px)"
-              onClick={handleNextClick}
-            />
-          </VStack>
-        </VStack>
-
-        {/* Image section */}
-        <Box
-          position="absolute"
-          top={0}
-          right={0}
-          w={{ base: 0, md: '50vw' }}
-          h="100%"
-          display={{ base: 'none', md: 'flex' }} /* ① make this a flex box      */
-          justifyContent="flex-end" /*   keep it flush right        */
-          alignItems="center" /* ② vertically centre its child */
-          overflow="hidden"
-          pointerEvents="none"
-          zIndex={1}
-        >
+            </Flex>
+          </Box>
+        </Box>
+        <Box width="50%" height="100%" position="relative" overflow="hidden">
           <Image
             src="cyd-onboard-ellipse.svg"
             alt="Onboard Ellipse"
-            h="170vh" /* scaled‑up height   */
-            w="auto" /* preserve aspect   */
-            objectFit="contain"
-            objectPosition="right" /* right‑align inside the flex item */
+            position="absolute"
+            top="0"
+            left="0"
+            width="100%"
+            height="100%"
+            objectFit="cover"
+            zIndex={1}
           />
         </Box>
       </Flex>

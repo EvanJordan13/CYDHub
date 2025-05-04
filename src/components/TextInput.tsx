@@ -9,7 +9,7 @@ interface TextInputProps {
   value?: string;
   onChange?: (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
   disabled?: boolean;
-  height?: string;
+  height?: string | number;
   wrap?: boolean;
   invalidFunction?: () => boolean;
 }

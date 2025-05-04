@@ -21,6 +21,7 @@ export default function LandingPage() {
               <Button
                 type="secondary"
                 text="Learn More"
+                textSize="clamp(14px, 1.18vw, 50px)"
                 width="clamp(178px,12.36vw,300px)"
                 height="clamp(56px,5.4vh,120px)"
                 pageColor="flamingo"
@@ -28,6 +29,7 @@ export default function LandingPage() {
               <Button
                 type="primary"
                 text="Get Started"
+                textSize="clamp(14px, 1.18vw, 50px)"
                 width="clamp(178px,12.36vw,300px)"
                 height="clamp(56px,5.4vh,120px)"
                 pageColor="flamingo"

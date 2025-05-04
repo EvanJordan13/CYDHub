@@ -11,7 +11,7 @@ interface DatePickerInputProps {
   helperText: string;
   isRequired?: boolean;
   showIcon?: boolean;
-  height?: string;
+  height?: string | number;
   val?: string | null;
   onChange?: (value: string) => void;
 }

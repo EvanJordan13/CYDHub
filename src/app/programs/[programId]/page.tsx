@@ -27,7 +27,7 @@ import {
 } from '@/src/lib/query/programs';
 import { ModuleMaterial, Assignment, Module as Mod, Announcement, Program, User } from '@prisma/client';
 import { useState, useEffect } from 'react';
-import QuestionPage from '../../questions/[assignmentId]/page';
+import QuestionPage from './@modules/assignments/[assignmentId]/questions/[questionNumber]/page';
 
 type ModuleWithRelations = Mod & {
   materials: ModuleMaterial[];
@@ -235,6 +235,8 @@ export default function ProgramPage({ params }: { params: { programId: number } 
                       dueDate={selectedResource.data.dueDate}
                       questionCount={selectedResource.data.questionCount}
                       description={selectedResource.data.description}
+                      programId={programId}
+                      assignmentId={selectedResource.data.assignmentNumber!}
                     />
                   ) : (
                     <MaterialDetail

@@ -11,7 +11,7 @@ interface AssignmentDetailProps {
   dueDate: Date | null;
   questionCount: number | null;
   description: string | null;
-  onBackClick: () => void;
+  onBackClick?: () => void;
 }
 
 const formatDate = (date: Date) => {
@@ -45,11 +45,13 @@ export default function AssignmentDetail({
   dueDate,
   questionCount,
   description,
-  onBackClick,
 }: AssignmentDetailProps) {
   const router = useRouter();
   const handleAssignmentClick = () => {
     router.push(`/programs/${programId}/assignments/${assignmentId}/questions/0`);
+  };
+  const onBackClick = () => {
+    router.push(`/programs/${programId}`);
   };
   return (
     <Box position={'relative'} mt={6}>
