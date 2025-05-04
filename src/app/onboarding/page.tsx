@@ -204,7 +204,7 @@ export default function OnboardingPage() {
                         *
                       </Text>
                     </Text>
-                    <Box width="142%" mt={'7px'}>
+                    <Box width="142%">
                       <DatePickerInput
                         helperText="XX/XX/XXXX"
                         height={20}
