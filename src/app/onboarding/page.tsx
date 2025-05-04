@@ -25,7 +25,6 @@ export default function OnboardingPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    if (dbUser?.name) setDisplayName(dbUser.name);
     if (dbUser?.pronouns) setSelectedPronoun(dbUser.pronouns);
     if (dbUser?.birthdate) setDate(dbUser.birthdate);
   }, [dbUser, auth0User]);
