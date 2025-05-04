@@ -2,8 +2,12 @@
 
 import { useState, useEffect, Suspense, useMemo } from 'react';
 import { useDbSession } from '@/src/hooks/useDbSession';
-import { Assignment, Program } from '@prisma/client';
-import { fetchProgramsByUser, fetchProgramAssignmentsByUser } from '@/src/lib/query/programs';
+import { Assignment, Program, ModuleMaterial } from '@prisma/client';
+import {
+  fetchProgramsByUser,
+  fetchProgramAssignmentsByUser,
+  fetchProgramMaterialsByUser,
+} from '@/src/lib/query/programs';
 import { Flex, Box, Heading, Center, Spinner, Text, Skeleton } from '@chakra-ui/react';
 import HomeSection from '@/src/components/dashboard/sections/HomeSection';
 import SideBar from '@/src/components/dashboard/SideBar';
@@ -13,10 +17,12 @@ import TodoSection from '@/src/components/dashboard/sections/TodoSection';
 import ArchivedPage from '@/src/components/dashboard/sections/Archived';
 import { useSearchParams, useRouter } from 'next/navigation';
 import PlaygroundSection from '@/src/components/dashboard/sections/PlaygroundSection';
+import CalendarSection from '@/src/components/dashboard/sections/CalendarSection';
 
 function DashboardClient() {
   const { dbUser } = useDbSession();
   const [assignments, setAssignments] = useState<Assignment[]>([]);
+  const [materials, setMaterials] = useState<ModuleMaterial[]>([]);
   const [programs, setPrograms] = useState<Program[]>([]);
   const [archivedPrograms, setArchivedPrograms] = useState<Program[]>([]);
   const [isLoadingPageData, setIsLoadingPageData] = useState(true);
@@ -43,14 +49,16 @@ function DashboardClient() {
 
     const fetchAllData = async () => {
       try {
-        const [assignmentsData, programsData, archivedProgramsData] = await Promise.all([
+        const [assignmentsData, materialsData, programsData, archivedProgramsData] = await Promise.all([
           fetchProgramAssignmentsByUser(dbUser.id),
+          fetchProgramMaterialsByUser(dbUser.id),
           fetchProgramsByUser(dbUser.id),
           fetchProgramsByUser(dbUser.id, true),
         ]);
 
         if (isMounted) {
           setAssignments(assignmentsData);
+          setMaterials(materialsData);
           setPrograms(programsData);
           setArchivedPrograms(archivedProgramsData);
         }
@@ -88,13 +96,9 @@ function DashboardClient() {
       home: (
         <HomeSection userInfo={dbUser} assignments={assignments} programs={programs} isLoading={isLoadingPageData} />
       ),
-      todo: <TodoSection assignments={assignments} points={dbUser?.points || 0} />,
+      todo: <TodoSection assignments={assignments} userInfo={dbUser} />,
       editor: <PlaygroundSection points={dbUser?.points || 0} />,
-      calendar: (
-        <Heading fontSize="40px" fontWeight={700} p="32px 48px 16px 48px" lineHeight={'48px'}>
-          Calendar Under Construction!
-        </Heading>
-      ),
+      calendar: <CalendarSection assignments={assignments} materials={materials} userInfo={dbUser} />,
       shop: (
         <Heading fontSize="40px" fontWeight={700} p="32px 48px 16px 48px" lineHeight={'48px'}>
           Shop Under Construction!
