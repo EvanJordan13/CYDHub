@@ -55,17 +55,10 @@ export default function TodoDropdown({ title, assignments }: TodoDropdownProps) 
           <Heading>
             {title} ({assignments.length})
           </Heading>
-          <IconButton
-            disabled={isEmpty}
-            variant="plain"
-            colorScheme="whiteAlpha"
-            aria-label="Toggle Todo Section"
-            color={'white'}
-          >
-            <ChevronDown
-              style={{ transform: `rotate(${isOpen ? 180 : 0}deg)`, transition: 'transform 0.3s ease-in-out' }}
-            />
-          </IconButton>
+
+          <ChevronDown
+            style={{ transform: `rotate(${isOpen ? 180 : 0}deg)`, transition: 'transform 0.3s ease-in-out' }}
+          />
         </Flex>
       </Collapsible.Trigger>
       <Collapsible.Content style={{ overflow: 'visible', width: '100%' }}>

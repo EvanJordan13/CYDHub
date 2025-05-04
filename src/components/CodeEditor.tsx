@@ -143,7 +143,7 @@ export default function CodeEditor({}: CodeEditorProps) {
   };
 
   return (
-    <Box>
+    <Box w={'95%'}>
       <Box display="flex" justifyContent="space-between" marginBottom={4}>
         <Select.Root
           collection={languages}
