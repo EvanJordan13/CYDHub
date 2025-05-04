@@ -32,6 +32,8 @@ export async function getUserNameById(userId: number): Promise<string> {
   if (userId === null) {
     throw new Error(`ID provided is null`);
   }
+
+  const user = await getUserById(userId);
   
   if (!user) {
     throw new Error(`No user found with ID ${userId}`);
@@ -63,8 +65,6 @@ export async function fetchCompletedAssignments(userId: number) {
   const completedAssignments = userWithSubmissions.submissions.map(submission => submission.assignment);
 
   return completedAssignments;
-
-  const user = await getUserById(userId);
 }
   
 export async function storeUserSurveyResponse(userId: number, surveyResponse: SurveyResponse) {
