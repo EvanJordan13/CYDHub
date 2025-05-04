@@ -1,14 +1,9 @@
-'use client';
-
 import React, { useEffect, useState } from 'react';
 import {
     Box,
     Flex,
     IconButton,
     Text,
-    HStack,
-    Tag,
-    TagLabel,
     Center,
 } from '@chakra-ui/react';
 import {
@@ -23,9 +18,10 @@ import { getDay } from 'date-fns/getDay';
 import { enUS } from 'date-fns/locale/en-US';
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
 import { Assignment, ModuleMaterial } from '@prisma/client';
+import { useRouter } from 'next/navigation';
+import { getModuleById } from '@/src/lib/query/modules';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import './calendar-theme.css';
-
 
 const locales = {
     'en-US': enUS,
@@ -40,8 +36,11 @@ const localizer = dateFnsLocalizer({
 });
 
 interface CalendarEvent extends RBCEvent {
+    id: number;
     title: string;
     type: 'assignment' | 'material';
+    moduleId: number;
+    programId: number;
 }
 
 interface CalendarProps {
@@ -50,8 +49,17 @@ interface CalendarProps {
 }
 
 export default function Calendar({ assignments, materials }: CalendarProps) {
+    const router = useRouter();
     const [events, setEvents] = useState<CalendarEvent[]>([]);
     const [currentDate, setCurrentDate] = useState(new Date());
+
+    const handleEventClick = (event: CalendarEvent) => {
+        if (event.type === 'assignment') {
+            router.push(`/programs/${event.programId}/assignments/${event.id}`);
+        } else if (event.type === 'material') {
+            router.push(`/programs/${event.programId}/materials/${event.id}`);
+        }
+    };
 
     const handlePrev = () => {
         const prev = new Date(currentDate);
@@ -66,25 +74,49 @@ export default function Calendar({ assignments, materials }: CalendarProps) {
     };
 
     useEffect(() => {
-        const mapDataToEvents = () => {
+        const mapDataToEvents = async () => {
+            const allModuleIds = Array.from(
+                new Set([
+                    ...assignments.map((a) => a.moduleId),
+                    ...materials.map((m) => m.moduleId),
+                ])
+            ).filter((id): id is number => id !== null);
+
+            const modules = await Promise.all(
+                allModuleIds.map((id) => getModuleById(id))
+            );
+
+            const moduleMap: Record<number, number> = {};
+            modules.forEach((module) => {
+                if (module) {
+                    moduleMap[module.id] = module.programId;
+                }
+            });
+
             const mappedAssignments: CalendarEvent[] = (assignments ?? [])
-                .filter((assignment) => assignment.dueDate !== null)
+                .filter((assignment) => assignment.dueDate !== null && assignment.moduleId !== null)
                 .map((assignment) => ({
-                    title: `${assignment.title}`,
+                    id: assignment.id,
+                    title: assignment.title,
                     start: new Date(assignment.dueDate as Date),
                     end: new Date(assignment.dueDate as Date),
                     allDay: true,
                     type: 'assignment',
+                    moduleId: assignment.moduleId as number,
+                    programId: moduleMap[assignment.moduleId as number] ?? -1,
                 }));
 
             const mappedMaterials: CalendarEvent[] = (materials ?? [])
-                .filter((material) => material.createdAt !== null)
+                .filter((material) => material.createdAt !== null && material.moduleId !== null)
                 .map((material) => ({
-                    title: `${material.title}`,
+                    id: material.id,
+                    title: material.title,
                     start: new Date(material.createdAt as Date),
                     end: new Date(material.createdAt as Date),
                     allDay: true,
                     type: 'material',
+                    moduleId: material.moduleId as number,
+                    programId: moduleMap[material.moduleId as number] ?? -1,
                 }));
 
             setEvents([...mappedAssignments, ...mappedMaterials]);
@@ -92,6 +124,7 @@ export default function Calendar({ assignments, materials }: CalendarProps) {
 
         mapDataToEvents();
     }, [assignments, materials]);
+
 
     return (
         <Box>
@@ -132,7 +165,7 @@ export default function Calendar({ assignments, materials }: CalendarProps) {
                     date={currentDate}
                     onNavigate={setCurrentDate}
                     toolbar={false}
-
+                    onSelectEvent={handleEventClick}
                     eventPropGetter={(event: CalendarEvent) => {
                         const className =
                             event.type === 'assignment'
@@ -145,6 +178,6 @@ export default function Calendar({ assignments, materials }: CalendarProps) {
                     }}
                 />
             </Box>
-        </Box >
+        </Box>
     );
 }

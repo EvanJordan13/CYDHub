@@ -81,6 +81,7 @@
     border-bottom-left-radius: 0 !important;
     padding-left: 8px;
     width: 90%;
+    margin-bottom: 8px;
 }
 
 .rbc-event-assignment {
@@ -94,4 +95,5 @@
     border-bottom-left-radius: 0 !important;
     padding-left: 8px;
     width: 90%;
+    margin-bottom: 8px;
 }
