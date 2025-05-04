@@ -4,6 +4,7 @@ import { createPortal } from 'react-dom';
 import { ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
+import { updateUser } from '@/src/lib/query/users';
 
 type Change = {
   field: string;
@@ -15,15 +16,25 @@ interface ConfirmChangesModalProps {
   changes: Change[];
   isOpen?: boolean;
   onClose?: () => void;
+  userId: number;
+  onSave?: () => void;
 }
 
 const MotionFlex = motion(Flex);
 const MotionDiv = motion.div;
 
-export default function ConfirmChangesModal({ changes, isOpen = false, onClose }: ConfirmChangesModalProps) {
+export default function ConfirmChangesModal({
+  changes,
+  isOpen = false,
+  onClose,
+  userId,
+  onSave,
+}: ConfirmChangesModalProps) {
   const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleClose = () => {
+    setError(null);
     onClose?.();
   };
 
@@ -34,11 +45,31 @@ export default function ConfirmChangesModal({ changes, isOpen = false, onClose }
   };
 
   const handleSave = async () => {
-    console.log('Saving...');
-    setIsSaving(true);
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    setIsSaving(false);
-    console.log('Saved!');
+    try {
+      setIsSaving(true);
+      setError(null);
+
+      // Extract the changes into an object format
+      const updateData: { name?: string; pronouns?: string } = {};
+      changes.forEach(change => {
+        if (change.field === 'Display Name') {
+          updateData.name = change.newValue;
+        } else if (change.field === 'Pronouns') {
+          updateData.pronouns = change.newValue;
+        }
+      });
+
+      // Update the user
+      await updateUser(userId, updateData);
+
+      // Call the onSave callback if provided
+      onSave?.();
+      handleClose();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to save changes');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return createPortal(
@@ -84,6 +115,11 @@ export default function ConfirmChangesModal({ changes, isOpen = false, onClose }
             <Text fontSize={'28px'} fontWeight={'700'}>
               Confirm Changes
             </Text>
+            {error && (
+              <Text color="red.500" fontSize="14px">
+                {error}
+              </Text>
+            )}
             <Flex flexDirection={'column'} gap={'24px'} alignItems={'center'}>
               {changes.map(change => (
                 <Flex

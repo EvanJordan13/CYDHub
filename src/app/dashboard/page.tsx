@@ -110,6 +110,10 @@ function DashboardClient() {
     }
   }, []);
 
+  const handleUserUpdate = (updatedUser: User) => {
+    setUserInfo(updatedUser);
+  };
+
   if (tab === null) return null;
   const tabs: Record<Tab, React.ReactNode> = {
     home: (
@@ -147,7 +151,7 @@ function DashboardClient() {
     ),
     settings: (
       <>
-        <SettingsSection userInfo={userInfo} />
+        <SettingsSection userInfo={userInfo} onUserUpdate={handleUserUpdate} />
       </>
     ),
   };

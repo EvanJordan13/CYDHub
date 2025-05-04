@@ -1,29 +1,32 @@
+'use client';
+
 import { useState } from 'react';
 import { Box, Flex, Heading, Text, Button } from '@chakra-ui/react';
 import Image from 'next/image';
-
 import { User } from '@prisma/client';
 import TextInput from '@/src/components/TextInput';
 import DropDownInput from '@/src/components/DropDownInput';
-import PasswordInput from '@/src/components/ui/PasswordInput';
-
 import ConfirmChangesModal from '@/src/components/dashboard/ConfirmChangesModal';
-
-import { User as UserIcon, Mail, Lock } from 'lucide-react';
+import { User as UserIcon, Mail, Lock, Link } from 'lucide-react';
+import AnimatedLink from '../../AnimatedLink';
+import { getPasswordResetLink } from '@/src/lib/actions/auth';
 
 interface SettingsSectionProps {
   userInfo: User | null;
+  onUserUpdate?: (updatedUser: User) => void;
 }
 
 const pronounOptions = ['He/Him', 'She/Her', 'They/Them', 'Prefer not to answer'];
 
-export default function SettingsSection({ userInfo }: SettingsSectionProps) {
+export default function SettingsSection({ userInfo, onUserUpdate }: SettingsSectionProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [isConfirmChangesModalOpen, setIsConfirmChangesModalOpen] = useState(false);
+  const [resetPasswordLink, setResetPasswordLink] = useState<string>('');
 
   const [name, setName] = useState(userInfo?.name || '');
-  const [pronouns, setPronouns] = useState(userInfo?.pronouns || '');
-  const [password, setPassword] = useState('');
+  const [pronouns, setPronouns] = useState(
+    userInfo?.pronouns && pronounOptions.includes(userInfo.pronouns) ? userInfo.pronouns : '',
+  );
 
   const handleToggleEdit = () => {
     setIsEditing(!isEditing);
@@ -39,9 +42,23 @@ export default function SettingsSection({ userInfo }: SettingsSectionProps) {
     setIsConfirmChangesModalOpen(true);
   };
 
-  const handleSaveChanges = () => {
+  const handleSaveChanges = async () => {
     setIsConfirmChangesModalOpen(false);
     setIsEditing(false);
+    // Update local state with new values
+    if (userInfo) {
+      const updatedUser = {
+        ...userInfo,
+        name: name,
+        pronouns: pronouns,
+      };
+      onUserUpdate?.(updatedUser);
+    }
+  };
+
+  const handlePasswordReset = async () => {
+    const link = await getPasswordResetLink(userInfo?.email || '');
+    setResetPasswordLink(link);
   };
 
   return (
@@ -89,6 +106,8 @@ export default function SettingsSection({ userInfo }: SettingsSectionProps) {
           ]}
           isOpen={isConfirmChangesModalOpen}
           onClose={() => setIsConfirmChangesModalOpen(false)}
+          userId={userInfo?.id || 0}
+          onSave={handleSaveChanges}
         />
         <Flex
           bg={'white'}
@@ -118,7 +137,7 @@ export default function SettingsSection({ userInfo }: SettingsSectionProps) {
             </Text>
             <TextInput label="Email" icon={<Mail />} disabled={!isEditing} value={userInfo?.email || ''} height={20} />
           </Box>
-          <Flex direction="column" gap="6px" width="35%" height="100%">
+          <Flex direction="column" gap="6px" width="35%">
             <Box width="100%">
               <DropDownInput
                 labelText="Pronouns"
@@ -131,12 +150,15 @@ export default function SettingsSection({ userInfo }: SettingsSectionProps) {
               />
             </Box>
           </Flex>
-          <Flex direction="column" gap="6px">
-            <Text color="black" fontSize="18px" fontWeight="medium">
-              Password
-            </Text>
-            <PasswordInput disabled={!isEditing} value={password} onChange={value => setPassword(value)} />
-          </Flex>
+          <AnimatedLink
+            link={resetPasswordLink}
+            linkName="Forgot your password?"
+            underlineColor="Aqua"
+            onClick={handlePasswordReset}
+            target="_blank"
+          >
+            Forgot your password?
+          </AnimatedLink>
           {isEditing ? (
             <Flex flexDirection={'row'} justifyContent={'space-between'}>
               <Button

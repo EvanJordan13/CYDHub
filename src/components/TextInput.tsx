@@ -10,7 +10,6 @@ interface TextInputProps {
   value?: string;
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   disabled?: boolean;
-  isSecret?: boolean;
   height?: number;
   invalidFunction?: () => boolean;
 }
@@ -21,7 +20,6 @@ export default function TextInput({
   value,
   onChange,
   disabled = false,
-  isSecret = false,
   height = 12,
   invalidFunction = () => !value || value.trim() === '',
 }: TextInputProps) {
@@ -63,11 +61,6 @@ export default function TextInput({
           fontWeight={500}
           disabled={disabled}
         />
-        {isSecret && (
-          <Box onClick={() => setShowSecretValue(!showSecretValue)} mr="4%">
-            {showSecretValue ? <Eye /> : <EyeOff />}
-          </Box>
-        )}
       </Flex>
     </Field.Root>
   );

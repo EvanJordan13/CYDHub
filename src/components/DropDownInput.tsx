@@ -65,9 +65,10 @@ const DropDownInput: React.FC<DropDownInputProps> = ({
               size="sm"
               rounded={'md'}
               width="100%"
+              color={disabled ? '#AAAAAA' : 'black'}
               borderWidth={'0.125rem'}
               borderColor={isFocused ? 'Aqua' : isInvalid ? 'red' : '#AAAAAA'}
-              _hover={{ background: '#E0EEFF' }}
+              _hover={{ background: disabled ? '' : '#E0EEFF' }}
               _focus={{ outline: 'none' }}
               onFocus={() => setIsFocused(true)}
               onBlur={() => {
@@ -76,10 +77,19 @@ const DropDownInput: React.FC<DropDownInputProps> = ({
               }}
               transition="none"
               height={height}
+              disabled={disabled}
               aria-label={selectedOption ? `Selected option is ${selectedOption}` : 'Select an option'}
+              bgColor={disabled ? '#F0EFEF' : ''}
+              opacity={1}
+              _disabled={{ opacity: 1 }}
             >
               <Flex justify="space-between" align="center" width="100%">
-                <Text truncate color={selectedOption ? 'black' : '#AAAAAA'} fontWeight={500} fontSize={'130%'}>
+                <Text
+                  truncate
+                  color={disabled ? '#AAAAAA' : selectedOption ? 'black' : '#AAAAAA'}
+                  fontWeight={500}
+                  fontSize={'130%'}
+                >
                   {selectedOption || helperText}
                 </Text>
                 {showIcon && <ChevronDown color="#AAAAAA" />}
