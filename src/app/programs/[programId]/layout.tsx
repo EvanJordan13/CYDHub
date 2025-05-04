@@ -1,15 +1,29 @@
 'use client';
 
 import SideBar from '@/src/components/dashboard/SideBar';
-import { Text, Heading, Box, Image, Tabs, Flex, Stack, Skeleton, SkeletonText } from '@chakra-ui/react';
+import {
+  createListCollection,
+  Portal,
+  Select,
+  Text,
+  Heading,
+  Box,
+  Image,
+  Tabs,
+  Flex,
+  Stack,
+  Skeleton,
+  SkeletonText,
+} from '@chakra-ui/react';
 import AnnouncementCard from '@/src/components/AnnouncementCard';
 import { getProgramAnnouncements, getProgramById, getUserById } from '@/src/lib/query/programs';
-import { Announcement, Program, User } from '@prisma/client';
+import { ModuleMaterial, Assignment, Module as Mod, Announcement, Program, User } from '@prisma/client';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Tab } from '@/src/components/dashboard/types';
 import FeedbackForm from '@/src/components/FeedbackForm';
 import AuthWrapper from '@/src/components/AuthWrapper';
+import { ChevronDown } from 'lucide-react';
 
 const ProgramPageSkeleton = () => (
   <Box marginY={6} marginLeft={250} style={{ flexBasis: '80%' }} paddingX={4}>
@@ -29,6 +43,13 @@ const ProgramPageSkeleton = () => (
   </Box>
 );
 
+type ModuleWithRelations = Mod & {
+  materials: ModuleMaterial[];
+  assignments: Assignment[];
+};
+
+type ResourceItem = { type: 'assignment'; data: Assignment } | { type: 'material'; data: ModuleMaterial };
+
 export default function ProgramLayout({
   modules,
   params,
@@ -42,7 +63,19 @@ export default function ProgramLayout({
   const [program, setProgram] = useState<Program | undefined>();
   const [teacher, setTeacher] = useState<User | undefined>();
   const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const [selectedResource, setSelectedResource] = useState<ResourceItem | null>(null);
+  const [showAssignments, setShowAssignments] = useState(true);
+  const [showMaterials, setShowMaterials] = useState(true);
+  const [modulesTabTitle, setModulesTabTitle] = useState('Modules');
   const router = useRouter();
+
+  const frameworks = createListCollection({
+    items: [
+      { label: 'Assignments', value: 'assignments' },
+      { label: 'Materials', value: 'materials' },
+      { label: 'Both', value: 'both' },
+    ],
+  });
 
   const fetchLayoutAndAnnouncementsData = async () => {
     setIsLoadingAnnouncements(true);
@@ -90,6 +123,26 @@ export default function ProgramLayout({
     router.push(`/dashboard?tab=${next}`);
   };
 
+  const handleModulesTabClick = () => {
+    setSelectedResource(null); // Reset selected resource
+  };
+
+  const changeResourcesShown = (value: string) => {
+    if (value === 'assignments') {
+      setShowAssignments(true);
+      setShowMaterials(false);
+      setModulesTabTitle('Assignments');
+    } else if (value == 'materials') {
+      setShowAssignments(false);
+      setShowMaterials(true);
+      setModulesTabTitle('Materials');
+    } else {
+      setShowAssignments(true);
+      setShowMaterials(true);
+      setModulesTabTitle('Modules');
+    }
+  };
+
   return (
     <AuthWrapper>
       <Box display={'flex'} minH={'100vh'} backgroundColor={'white'} color={'black'}>
@@ -120,8 +173,39 @@ export default function ProgramLayout({
                   <Tabs.Trigger
                     value="modules"
                     _selected={{ color: 'Aqua', fontWeight: '700', borderBottom: '4px solid #4D80BB' }}
+                    onClick={handleModulesTabClick}
                   >
-                    <Text>Modules</Text>
+                    {/* <Text>Modules</Text> */}
+                    <Select.Root
+                      collection={frameworks}
+                      size="sm"
+                      onChange={(e: React.FormEvent<HTMLDivElement>) =>
+                        changeResourcesShown((e.target as HTMLSelectElement).value)
+                      }
+                      positioning={{ placement: 'bottom', offset: { crossAxis: -35 } }}
+                    >
+                      <Select.HiddenSelect />
+                      <Box display="flex" justifyContent={'space-evenly'} alignItems={'center'} height={5}>
+                        {' '}
+                        {/* alignItems={'flex-end'} */}
+                        <Select.Label paddingLeft={2}>{modulesTabTitle}</Select.Label>
+                        <Select.Trigger width={10} borderColor="transparent">
+                          <ChevronDown />
+                        </Select.Trigger>
+                      </Box>
+                      <Portal>
+                        <Select.Positioner>
+                          <Select.Content width={36}>
+                            {frameworks.items.map(framework => (
+                              <Select.Item item={framework} key={framework.value}>
+                                {framework.label}
+                                <Select.ItemIndicator />
+                              </Select.Item>
+                            ))}
+                          </Select.Content>
+                        </Select.Positioner>
+                      </Portal>
+                    </Select.Root>
                   </Tabs.Trigger>
                   <Tabs.Trigger
                     value="announcements"
