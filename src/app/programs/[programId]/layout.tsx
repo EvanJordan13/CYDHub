@@ -24,9 +24,10 @@ import { Tab } from '@/src/components/dashboard/types';
 import FeedbackForm from '@/src/components/FeedbackForm';
 import AuthWrapper from '@/src/components/AuthWrapper';
 import { ChevronDown } from 'lucide-react';
+import { useDbSession } from '@/src/hooks/useDbSession';
 
 const ProgramPageSkeleton = () => (
-  <Box marginY={6} marginLeft={250} style={{ flexBasis: '80%' }} paddingX={4}>
+  <Box marginY={6} marginLeft={250} style={{ flexBasis: '80%' }} paddingX={4} mt={10}>
     <Flex height={'35px'} justifyContent={'space-between'} alignItems="center" mb={5}>
       <Skeleton height="35px" width="clamp(200px, 30%, 400px)" />
       <Skeleton height="35px" width="80px" />
@@ -83,6 +84,7 @@ export default function ProgramLayout({
   const [modulesTabTitle, setModulesTabTitle] = useState('Modules');
   const [view, setView] = useState<'assignments' | 'materials' | 'both'>('both');
   const router = useRouter();
+  const { dbUser } = useDbSession();
 
   const showAssignments = view === 'assignments' || view === 'both';
   const showMaterials = view === 'materials' || view === 'both';
@@ -169,7 +171,7 @@ export default function ProgramLayout({
               <Heading color="red.500">Program not found.</Heading>
             </Box>
           ) : (
-            <Box marginY={6} marginLeft={250} style={{ flexBasis: '80%' }}>
+            <Box marginY={6} marginLeft={250} style={{ flexBasis: '80%' }} paddingX={4} mt={10}>
               <Box display={'flex'} height={'28px'} justifyContent={'space-between'} alignItems="center">
                 <Heading fontSize={35} fontWeight={'bold'} color={'Aqua'}>
                   {program.name}
@@ -177,7 +179,7 @@ export default function ProgramLayout({
                 <Box display={'flex'} alignItems={'center'} gap={2}>
                   <Image width={'19px'} height={'28px'} src={'/streak-card-icon.svg'} alt="Streak Icon" />
                   <Text color={'#FFCE29'} fontWeight={'bold'} fontSize={30} marginRight={10}>
-                    ?
+                    {dbUser?.points}
                   </Text>
                 </Box>
               </Box>
