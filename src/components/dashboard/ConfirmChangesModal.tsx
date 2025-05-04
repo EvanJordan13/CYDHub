@@ -170,8 +170,8 @@ export default function ConfirmChangesModal({
                 pageColor={'aqua'}
                 text={'Go Back'}
                 textSize={'16px'}
-                height={''}
-                width={''}
+                width={'232px'}
+                height={'60px'}
               />
               <Button
                 onClick={handleSave}
@@ -179,8 +179,8 @@ export default function ConfirmChangesModal({
                 pageColor={'aqua'}
                 text={isSaving ? 'Saving Changes...' : 'Confirm Change'}
                 textSize={'16px'}
-                height={''}
-                width={''}
+                width={'232px'}
+                height={'60px'}
               />
             </Flex>
           </MotionFlex>
