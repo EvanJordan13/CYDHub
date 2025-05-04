@@ -42,7 +42,7 @@ export default function DevPage() {
   const [isLoadingAssignments, setIsLoadingAssignments] = useState(false);
   const [showAllPrograms, setShowAllPrograms] = useState(true);
   const [showUserPrograms, setShowUserPrograms] = useState(true);
-  const [completedAssignments, setCompletedAssignments] = useState<(Assignment & { moduleTitle: string })[]>([]);
+  const [completedAssignments, setCompletedAssignments] = useState<Assignment[]>([]);
   const [showMaterials, setShowMaterials] = useState(true);
   const [isLoadingAnnouncements, setIsLoadingAnnouncements] = useState(false);
   const [programAnnouncements, setProgramAnnouncements] = useState<Announcement[]>([]);
