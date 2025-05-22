@@ -87,7 +87,7 @@ const DatePickerInput: React.FC<DatePickerInputProps> = ({
         icon={showIcon ? <Calendar /> : undefined}
         onChange={handleChange}
         value={value}
-        height={height}
+        height={Number(height)}
         invalidFunction={() => !isValidDate(value)}
       />
     </Box>

@@ -86,7 +86,7 @@ export default function SideBar({ currentTab, onTabChange }: SideBarProps) {
           isSelected={currentTab === 'settings'}
           onClick={() => onTabChange('settings')}
         />
-        <Link href="/api/auth/logout">
+        <Link href="/api/auth/logout?returnTo=/">
           <Bar Icon={LogOut} text="Log Out" onClick={() => {}} />
         </Link>
       </Flex>
