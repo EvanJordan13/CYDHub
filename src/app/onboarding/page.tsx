@@ -227,7 +227,7 @@ export default function OnboardingPage() {
                   onCheckedChange={() => setChecked(prev => !prev)}
                 >
                   <Flex direction="row">
-                    <Text color="black" fontSize="xl" fontWeight="medium">
+                    <Text color="black" fontSize="xl" fontWeight="medium" mr={'4px'}>
                       I certify that I have read the{' '}
                     </Text>
                     <Link color="#4D80BB" href="/" fontSize="xl" textDecoration="underline">
