@@ -12,7 +12,7 @@ export default function InformationCard({ title, description, icon = LayoutDashb
   return (
     <Box
       height="25.97vh"
-      minH="266px"
+      minH="300px"
       width={'28%'}
       bg={'white'}
       borderWidth={'2px'}
@@ -27,7 +27,7 @@ export default function InformationCard({ title, description, icon = LayoutDashb
         <Text fontWeight={700} fontSize="32px" fontFamily={'Poppins'} color="Slate">
           {title}
         </Text>
-        <Text fontWeight={500} fontSize="clamp(16px, 1.1vw, 50px)" fontFamily={'Poppins'} color="Slate">
+        <Text fontWeight={500} fontSize="16px" fontFamily={'Poppins'} color="Slate">
           {description}
         </Text>
       </VStack>

@@ -3,7 +3,7 @@ import { Box, Flex, Heading, Text } from '@chakra-ui/react';
 import { Assignment } from '@prisma/client';
 import { SquareArrowOutUpRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { getModuleById } from '@/src/lib/query/modules';
 
 interface TodoCardProps {
@@ -40,6 +40,16 @@ export default function TodoCard({ assignments }: TodoCardProps) {
     }
   };
 
+  const sorted = useMemo(() => {
+    return [...assignments]
+      .filter(a => a.dueDate)
+      .sort((a, b) => {
+        const da = new Date(a.dueDate!).getTime();
+        const db = new Date(b.dueDate!).getTime();
+        return da - db;
+      });
+  }, [assignments]);
+
   return (
     <Flex
       width={'100%'}
@@ -60,7 +70,7 @@ export default function TodoCard({ assignments }: TodoCardProps) {
         </Flex>
       </Flex>
       <Flex flexDirection={'column'} gap={4} fontSize={'14px'}>
-        {assignments.slice(0, 3).map(assignment => (
+        {sorted.slice(0, 3).map(assignment => (
           <Flex
             key={assignment.id}
             rounded={'6px'}

@@ -11,7 +11,7 @@ interface DatePickerInputProps {
   helperText: string;
   isRequired?: boolean;
   showIcon?: boolean;
-  height?: string | number;
+  height?: number;
   val?: string | null;
   onChange?: (value: string) => void;
 }
@@ -21,7 +21,7 @@ const DatePickerInput: React.FC<DatePickerInputProps> = ({
   helperText,
   isRequired = false,
   showIcon = true,
-  height = '12',
+  height = 12,
   val,
   onChange,
   ...rest
@@ -71,7 +71,7 @@ const DatePickerInput: React.FC<DatePickerInputProps> = ({
   return (
     <Box width="100%" {...rest}>
       {labelText && (
-        <Text mb={2} fontSize="sm" fontWeight={'medium'}>
+        <Text mb={2} fontSize="14px" fontWeight={'medium'}>
           {labelText}
           {isRequired && (
             <Text as="span" color="red.500">
