@@ -67,6 +67,35 @@ export async function fetchCompletedAssignments(userId: number) {
   return completedAssignments;
 }
 
+export async function addCompletion(userId: number, materialId: number, content?: string, fileUrl?: string) {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+  });
+
+  const material = await prisma.moduleMaterial.findUnique({
+    where: { id: materialId },
+  });
+
+  if (!user) {
+    throw new Error(`No user found with ID ${userId}`);
+  }
+
+  if (!material) {
+    throw new Error(`No material found with ID ${materialId}`);
+  }
+
+  const completion = await prisma.completion.create({
+    data: {
+      studentId: userId,
+      materialId: materialId,
+      content: content || null,
+      fileUrl: fileUrl || null,
+    },
+  });
+
+  return completion;
+}
+
 export async function storeUserSurveyResponse(userId: number, surveyResponse: SurveyResponse) {
   if (userId === null) {
     throw new Error(`ID provided is null`);

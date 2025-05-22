@@ -5,7 +5,7 @@ import BlocklyEditor from '../../components/BlocklyEditor';
 import ProgramCard from '../../components/ProgramCard';
 import CodeEditor from '../../components/CodeEditor';
 import { Box, Center, Heading, Stack, Text, VStack } from '@chakra-ui/react';
-import { Program, Announcement } from '@prisma/client';
+import { Program, Announcement, Completion } from '@prisma/client';
 import { User, Calendar, Award } from 'lucide-react';
 import {
   fetchAllPrograms,
@@ -14,7 +14,7 @@ import {
   getProgramAnnouncements,
   fetchProgramAssignments,
 } from '@/src/lib/query/programs';
-import { fetchCompletedAssignments } from '@/src/lib/query/users';
+import { fetchCompletedAssignments, addCompletion } from '@/src/lib/query/users';
 import { Flex } from '@chakra-ui/react';
 import Button from '@/src/components/Button';
 import { Button as ChakraButton } from '@chakra-ui/react';
@@ -129,6 +129,15 @@ export default function DevPage() {
     }
   };
 
+  const testAddCompletion = async () => {
+    try {
+      const completion = await addCompletion(15, 2);
+      console.log(completion);
+    } catch (error) {
+      console.error('Error with adding completion', error);
+    }
+  };
+
   const mockAnnouncements: AnnouncementCardProps[] = [
     {
       subject: 'Portfolio Graded',
@@ -192,6 +201,9 @@ export default function DevPage() {
         </ChakraButton>
         <ChakraButton onClick={testFetchCompletedAssignments} loading={isLoadingAssignments}>
           Test Fetch Completed Assignments
+        </ChakraButton>
+        <ChakraButton onClick={testAddCompletion} loading={isLoadingAssignments}>
+          Test Add Completion
         </ChakraButton>
       </Box>
 
