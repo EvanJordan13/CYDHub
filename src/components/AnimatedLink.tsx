@@ -10,12 +10,10 @@ interface AnimatedLinkProps extends ChakraLinkProps {
 export default function AnimatedLink({ link, linkName, underlineColor = 'Flamingo', ...rest }: AnimatedLinkProps) {
   return (
     <Box position="relative" display="inline-block">
-      {/* Hidden pseudo-element for width */}
       <Box as="span" position="absolute" opacity="0" pointerEvents="none" whiteSpace="nowrap">
         {linkName}
       </Box>
 
-      {/* Actual Link */}
       <ChakraLink
         as={Link}
         href={link}
@@ -27,7 +25,7 @@ export default function AnimatedLink({ link, linkName, underlineColor = 'Flaming
           position: 'absolute',
           bottom: '-2px',
           left: '0',
-          width: '0px', // Start hidden
+          width: '0px',
           height: '2px',
           backgroundColor: underlineColor,
           transition: 'width 0.3s ease-in-out',

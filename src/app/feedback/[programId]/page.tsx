@@ -4,8 +4,10 @@ import { VStack, Center, Image, Heading, Text, Spinner } from '@chakra-ui/react'
 import Button from '@/src/components/Button';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@auth0/nextjs-auth0/client';
+import { useDbSession } from '@/src/hooks/useDbSession';
 
 export default function SubmissionSuccessPage({ params }: { params: { programId: number } }) {
+  const { dbUser } = useDbSession();
   const { user, isLoading } = useUser();
   const router = useRouter();
   const points = 52;
@@ -18,13 +20,13 @@ export default function SubmissionSuccessPage({ params }: { params: { programId:
     );
   }
 
-  const firstName = user?.nickname?.split(' ')[0] ?? '';
+  const name = dbUser?.name;
 
   return (
     <Center height="90vh" width="100vw">
       <VStack gap={5}>
         <Image src="/sideways-happy.svg" height={36} width={36} alt="smiling dreambuddy" marginBottom={5} />
-        <Heading fontSize="3xl">Thanks for submitting, {firstName}!</Heading>
+        <Heading fontSize="3xl">Thanks for submitting, {name}!</Heading>
         <Text fontSize="lg" fontWeight="medium" marginBottom={3}>
           You have gained{' '}
           <Text as="span" fontWeight="bold" color="Aqua">

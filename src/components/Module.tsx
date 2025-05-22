@@ -75,9 +75,6 @@ export default function Module({ title, materials, assignments, onClick }: Modul
               onClick={() => handleClick({ type: 'material', data: material })}
             />
           ))}
-          {/* <Resource title={'Syllabus'} dueDate={'March 1st'} icon={<ClipboardMinus />} resourceType={'assignment'} />
-          <Resource title={'Introduction to HTML'} dueDate={'March 1st'} icon={<Video />} resourceType={'assignment'} />
-          <Resource title={'Lecture'} dueDate={'March 1st'} icon={<Video />} resourceType={'material'} /> */}
         </Box>
       </Collapsible.Content>
     </Collapsible.Root>

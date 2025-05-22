@@ -117,11 +117,10 @@ export default function ProgramPage({ params }: { params: { programId: number } 
   };
 
   const fetchAnnouncementsAndProgram = async (setLoading = true) => {
-    if (setLoading) setIsLoadingAnnouncements(true); // Controls skeleton within announcement tab
+    if (setLoading) setIsLoadingAnnouncements(true);
     try {
-      // Fetch program, announcements, and user data concurrently where possible
       const programData = await getProgramById(programId);
-      setProgram(programData); // Set program data early for title potentially
+      setProgram(programData);
 
       if (!programData) throw new Error('Program not found');
 
@@ -138,7 +137,7 @@ export default function ProgramPage({ params }: { params: { programId: number } 
       }
     } catch (error) {
       console.error('Error fetching program/announcements/user:', error);
-      if (setLoading) throw error; // Only re-throw if part of initial load
+      if (setLoading) throw error;
     } finally {
       if (setLoading) setIsLoadingAnnouncements(false);
     }
@@ -146,30 +145,27 @@ export default function ProgramPage({ params }: { params: { programId: number } 
 
   useEffect(() => {
     const loadInitialData = async () => {
-      setIsInitialLoading(true); // Start overall loading
+      setIsInitialLoading(true);
       setSelectedResource(null);
 
       try {
-        // Reset previous states
         setProgramModules([]);
         setProgramAnnouncements([]);
         setProgram(undefined);
         setUser(undefined);
 
-        // Wait for all essential initial fetches to complete
         await Promise.all([fetchMaterials(), fetchAssignments(), fetchModules(), fetchAnnouncementsAndProgram(false)]);
       } catch (error) {
         console.error('Error fetching initial program data:', error);
       } finally {
-        setIsInitialLoading(false); // Finish overall loading
+        setIsInitialLoading(false);
       }
     };
 
     loadInitialData();
-  }, [programId]); // Re-run if programId changes
+  }, [programId]);
 
   const handleAnnouncementsTabClick = () => {
-    // Fetch only if data isn't present and not already loading specifically for the tab
     setSelectedResource(null);
 
     if (programAnnouncements.length === 0 && !isLoadingAnnouncements) {
@@ -178,7 +174,7 @@ export default function ProgramPage({ params }: { params: { programId: number } 
   };
 
   const handleModulesTabClick = () => {
-    setSelectedResource(null); // Reset selected resource
+    setSelectedResource(null);
   };
 
   return (
@@ -265,7 +261,6 @@ export default function ProgramPage({ params }: { params: { programId: number } 
               <Tabs.Content value="announcements">
                 <Flex direction="column" paddingTop={'16px'} paddingBottom={'16px'} gap={'32px'}>
                   {isLoadingAnnouncements ? (
-                    // Skeleton specifically for announcements list
                     [...Array(2)].map((_, i) => (
                       <Box key={i} padding="6" boxShadow="md" bg="white" borderWidth="1px" borderRadius="lg">
                         <Flex>
@@ -278,8 +273,7 @@ export default function ProgramPage({ params }: { params: { programId: number } 
                         </Flex>
                       </Box>
                     ))
-                  ) : // Render actual announcements or empty/error state
-                  user && programAnnouncements.length > 0 ? (
+                  ) : user && programAnnouncements.length > 0 ? (
                     programAnnouncements.map(a => (
                       <AnnouncementCard
                         key={a.id}

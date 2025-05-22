@@ -17,13 +17,11 @@ const StreakCard: React.FC<StreakCardProps> = ({ currentPoints = 0, nextRewardPo
   const [count, setCount] = useState(0);
 
   useEffect(() => {
-    // Animate progress circle
     progressControls.start({
       pathLength: progress / 100,
       transition: { duration: 1.5, ease: 'easeOut' },
     });
 
-    // Animate the count
     const controls = animate(0, currentPoints, {
       duration: 1.5,
       ease: 'easeOut',

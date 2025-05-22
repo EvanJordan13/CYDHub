@@ -77,7 +77,6 @@ export default function AnnouncementCard({
         </Box>
       </Flex>
 
-      {/* Content section */}
       <Box color={'Slate'}>
         {title && (
           <Heading as="h2" fontSize={'2xl'} fontWeight={700} mb={5}>

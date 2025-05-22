@@ -1,13 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Box, Flex, Heading, Text, Button } from '@chakra-ui/react';
 import Image from 'next/image';
 import { User } from '@prisma/client';
 import TextInput from '@/src/components/TextInput';
 import DropDownInput from '@/src/components/DropDownInput';
 import ConfirmChangesModal from '@/src/components/dashboard/ConfirmChangesModal';
-import { User as UserIcon, Mail, Lock, Link } from 'lucide-react';
+import { User as UserIcon, Mail } from 'lucide-react';
 import AnimatedLink from '../../AnimatedLink';
 
 interface SettingsSectionProps {
@@ -27,21 +27,27 @@ export default function SettingsSection({ userInfo, onUserUpdate }: SettingsSect
     userInfo?.pronouns && pronounOptions.includes(userInfo.pronouns) ? userInfo.pronouns : '',
   );
 
-  const getPasswordResetLink = (email: string) => {
-    const domain = process.env.NEXT_PUBLIC_AUTH0_DOMAIN;
-    const clientId = process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID;
-    const connection = 'Username-Password-Authentication'; // must match your dashboard exactly
-
-    return `${domain}/dbconnections/change_password?client_id=${clientId}&email=${encodeURIComponent(email)}&connection=${encodeURIComponent(connection)}`;
-  };
+  useEffect(() => {
+    if (userInfo) {
+      setName(userInfo.name || '');
+      setPronouns(userInfo.pronouns && pronounOptions.includes(userInfo.pronouns) ? userInfo.pronouns : '');
+    }
+  }, [userInfo]);
 
   const handleToggleEdit = () => {
     setIsEditing(!isEditing);
+    if (isEditing && userInfo) {
+      // If exiting edit mode without saving (isEditing was true, now false)
+      setName(userInfo.name || '');
+      setPronouns(userInfo.pronouns && pronounOptions.includes(userInfo.pronouns) ? userInfo.pronouns : '');
+    }
   };
 
   const handleCancelChanges = () => {
-    setName(userInfo?.name || '');
-    setPronouns(userInfo?.pronouns || '');
+    if (userInfo) {
+      setName(userInfo.name || '');
+      setPronouns(userInfo.pronouns && pronounOptions.includes(userInfo.pronouns) ? userInfo.pronouns : '');
+    }
     setIsEditing(false);
   };
 
@@ -52,7 +58,6 @@ export default function SettingsSection({ userInfo, onUserUpdate }: SettingsSect
   const handleSaveChanges = async () => {
     setIsConfirmChangesModalOpen(false);
     setIsEditing(false);
-    // Update local state with new values
     if (userInfo) {
       const updatedUser = {
         ...userInfo,
@@ -68,10 +73,6 @@ export default function SettingsSection({ userInfo, onUserUpdate }: SettingsSect
       const domain = process.env.NEXT_PUBLIC_AUTH0_DOMAIN;
       const clientId = process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID;
 
-      console.log('Auth0 Domain:', domain);
-      console.log('Auth0 Client ID:', clientId);
-      console.log('User Email:', userInfo?.email);
-
       if (!domain || !clientId) {
         console.error('Missing Auth0 configuration:', { domain, clientId });
         setResetPasswordMessage('Configuration error. Please contact support.');
@@ -79,8 +80,6 @@ export default function SettingsSection({ userInfo, onUserUpdate }: SettingsSect
       }
 
       const url = `https://${domain}/dbconnections/change_password`;
-      console.log('Request URL:', url);
-
       const res = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -90,11 +89,6 @@ export default function SettingsSection({ userInfo, onUserUpdate }: SettingsSect
           connection: 'Username-Password-Authentication',
         }),
       });
-
-      console.log('Response status:', res.status);
-      const text = await res.text();
-      console.log('Response text:', text);
-
       if (res.ok) {
         setResetPasswordMessage('Password reset email sent successfully!');
       } else {
@@ -172,7 +166,7 @@ export default function SettingsSection({ userInfo, onUserUpdate }: SettingsSect
               label="Input"
               icon={<UserIcon />}
               disabled={!isEditing}
-              value={userInfo?.name || ''}
+              value={name}
               onChange={e => setName(e.target.value)}
             />
           </Box>
@@ -180,10 +174,14 @@ export default function SettingsSection({ userInfo, onUserUpdate }: SettingsSect
             <Text color="black" fontSize="18px" fontWeight="medium" mb={2}>
               Email
             </Text>
-            <TextInput label="Email" icon={<Mail />} disabled={!isEditing} value={userInfo?.email || ''} height={20} />
+            <TextInput label="Email" icon={<Mail />} disabled={true} value={userInfo?.email || ''} height={20} />
           </Box>
-          <Flex direction="column" gap="6px" width="35%">
+          <Flex direction="column" gap="6px" width="100%">
+            {' '}
+            {/* Changed width to 100% for DropDownInput */}
             <Box width="100%" mb={6}>
+              {' '}
+              {/* Ensured DropDownInput takes full width of its parent */}
               <DropDownInput
                 labelText="Pronouns"
                 size="18px"
@@ -191,26 +189,29 @@ export default function SettingsSection({ userInfo, onUserUpdate }: SettingsSect
                 options={pronounOptions}
                 isRequired={true}
                 disabled={!isEditing}
-                value={userInfo?.pronouns}
+                value={pronouns}
                 onChange={value => setPronouns(value)}
               />
             </Box>
           </Flex>
-          {/* <AnimatedLink
+          <AnimatedLink
             link="#"
             linkName="Send Password Reset Email"
             underlineColor="Aqua"
-            onClick={handlePasswordReset}
-          >
-            Send Password Reset Email
-          </AnimatedLink> */}
+            onClick={e => {
+              e.preventDefault();
+              handlePasswordReset();
+            }}
+          />
           {resetPasswordMessage && (
             <Text color={resetPasswordMessage.includes('successfully') ? 'green.500' : 'red.500'} mt={2}>
               {resetPasswordMessage}
             </Text>
           )}
           {isEditing ? (
-            <Flex flexDirection={'row'} justifyContent={'space-between'}>
+            <Flex flexDirection={'row'} justifyContent={'space-between'} mt="auto">
+              {' '}
+              {/* Added mt="auto" to push to bottom */}
               <Button
                 onClick={handleCancelChanges}
                 fontSize="16px"
@@ -220,11 +221,31 @@ export default function SettingsSection({ userInfo, onUserUpdate }: SettingsSect
                 h="48px"
                 p="12px 24px"
                 borderRadius="8px"
+                borderWidth="1px"
+                borderColor="gray.300"
               >
                 Cancel
               </Button>
               <Button
                 onClick={handleOpenConfirmChangesModal}
+                fontSize="16px"
+                fontWeight={500}
+                bg="Aqua"
+                color="white"
+                _hover={{ bg: 'AquaHover' }}
+                h="48px"
+                p="12px 24px"
+                borderRadius="8px"
+              >
+                Save Changes
+              </Button>
+            </Flex>
+          ) : (
+            <Flex justifyContent="flex-end" mt="auto">
+              {' '}
+              {/* Added mt="auto" and Flex for alignment */}
+              <Button
+                onClick={handleToggleEdit}
                 fontSize="16px"
                 fontWeight={500}
                 bg="white"
@@ -234,24 +255,9 @@ export default function SettingsSection({ userInfo, onUserUpdate }: SettingsSect
                 borderRadius="8px"
                 boxShadow={'0px 0px 4px 0px rgba(0, 0, 0, 0.25)'}
               >
-                Save Changes
+                Edit
               </Button>
             </Flex>
-          ) : (
-            <Button
-              onClick={handleToggleEdit}
-              fontSize="16px"
-              fontWeight={500}
-              bg="white"
-              color="Slate"
-              h="48px"
-              p="12px 24px"
-              ml="auto"
-              borderRadius="8px"
-              boxShadow={'0px 0px 4px 0px rgba(0, 0, 0, 0.25)'}
-            >
-              Edit
-            </Button>
           )}
         </Flex>
       </Box>

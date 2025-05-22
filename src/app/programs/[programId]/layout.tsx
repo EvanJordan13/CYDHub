@@ -192,7 +192,6 @@ export default function ProgramLayout({
                       _selected={{ color: 'Aqua', fontWeight: '700', borderBottom: '4px solid #4D80BB' }}
                       onClick={handleModulesTabClick}
                     >
-                      {/* <Text>Modules</Text> */}
                       <Select.Root
                         collection={frameworks}
                         size="sm"
@@ -204,9 +203,8 @@ export default function ProgramLayout({
                         <Select.HiddenSelect />
                         <Box display="flex" justifyContent={'space-evenly'} alignItems={'center'} height={5}>
                           {' '}
-                          {/* alignItems={'flex-end'} */}
                           <Select.Label paddingLeft={2}>{modulesTabTitle}</Select.Label>
-                          <Select.Trigger width={10} borderColor="transparent">
+                          <Select.Trigger as="div" width={10} borderColor="transparent" style={{ cursor: 'pointer' }}>
                             <ChevronDown />
                           </Select.Trigger>
                         </Box>
