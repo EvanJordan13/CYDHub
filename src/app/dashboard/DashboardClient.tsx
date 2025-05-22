@@ -1,5 +1,4 @@
 'use client';
-
 import { useState, useEffect, useMemo } from 'react';
 import { useDbSession } from '@/src/hooks/useDbSession';
 import { Assignment, Program, ModuleMaterial } from '@prisma/client';
@@ -18,6 +17,7 @@ import ArchivedPage from '@/src/components/dashboard/sections/Archived';
 import { useSearchParams, useRouter } from 'next/navigation';
 import PlaygroundSection from '@/src/components/dashboard/sections/PlaygroundSection';
 import CalendarSection from '@/src/components/dashboard/sections/CalendarSection';
+import SettingsSection from '@/src/components/dashboard/sections/SettingsSection';
 
 export default function DashboardClient() {
   const { dbUser } = useDbSession();
@@ -30,6 +30,7 @@ export default function DashboardClient() {
   const [tab, setTab] = useState<Tab>('home');
   const searchParams = useSearchParams();
   const router = useRouter();
+  const [isClientForModal, setIsClientForModal] = useState(false);
 
   useEffect(() => {
     const q = searchParams.get('tab') as Tab | null;
@@ -77,13 +78,13 @@ export default function DashboardClient() {
     };
 
     fetchAllData();
-
     return () => {
       isMounted = false;
     };
   }, [dbUser?.id]);
 
   useEffect(() => {
+    setIsClientForModal(true);
     const key = 'dashboardModalShown';
     if (!sessionStorage.getItem(key)) {
       setIsOpenModal(true);
@@ -105,11 +106,7 @@ export default function DashboardClient() {
         </Heading>
       ),
       archived: <ArchivedPage userInfo={dbUser} archivedPrograms={archivedPrograms} isLoading={isLoadingPageData} />,
-      settings: (
-        <Heading fontSize="40px" fontWeight={700} p="32px 48px 16px 48px" lineHeight={'48px'}>
-          Settings Under Construction!
-        </Heading>
-      ),
+      settings: <SettingsSection userInfo={dbUser} />,
     }),
     [dbUser, assignments, programs, archivedPrograms, isLoadingPageData],
   );
@@ -127,7 +124,7 @@ export default function DashboardClient() {
         {tabs[tab]}
       </Box>
 
-      {isOpenModal && (
+      {isClientForModal && isOpenModal && (
         <Box position="fixed" top={0} left={0} right={0} bottom={0} bg="rgba(0, 0, 0, 0.5)" zIndex={999}>
           <Box position="fixed" top="50%" left="50%" transform="translate(-50%, -50%)" zIndex={1000}>
             <MoodModal onClose={closeModal} />

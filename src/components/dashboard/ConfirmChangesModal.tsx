@@ -1,4 +1,4 @@
-import { Flex, Text } from '@chakra-ui/react';
+import { Flex, Text, chakra } from '@chakra-ui/react';
 import Button from '@/src/components/Button';
 import { createPortal } from 'react-dom';
 import { ArrowRight } from 'lucide-react';
@@ -11,7 +11,6 @@ type Change = {
   oldValue: string;
   newValue: string;
 };
-
 interface ConfirmChangesModalProps {
   changes: Change[];
   isOpen?: boolean;
@@ -20,7 +19,7 @@ interface ConfirmChangesModalProps {
   onSave?: () => void;
 }
 
-const MotionFlex = motion(Flex);
+const MotionFlex = motion(chakra(Flex));
 const MotionDiv = motion.div;
 
 export default function ConfirmChangesModal({
@@ -49,7 +48,6 @@ export default function ConfirmChangesModal({
       setIsSaving(true);
       setError(null);
 
-      // Extract the changes into an object format
       const updateData: { name?: string; pronouns?: string } = {};
       changes.forEach(change => {
         if (change.field === 'Display Name') {
@@ -58,11 +56,7 @@ export default function ConfirmChangesModal({
           updateData.pronouns = change.newValue;
         }
       });
-
-      // Update the user
       await updateUser(userId, updateData);
-
-      // Call the onSave callback if provided
       onSave?.();
       handleClose();
     } catch (err) {
@@ -71,6 +65,10 @@ export default function ConfirmChangesModal({
       setIsSaving(false);
     }
   };
+
+  if (typeof document === 'undefined') {
+    return null;
+  }
 
   return createPortal(
     <AnimatePresence onExitComplete={onClose}>

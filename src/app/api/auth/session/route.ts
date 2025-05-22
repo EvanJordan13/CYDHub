@@ -23,18 +23,15 @@ export async function GET(req: NextRequest) {
     }
 
     try {
-      // Find user by ID
       let dbUser = await prisma.user.findUnique({
         where: { auth0Id: auth0Sub },
       });
 
-      // If couldn't find by ID, try email
       if (!dbUser && userEmail) {
         dbUser = await prisma.user.findUnique({
           where: { email: userEmail },
         });
 
-        // If found by email, update their auth0Id if it's missing
         if (dbUser && !dbUser.auth0Id) {
           dbUser = await prisma.user.update({
             where: { id: dbUser.id },
@@ -43,21 +40,19 @@ export async function GET(req: NextRequest) {
         }
       }
 
-      // If still not found, create a new user
       if (!dbUser) {
         dbUser = await prisma.user.create({
           data: {
             email: userEmail,
             auth0Id: auth0Sub,
             name: userName || null,
-            role: UserRole.STUDENT, // Default for now
+            role: UserRole.STUDENT,
             avatarUrl: userPicture || null,
-            signupComplete: false, // User needs onboarding
+            signupComplete: false,
           },
         });
       }
 
-      // Return the Auth0 session AND the corresponding database user record
       return NextResponse.json(
         {
           session,
@@ -71,6 +66,5 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  // No active session
   return NextResponse.json({ session: null, dbUser: null }, { headers: res.headers });
 }

@@ -34,9 +34,9 @@ const timeBasedIcons = {
 };
 
 function isFirstLoginOfDay(): boolean {
+  if (typeof window === 'undefined') return false;
   const lastLoginTime = localStorage.getItem('lastLoginTime');
   const now = new Date();
-
   if (!lastLoginTime) {
     localStorage.setItem('lastLoginTime', now.toISOString());
     return true;
@@ -47,7 +47,6 @@ function isFirstLoginOfDay(): boolean {
     lastLogin.getDate() === now.getDate() &&
     lastLogin.getMonth() === now.getMonth() &&
     lastLogin.getFullYear() === now.getFullYear();
-
   if (!isSameDay) {
     localStorage.setItem('lastLoginTime', now.toISOString());
     return true;
@@ -64,23 +63,49 @@ function getTimeOfDay(): 'morning' | 'afternoon' | 'evening' {
 }
 
 export default function Callout({ type = 'greeting', numPointsGained = 0, animation, userName }: CalloutProps) {
-  const isFirstLogin = useMemo(() => isFirstLoginOfDay(), []);
-  const firstName = useMemo(() => userName?.split(' ')[0], [userName]);
-  const timeOfDay = useMemo(() => getTimeOfDay(), []);
-  const randomGreeting = useMemo(() => greetings[Math.floor(Math.random() * greetings.length)], []);
+  const [effectiveMessage, setEffectiveMessage] = useState('');
+  const [isClient, setIsClient] = useState(false);
 
-  function getCallout(type: CalloutProps['type']) {
-    switch (type) {
-      case 'greeting':
-        return isFirstLogin && userName
-          ? `Good ${timeOfDay} ${firstName}! ${timeBasedIcons[timeOfDay]}`
-          : randomGreeting;
-      case 'gainPoints':
-        return `You've gained ${numPointsGained} points!`;
-      case 'save':
-        return `Code locally Saved Successfully!`;
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  useEffect(() => {
+    if (isClient) {
+      const firstLogin = isFirstLoginOfDay();
+      const tod = getTimeOfDay();
+      const name = userName?.split(' ')[0];
+      const randomG = greetings[Math.floor(Math.random() * greetings.length)];
+
+      switch (type) {
+        case 'greeting':
+          setEffectiveMessage(firstLogin && name ? `Good ${tod} ${name}! ${timeBasedIcons[tod]}` : randomG);
+          break;
+        case 'gainPoints':
+          setEffectiveMessage(`You've gained ${numPointsGained} points!`);
+          break;
+        case 'save':
+          setEffectiveMessage(`Code locally Saved Successfully!`);
+          break;
+        default:
+          setEffectiveMessage(greetings[0]);
+      }
+    } else {
+      switch (type) {
+        case 'greeting':
+          setEffectiveMessage(greetings[0]);
+          break;
+        case 'gainPoints':
+          setEffectiveMessage(`You've gained ${numPointsGained} points!`);
+          break;
+        case 'save':
+          setEffectiveMessage(`Code locally Saved Successfully!`);
+          break;
+        default:
+          setEffectiveMessage(greetings[0]);
+      }
     }
-  }
+  }, [isClient, type, userName, numPointsGained]);
 
   return (
     <Flex
@@ -101,7 +126,7 @@ export default function Callout({ type = 'greeting', numPointsGained = 0, animat
           <Image alt="energy" src="/streak-card-icon.svg" width={15} height={23} />
         </Box>
       )}
-      <Text>{getCallout(type)}</Text>
+      <Text>{effectiveMessage}</Text>
       <Box position="absolute" right="-9px" color="Aqua">
         {CalloutPointer}
       </Box>

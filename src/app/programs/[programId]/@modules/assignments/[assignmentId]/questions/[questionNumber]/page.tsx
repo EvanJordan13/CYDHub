@@ -15,9 +15,8 @@ import { useParams } from 'next/navigation';
 import ProgressBar from '@/src/components/ProgressBar';
 import { useRouter } from 'next/navigation';
 import { submitQuestionAnswer } from '@/src/lib/query/assignments';
-
 import CodeEditor from '@/src/components/CodeEditor';
-import { useUser } from '@auth0/nextjs-auth0/client';
+import { useDbSession } from '@/src/hooks/useDbSession';
 
 export default function QuestionPage() {
   const { programId, assignmentId, questionNumber } = useParams<{
@@ -29,7 +28,7 @@ export default function QuestionPage() {
   const assignmentIdNumber = Number(assignmentId);
   const questionIdx = Number(questionNumber);
   const router = useRouter();
-  const { user } = useUser();
+  const { dbUser, isLoading: dbSessionLoading } = useDbSession();
 
   const [programAssignment, setProgramAssignment] = useState<Assignment | null>(null);
   const [assignmentQuestions, setAssignmentQuestions] = useState<AssignmentQuestion[] | null>(null);
@@ -38,54 +37,39 @@ export default function QuestionPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchAssignment() {
-      const data = await getAssignmentById(assignmentIdNumber);
-      setProgramAssignment(data as Assignment);
-      const questions = await getAssignmentByIdQuestionsAndSubmissions(assignmentIdNumber);
-      setAssignmentQuestions(questions as AssignmentQuestion[]);
-      setAssignmentQuestionsLength(questions.length);
-    }
-    fetchAssignment();
-  }, [assignmentIdNumber]);
-
-  useEffect(() => {
-    if (!user) return;
+    if (!dbUser || dbSessionLoading) return;
     setIsLoading(true);
     (async () => {
-      // 1) fetch the assignment meta
       const assignment = await getAssignmentById(assignmentIdNumber);
       setProgramAssignment(assignment as Assignment);
 
-      // 2) fetch questions + any existing submission answers
-      const qs = await getAssignmentByIdQuestions(assignmentIdNumber, user?.id as number);
+      const qs = await getAssignmentByIdQuestions(assignmentIdNumber, dbUser.id);
       setAssignmentQuestions(qs as AssignmentQuestion[]);
       setAssignmentQuestionsLength(qs.length);
 
-      // 3) prefill answerText (or clear it if none)
       const existing = qs[questionIdx]?.existingAnswer;
-      console.log({ existing });
       setAnswerText(existing?.answerText ?? '');
 
       setIsLoading(false);
     })();
-  }, [assignmentIdNumber, questionIdx, user]);
+  }, [assignmentIdNumber, questionIdx, dbUser, dbSessionLoading]);
 
   const handleExitClick = () => {
     router.push(`/programs/${programIdNumber}`);
   };
+
   const handleNext = async () => {
-    const q = assignmentQuestions![questionIdx];
-    console.log({ questionId: q.id });
+    if (!assignmentQuestions || !dbUser) return;
+    const q = assignmentQuestions[questionIdx];
     await submitQuestionAnswer({
       assignmentId: assignmentIdNumber,
       questionId: q.id,
       answerText,
       fileUrl: undefined,
     });
-
-    if (questionIdx < assignmentQuestions!.length - 1) {
+    if (questionIdx < assignmentQuestions.length - 1) {
       router.push(`/programs/${programIdNumber}/assignments/${assignmentIdNumber}/questions/${questionIdx + 1}`);
-    } else if (questionIdx === assignmentQuestions!.length - 1) {
+    } else if (questionIdx === assignmentQuestions.length - 1) {
       router.push(`/feedback/${programIdNumber}`);
     }
   };
@@ -97,7 +81,7 @@ export default function QuestionPage() {
 
   return (
     <VStack w="100%" minH="200px" alignItems="left">
-      {isLoading ? (
+      {isLoading || dbSessionLoading ? (
         <Skeleton w="100%" h="40px" mt="26px" />
       ) : (
         <HStack w="100%" h="20px" mt="26px">
@@ -107,21 +91,21 @@ export default function QuestionPage() {
       )}
 
       <VStack w="100%" alignItems="left" p="32px" padding={'32px'}>
-        {isLoading ? (
+        {isLoading || dbSessionLoading ? (
           <SkeletonText noOfLines={1} height="15px" w="250px" />
         ) : (
           <Text fontFamily="Poppins" fontSize="15px" fontWeight={500} color="Slate">
             {`Question: ${questionIdx + 1} out of ${assignmentQuestionsLength}`}
           </Text>
         )}
-        {isLoading ? (
+        {isLoading || dbSessionLoading ? (
           <SkeletonText noOfLines={1} height="22px" w="300px" />
         ) : (
           <Text fontFamily="Poppins" fontSize="22px" fontWeight={700} color="Slate">
             {programAssignment?.title}
           </Text>
         )}
-        {isLoading ? (
+        {isLoading || dbSessionLoading ? (
           <SkeletonText noOfLines={3} height="16px" w="100%" />
         ) : (
           <Text fontFamily="Poppins" fontSize="16px" fontWeight={500} color="Slate">
@@ -143,7 +127,7 @@ export default function QuestionPage() {
             <Button
               type="primary"
               pageColor="aqua"
-              text={questionIdx < assignmentQuestionsLength - 1 ? 'Next' : 'Submit'}
+              text={assignmentQuestionsLength > 0 && questionIdx < assignmentQuestionsLength - 1 ? 'Next' : 'Submit'}
               textSize="16px"
               height="60px"
               width="130px"

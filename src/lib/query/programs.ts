@@ -182,9 +182,6 @@ export async function getProgramModules(programId: number): Promise<Module[]> {
       where: {
         id: programId,
       },
-      // include: {
-      //   modules: true,
-      // },
       include: {
         modules: {
           include: {
