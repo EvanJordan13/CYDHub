@@ -12,9 +12,12 @@ import { EditorView } from '@codemirror/view';
 
 type PyodideInterface = any;
 
-interface CodeEditorProps {}
+interface CodeEditorProps {
+  value?: string;
+  onChange?: (value: string) => void;
+}
 
-export default function CodeEditor({}: CodeEditorProps) {
+export default function CodeEditor({ value, onChange }: CodeEditorProps) {
   const [currentCode, setCurrentCode] = useState('');
   const [savedCode, setSavedCode] = useState('');
   const [language, setLanguage] = useState('javascript');
@@ -204,6 +207,7 @@ export default function CodeEditor({}: CodeEditorProps) {
           type="secondary"
           pageColor="aqua"
           text="Run Code"
+          textSize="16px"
           height="3rem"
           width="7rem"
         />
@@ -211,11 +215,13 @@ export default function CodeEditor({}: CodeEditorProps) {
       <Box marginBottom={4} borderRadius="lg" borderWidth={3} borderColor="LightGray" overflow="hidden">
         <CodeMirror
           key={language}
-          value={currentCode}
+          value={value ?? currentCode}
           height="30rem"
           theme={customTheme}
           extensions={[getLanguageExtension(language)]}
-          onChange={value => setCurrentCode(value)}
+          onChange={val => {
+            onChange ? onChange(val) : setCurrentCode(val);
+          }}
         />
       </Box>
       <Box display="flex" justifyContent="space-between" alignItems="center" gap={4}>
@@ -236,6 +242,7 @@ export default function CodeEditor({}: CodeEditorProps) {
             type="primary"
             pageColor="aqua"
             text="Save Code"
+            textSize="16px"
             height="3rem"
             width="7rem"
           />
@@ -244,6 +251,7 @@ export default function CodeEditor({}: CodeEditorProps) {
             type="secondary"
             pageColor="aqua"
             text="Load Previous Code"
+            textSize="16px"
             height="3rem"
             width="11rem"
           />

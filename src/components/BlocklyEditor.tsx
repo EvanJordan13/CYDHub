@@ -201,6 +201,7 @@ export default function BlocklyEditor() {
           type="secondary"
           pageColor="aqua"
           text="Run Code"
+          textSize="16px"
           height="3rem"
           width="7rem"
         />
@@ -232,6 +233,7 @@ export default function BlocklyEditor() {
             type="primary"
             pageColor="aqua"
             text="Save Blocks"
+            textSize="16px"
             height="3rem"
             width="8rem"
           />
@@ -240,6 +242,7 @@ export default function BlocklyEditor() {
             type="secondary"
             pageColor="aqua"
             text="Load Previous Blocks"
+            textSize="16px"
             height="3rem"
             width="14rem"
           />
