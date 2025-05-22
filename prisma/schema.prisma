@@ -135,6 +135,7 @@ model Submission {
   content          String?
   fileUrl          String?
   grade            Float?
+  completed Boolean? @default(false)
   teacherFeedback  String?
   submittedAt      DateTime           @default(now())
   updatedAt        DateTime           @updatedAt

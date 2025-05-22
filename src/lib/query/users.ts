@@ -109,3 +109,22 @@ export async function storeUserSurveyResponse(userId: number, surveyResponse: Su
     data: { surveyResponses: { connect: { id: surveyResponse.id } } },
   });
 }
+
+export async function updateUser(userId: number, data: { name?: string; pronouns?: string }): Promise<User> {
+  if (userId === null) {
+    throw new Error(`ID provided is null`);
+  }
+
+  const user = await prisma.user.update({
+    where: { id: userId },
+    data: {
+      ...data,
+    },
+  });
+
+  if (!user) {
+    throw new Error(`No user found with ID ${userId}`);
+  }
+
+  return user;
+}

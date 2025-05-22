@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { useEffect, useState, useMemo } from 'react';
 
 interface CalloutProps {
-  type: 'greeting' | 'gainPoints';
+  type: 'greeting' | 'gainPoints' | 'save';
   numPointsGained?: number;
   userName?: string;
   animation?: string;
@@ -77,6 +77,8 @@ export default function Callout({ type = 'greeting', numPointsGained = 0, animat
           : randomGreeting;
       case 'gainPoints':
         return `You've gained ${numPointsGained} points!`;
+      case 'save':
+        return `Code locally Saved Successfully!`;
     }
   }
 

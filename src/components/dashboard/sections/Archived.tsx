@@ -1,6 +1,7 @@
 import { Text, Image, Flex, VStack, HStack, Link, Wrap, WrapItem, Skeleton, SkeletonText, Box } from '@chakra-ui/react';
 import { Program, User } from '@prisma/client';
 import ProgramCard from '@/src/components/ProgramCard';
+import Header from '../Header';
 
 export function ProgramCardSkeleton() {
   return (
@@ -32,25 +33,8 @@ export default function ArchivedPage({ userInfo, archivedPrograms, isLoading }: 
   return (
     <Flex direction={'row'}>
       <VStack width={'100%'}>
-        <HStack
-          marginBottom={2}
-          paddingY={8}
-          paddingX={12}
-          justify={'space-between'}
-          width={'100%'}
-          shadow={'0px 2px 2px #e3dbdb'}
-          dropShadow={'10px 10px 10px rgba(0, 0, 0, 0.5)'}
-        >
-          <Text fontSize={'40px'} fontWeight={'bold'}>
-            Welcome, {userInfo?.name}
-          </Text>
-          <HStack gap={2}>
-            <Image src="/lightning.svg" alt="Points logo" />
-            <Text fontSize={'3xl'} fontWeight={'bold'} color={'#FFCE29'}>
-              {userInfo?.points}
-            </Text>
-          </HStack>
-        </HStack>
+        <Header userInfo={userInfo}></Header>
+
         {archivedPrograms.length > 0 ? (
           <VStack paddingY={5} paddingX={12} align={'start'} width={'100%'} gap={4}>
             <Text fontSize={'2xl'} fontWeight={'bold'}>

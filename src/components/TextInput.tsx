@@ -26,6 +26,8 @@ export default function TextInput({
   ...props
 }: TextInputProps) {
   const [hasBeenTouched, setHasBeenTouched] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
+  const [showSecretValue, setShowSecretValue] = useState(false);
   const isInvalid = hasBeenTouched && invalidFunction();
 
   return (
@@ -33,12 +35,14 @@ export default function TextInput({
       <Flex
         align="center"
         border="0.125rem solid"
-        borderColor={isInvalid ? 'red' : disabled || !hasBeenTouched ? '#AAAAAA' : 'Aqua'}
+        borderColor={isInvalid ? 'red' : disabled || (!hasBeenTouched && !isFocused) ? '#AAAAAA' : 'Aqua'}
         borderRadius="md"
         width="100%"
         minH={height}
         _hover={{ background: disabled ? '' : '#E0EEFF' }}
         bgColor={disabled ? '#F0EFEF' : ''}
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(false)}
       >
         {icon ? (
           <Box color="#AAAAAA" ml="4%" transform="scale(1.2)" bgColor={disabled ? '#F0EFEF' : ''}>
