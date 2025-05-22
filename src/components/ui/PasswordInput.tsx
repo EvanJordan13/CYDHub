@@ -14,7 +14,7 @@ interface PasswordInputProps {
 export default function PasswordInput({ disabled, value, onChange }: PasswordInputProps) {
   return (
     <Flex>
-      <TextInput label="Password" icon={<></>} disabled={disabled} value={value} height={20} isSecret={true} />
+      <TextInput label="Password" icon={<></>} disabled={disabled} value={value} height={20} />
     </Flex>
   );
 }
