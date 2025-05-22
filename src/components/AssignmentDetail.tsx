@@ -1,14 +1,17 @@
 import { Box, Text, Stack, IconButton } from '@chakra-ui/react';
 import { ArrowLeft } from 'lucide-react';
 import Button from './Button';
+import { useRouter } from 'next/navigation';
 
 interface AssignmentDetailProps {
+  programId: number;
+  assignmentId: number;
   assignmentNumber: number | null;
   assignmentTitle: string;
   dueDate: Date | null;
   questionCount: number | null;
   description: string | null;
-  onBackClick: () => void;
+  onBackClick?: () => void;
 }
 
 const formatDate = (date: Date) => {
@@ -35,17 +38,33 @@ const formatDate = (date: Date) => {
 };
 
 export default function AssignmentDetail({
+  programId,
+  assignmentId,
   assignmentNumber,
   assignmentTitle,
   dueDate,
   questionCount,
   description,
-  onBackClick,
 }: AssignmentDetailProps) {
+  const router = useRouter();
+  const handleAssignmentClick = () => {
+    router.push(`/programs/${programId}/assignments/${assignmentId}/questions/0`);
+  };
+  const onBackClick = () => {
+    router.push(`/programs/${programId}`);
+  };
   return (
     <Box position={'relative'} mt={6}>
       <Box position={'absolute'} top={0} right={0}>
-        <Button type={'secondary'} pageColor={'aqua'} text={'Start Assignment'} height={'12'} width={'44'} />
+        <Button
+          type={'secondary'}
+          pageColor={'aqua'}
+          text={'Start Assignment'}
+          textSize="16px"
+          height={'12'}
+          width={'44'}
+          onClick={handleAssignmentClick}
+        />
       </Box>
 
       <Stack direction={'row'}>

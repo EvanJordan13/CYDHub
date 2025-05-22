@@ -10,7 +10,8 @@ interface DropDownInputProps {
   options: string[];
   showIcon?: boolean;
   isRequired?: boolean;
-  height?: number;
+  height?: string | number;
+  disabled?: boolean;
   value?: string | null;
   onChange?: (value: string) => void;
 }
@@ -21,6 +22,7 @@ const DropDownInput: React.FC<DropDownInputProps> = ({
   showIcon = true,
   options,
   isRequired = false,
+  disabled = false,
   height = 12,
   value,
   onChange,
@@ -43,9 +45,9 @@ const DropDownInput: React.FC<DropDownInputProps> = ({
 
   return (
     <Field.Root required>
-      <Box width="100%" height={'100%'} {...rest}>
+      <Box width="100%" height={height} {...rest}>
         {labelText && (
-          <Text mb={2} fontSize="110%" fontWeight={'medium'} color={'black'}>
+          <Text mb={2} fontSize=".97vw" fontWeight={'medium'} color={'black'}>
             {labelText}
             {isRequired && (
               <Text as="span" color="red.500">
@@ -63,9 +65,10 @@ const DropDownInput: React.FC<DropDownInputProps> = ({
               size="sm"
               rounded={'md'}
               width="100%"
+              color={disabled ? '#AAAAAA' : 'black'}
               borderWidth={'0.125rem'}
               borderColor={isFocused ? 'Aqua' : isInvalid ? 'red' : '#AAAAAA'}
-              _hover={{ background: '#E0EEFF' }}
+              _hover={{ background: disabled ? '' : '#E0EEFF' }}
               _focus={{ outline: 'none' }}
               onFocus={() => setIsFocused(true)}
               onBlur={() => {
@@ -74,10 +77,14 @@ const DropDownInput: React.FC<DropDownInputProps> = ({
               }}
               transition="none"
               height={height}
+              disabled={disabled}
               aria-label={selectedOption ? `Selected option is ${selectedOption}` : 'Select an option'}
+              bgColor={disabled ? '#F0EFEF' : ''}
+              opacity={1}
+              _disabled={{ opacity: 1 }}
             >
               <Flex justify="space-between" align="center" width="100%">
-                <Text truncate color={selectedOption ? 'black' : '#AAAAAA'} fontWeight={500} fontSize={'130%'}>
+                <Text color={selectedOption ? 'black' : '#AAAAAA'} fontWeight={500} fontSize={'clamp(16px,.97vw,40px)'}>
                   {selectedOption || helperText}
                 </Text>
                 {showIcon && <ChevronDown color="#AAAAAA" />}
