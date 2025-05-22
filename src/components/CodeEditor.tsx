@@ -18,9 +18,9 @@ interface CodeEditorProps {
 }
 
 export default function CodeEditor({ value, onChange }: CodeEditorProps) {
-  const [currentCode, setCurrentCode] = useState('');
+  const [currentCode, setCurrentCode] = useState(value ?? '');
   const [savedCode, setSavedCode] = useState('');
-  const [language, setLanguage] = useState('javascript');
+  const [language, setLanguage] = useState('python');
   const [output, setOutput] = useState<string | null>(null);
   const [pyodide, setPyodide] = useState<PyodideInterface | null>(null);
   const [pyodideLoading, setPyodideLoading] = useState(false);
@@ -65,9 +65,15 @@ export default function CodeEditor({ value, onChange }: CodeEditorProps) {
       case 'css':
         return css();
       default:
-        return javascript({ jsx: true });
+        return python();
     }
   };
+
+  useEffect(() => {
+    if (value !== undefined) {
+      setCurrentCode(value);
+    }
+  }, [value]);
 
   useEffect(() => {
     const initPyodide = async () => {
@@ -97,9 +103,11 @@ export default function CodeEditor({ value, onChange }: CodeEditorProps) {
     if (language === 'python' && !pyodide) {
       initPyodide();
     }
-  }, [language]);
+  }, [language, pyodide]);
 
   const executeCode = async () => {
+    const codeToExecute = value !== undefined ? value : currentCode;
+
     if (language === 'javascript') {
       try {
         const logs: string[] = [];
@@ -109,7 +117,7 @@ export default function CodeEditor({ value, onChange }: CodeEditorProps) {
           logs.push(args.map(arg => String(arg)).join(' '));
         };
 
-        const result = new Function(currentCode)();
+        const result = new Function(codeToExecute)();
 
         console.log = originalConsoleLog;
 
@@ -130,11 +138,9 @@ export default function CodeEditor({ value, onChange }: CodeEditorProps) {
             outputBuffer += text;
           },
         });
-
-        const result = await pyodide.runPythonAsync(currentCode);
+        const result = await pyodide.runPythonAsync(codeToExecute);
 
         pyodide.setStdout({ batched: () => {} });
-
         const combinedOutput = outputBuffer + (result !== undefined ? String(result) : '');
         setOutput(combinedOutput || 'Python code executed with no output.');
       } catch (err) {
@@ -153,12 +159,13 @@ export default function CodeEditor({ value, onChange }: CodeEditorProps) {
           size="md"
           width={36}
           color="white"
+          defaultValue={[language]}
           onChange={(e: React.FormEvent<HTMLDivElement>) => setLanguage((e.target as HTMLSelectElement).value)}
         >
           <Select.HiddenSelect />
           <Select.Control bg="Aqua" color="white" borderRadius="md" _hover={{ bg: '#3d5aa9' }}>
             <Select.Trigger px={4} py={2}>
-              <Select.ValueText color="white" placeholder="JavaScript" />
+              <Select.ValueText color="white" placeholder="Python" />
             </Select.Trigger>
             <Select.IndicatorGroup>
               <Select.Indicator color="white" />
@@ -168,7 +175,7 @@ export default function CodeEditor({ value, onChange }: CodeEditorProps) {
             <Select.Positioner>
               <Select.Content>
                 {languages.items.map(
-                  (language: {
+                  (langItem: {
                     value: Key | null | undefined;
                     label:
                       | string
@@ -192,8 +199,8 @@ export default function CodeEditor({ value, onChange }: CodeEditorProps) {
                       | null
                       | undefined;
                   }) => (
-                    <Select.Item item={language} key={language.value}>
-                      {language.label}
+                    <Select.Item item={langItem} key={langItem.value}>
+                      {langItem.label}
                       <Select.ItemIndicator />
                     </Select.Item>
                   ),
@@ -220,7 +227,8 @@ export default function CodeEditor({ value, onChange }: CodeEditorProps) {
           theme={customTheme}
           extensions={[getLanguageExtension(language)]}
           onChange={val => {
-            onChange ? onChange(val) : setCurrentCode(val);
+            setCurrentCode(val);
+            onChange?.(val);
           }}
         />
       </Box>
@@ -247,7 +255,12 @@ export default function CodeEditor({ value, onChange }: CodeEditorProps) {
             width="7rem"
           />
           <Button
-            onClick={() => setCurrentCode(savedCode)}
+            onClick={() => {
+              setCurrentCode(savedCode);
+              if (onChange && value !== undefined) {
+                onChange(savedCode);
+              }
+            }}
             type="secondary"
             pageColor="aqua"
             text="Load Previous Code"
